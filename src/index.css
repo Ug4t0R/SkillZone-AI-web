@@ -1,0 +1,781 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ========================
+   CUSTOM THEME (TW4)
+   ======================== */
+@theme {
+    --color-sz-red: #E31E24;
+    --color-sz-red-dark: #b91217;
+    --color-dark-bg: #050505;
+    --color-light-bg: #f3f4f6;
+    --color-card-bg: #0f0f0f;
+    --color-card-light: #ffffff;
+    --color-panel-border: #2a2a2a;
+
+    --font-sans: 'Inter', sans-serif;
+    --font-orbitron: 'Orbitron', sans-serif;
+
+    --animate-pulse-slow: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    --animate-marquee: marquee 120s linear infinite;
+    --animate-typewriter: typewriter 2s steps(40) 1s 1 normal both;
+    --animate-blinkTextCursor: blinkTextCursor 500ms steps(40) infinite normal;
+    --animate-strike: strike 0.5s ease-in-out forwards;
+    --animate-glitch: glitch 1s linear infinite;
+    --animate-circuit-flow: circuitFlow 20s linear infinite;
+}
+
+/* ========================
+   KEYFRAMES
+   ======================== */
+@keyframes marquee {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+@keyframes typewriter {
+    from {
+        width: 0;
+    }
+
+    to {
+        width: 100%;
+    }
+}
+
+@keyframes blinkTextCursor {
+    from {
+        border-right-color: rgba(227, 30, 36, 0.75);
+    }
+
+    to {
+        border-right-color: transparent;
+    }
+}
+
+@keyframes strike {
+    0% {
+        width: 0%;
+    }
+
+    100% {
+        width: 110%;
+    }
+}
+
+@keyframes glitch {
+
+    2%,
+    64% {
+        transform: translate(2px, 0) skew(0deg);
+    }
+
+    4%,
+    60% {
+        transform: translate(-2px, 0) skew(0deg);
+    }
+
+    62% {
+        transform: translate(0, 0) skew(5deg);
+    }
+}
+
+@keyframes circuitFlow {
+    0% {
+        background-position: 0% 0%;
+    }
+
+    100% {
+        background-position: 100% 100%;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes floatUp {
+    0% {
+        opacity: 1;
+        transform: translateY(0) scale(1.2);
+    }
+
+    20% {
+        opacity: 1;
+        transform: translateY(-10px) scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(-50px) scale(0.8);
+    }
+}
+
+@keyframes slideInFromTop {
+    from {
+        transform: translateY(-10px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes energyPulse {
+    0% {
+        background-position: 0% 0%;
+        opacity: 0.5;
+    }
+
+    100% {
+        background-position: 100% 100%;
+        opacity: 1;
+    }
+}
+
+/* ========================
+   BASE STYLES
+   ======================== */
+body {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ========================
+   CUSTOM SCROLLBAR
+   ======================== */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #080808;
+}
+
+html.dark ::-webkit-scrollbar-track {
+    background: #080808;
+}
+
+html:not(.dark) ::-webkit-scrollbar-track {
+    background: #f3f4f6;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 4px;
+}
+
+html:not(.dark) ::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #E31E24;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #2a2a2a;
+    border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #E31E24;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* ========================
+   GLASS PANEL EFFECT
+   ======================== */
+.glass-panel {
+    background: rgba(20, 20, 20, 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(227, 30, 36, 0.1);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+
+html:not(.dark) .glass-panel {
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* ========================
+   LIGHT MODE POLISH
+   ======================== */
+
+/* Section backgrounds — subtle alternating */
+html:not(.dark) section:nth-child(even) {
+    background-color: #f9fafb;
+}
+
+html:not(.dark) section:nth-child(odd) {
+    background-color: #ffffff;
+}
+
+/* Cards — clean white with subtle shadow */
+html:not(.dark) [class*="bg-zinc-9"],
+html:not(.dark) [class*="bg-card-bg"],
+html:not(.dark) [class*="bg-black/"] {
+    background-color: rgba(255, 255, 255, 0.9) !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+/* Text contrast — ensure readability */
+html:not(.dark) .text-white {
+    color: #111827;
+}
+
+html:not(.dark) .text-gray-400,
+html:not(.dark) .text-gray-500 {
+    color: #6b7280;
+}
+
+html:not(.dark) .text-gray-300 {
+    color: #9ca3af;
+}
+
+/* Borders — softer in light mode */
+html:not(.dark) [class*="border-white/"] {
+    border-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+html:not(.dark) [class*="border-sz-red/"] {
+    border-color: rgba(227, 30, 36, 0.2) !important;
+}
+
+/* Input fields */
+html:not(.dark) input[type="text"],
+html:not(.dark) input[type="email"],
+html:not(.dark) input[type="number"],
+html:not(.dark) textarea,
+html:not(.dark) select {
+    background-color: #f9fafb;
+    color: #111827;
+    border-color: #e5e7eb;
+}
+
+html:not(.dark) input::placeholder,
+html:not(.dark) textarea::placeholder {
+    color: #9ca3af;
+}
+
+/* Font-mono elements (code-like text) */
+html:not(.dark) .font-mono {
+    color: #374151;
+}
+
+/* Motherboard pattern — barely visible in light mode */
+html:not(.dark) .bg-motherboard {
+    opacity: 0.05 !important;
+}
+
+html:not(.dark) .motherboard-energy {
+    opacity: 0.08 !important;
+}
+
+/* Status bar / footer */
+html:not(.dark) footer,
+html:not(.dark) [class*="bg-dark-bg"] {
+    background-color: #1f2937 !important;
+    color: #f3f4f6;
+}
+
+/* Nav in light mode — subtle glass */
+html:not(.dark) nav {
+    background-color: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+/* SZ-Red badges and accents — keep vibrant */
+html:not(.dark) .bg-sz-red {
+    box-shadow: 0 2px 8px rgba(227, 30, 36, 0.25);
+}
+
+/* Text glow — disabled in light mode (looks bad) */
+html:not(.dark) .text-glow {
+    text-shadow: none;
+}
+
+/* Neon/glow shadows — softer in light mode */
+html:not(.dark) [style*="box-shadow"] {
+    --tw-shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+/* ========================
+   UTILITY CLASSES
+   ======================== */
+.sz-border-hover:hover {
+    border-color: #E31E24;
+    box-shadow: 0 0 15px rgba(227, 30, 36, 0.2);
+}
+
+.text-glow {
+    text-shadow: 0 0 15px rgba(227, 30, 36, 0.6);
+}
+
+.clip-angle {
+    clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
+}
+
+.clip-corner {
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+}
+
+/* ========================
+   GLITCH EFFECT
+   ======================== */
+.glitch-wrapper {
+    position: relative;
+}
+
+.animate-glitch-text {
+    animation: glitch 1s linear infinite;
+}
+
+/* ========================
+   ANIMATIONS
+   ======================== */
+.animate-in {
+    animation: fadeIn 0.3s ease-out;
+}
+
+.fade-in {
+    animation-name: fadeIn;
+}
+
+.slide-in-from-top-2 {
+    animation: slideInFromTop 0.2s ease-out;
+}
+
+/* ========================
+   SCROLL REVEAL ANIMATIONS
+   ======================== */
+@keyframes glitchIn {
+    0% {
+        opacity: 0;
+        transform: translate(-3px, 0) skew(2deg);
+        filter: blur(4px);
+    }
+
+    20% {
+        opacity: 0.4;
+        transform: translate(3px, 0) skew(-1deg);
+        filter: blur(2px);
+    }
+
+    40% {
+        opacity: 0.7;
+        transform: translate(-2px, 0) skew(1deg);
+        filter: blur(1px);
+    }
+
+    60% {
+        opacity: 0.9;
+        transform: translate(1px, 0) skew(0deg);
+        filter: blur(0);
+    }
+
+    80% {
+        opacity: 1;
+        transform: translate(-1px, 0);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translate(0, 0);
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.85);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-40px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(40px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Base scroll reveal — hidden by default */
+.scroll-reveal {
+    opacity: 0;
+    will-change: opacity, transform;
+}
+
+/* When revealed, animate based on variant */
+.scroll-reveal.revealed {
+    animation: slideUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.scroll-reveal.sr-glitch.revealed {
+    animation: glitchIn 0.5s ease-out forwards;
+}
+
+.scroll-reveal.sr-slide-up.revealed {
+    animation: slideUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.scroll-reveal.sr-scale.revealed {
+    animation: scaleIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.scroll-reveal.sr-fade.revealed {
+    animation: fadeIn 0.6s ease-out forwards;
+}
+
+.scroll-reveal.sr-left.revealed {
+    animation: slideInLeft 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.scroll-reveal.sr-right.revealed {
+    animation: slideInRight 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Stagger children — each child gets delayed */
+.sr-stagger>* {
+    opacity: 0;
+    will-change: opacity, transform;
+}
+
+.sr-stagger.revealed>* {
+    animation: slideUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation-delay: var(--sr-delay, 0ms);
+}
+
+/* Reduced motion — no animations, just show */
+@media (prefers-reduced-motion: reduce) {
+
+    .scroll-reveal,
+    .sr-stagger>* {
+        opacity: 1 !important;
+        transform: none !important;
+        animation: none !important;
+    }
+}
+
+/* ========================
+   MOTHERBOARD PATTERN
+   ======================== */
+.bg-motherboard {
+    background-color: transparent;
+    background-image: url("data:image/svg+xml,%3Csvg width='300' height='300' viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3Cpattern id='pcb' x='0' y='0' width='300' height='300' patternUnits='userSpaceOnUse'%3E%3Ccircle cx='10' cy='10' r='1.5' fill='%23333' opacity='0.5'/%3E%3Ccircle cx='100' cy='10' r='1.5' fill='%23333' opacity='0.5'/%3E%3Ccircle cx='200' cy='10' r='1.5' fill='%23333' opacity='0.5'/%3E%3Ccircle cx='10' cy='100' r='1.5' fill='%23333' opacity='0.5'/%3E%3Ccircle cx='10' cy='200' r='1.5' fill='%23333' opacity='0.5'/%3E%3Cpath d='M20 20 L50 20 L70 40 L120 40' stroke='%23333' stroke-width='2' fill='none' opacity='0.3'/%3E%3Cpath d='M20 30 L45 30 L60 45 L120 45' stroke='%23333' stroke-width='2' fill='none' opacity='0.3'/%3E%3Cpath d='M150 20 L180 50 L250 50' stroke='%23333' stroke-width='2' fill='none' opacity='0.3'/%3E%3Cpath d='M150 150 L120 180 L50 180' stroke='%23333' stroke-width='2' fill='none' opacity='0.3'/%3E%3Cpath d='M280 20 L260 40 L260 100' stroke='%23333' stroke-width='2' fill='none' opacity='0.3'/%3E%3Cpath d='M20 280 L50 250 L150 250' stroke='%23333' stroke-width='2' fill='none' opacity='0.3'/%3E%3Crect x='60' y='60' width='40' height='40' stroke='%23333' stroke-width='2' fill='none' opacity='0.4'/%3E%3Crect x='180' y='180' width='60' height='30' stroke='%23333' stroke-width='2' fill='none' opacity='0.4'/%3E%3Ccircle cx='65' cy='65' r='2' fill='%23444'/%3E%3Ccircle cx='95' cy='95' r='2' fill='%23444'/%3E%3Ccircle cx='65' cy='95' r='2' fill='%23444'/%3E%3Ccircle cx='95' cy='65' r='2' fill='%23444'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='300' height='300' fill='url(%23pcb)'/%3E%3C/svg%3E");
+}
+
+.motherboard-energy {
+    background: radial-gradient(circle at 50% 50%, rgba(227, 30, 36, 0.2), transparent 50%),
+        radial-gradient(circle at 0% 0%, rgba(227, 30, 36, 0.1), transparent 30%);
+    background-size: 200% 200%;
+    animation: energyPulse 10s ease-in-out infinite alternate;
+    mix-blend-mode: overlay;
+}
+
+/* ========================
+   STRIKE LINE EFFECT
+   ======================== */
+.strike-line {
+    position: absolute;
+    top: 50%;
+    left: -5%;
+    height: 6px;
+    background-color: #E31E24;
+    transform: translateY(-50%) rotate(-3deg);
+    z-index: 20;
+    box-shadow: 0 0 15px #E31E24;
+    border-radius: 2px;
+    clip-path: polygon(0% 10%, 5% 5%, 10% 15%, 15% 5%, 20% 12%, 25% 5%, 30% 15%, 35% 5%, 40% 12%, 45% 5%, 50% 15%, 55% 5%, 60% 12%, 65% 5%, 70% 15%, 75% 5%, 80% 12%, 85% 5%, 90% 15%, 95% 5%, 100% 10%, 100% 90%, 95% 95%, 90% 85%, 85% 95%, 80% 88%, 75% 95%, 70% 85%, 65% 95%, 60% 88%, 55% 95%, 50% 85%, 45% 95%, 40% 88%, 35% 95%, 30% 85%, 25% 95%, 20% 88%, 15% 95%, 10% 85%, 5% 95%, 0% 90%);
+}
+
+/* ========================
+   CRISP CHAT — above status bar
+   ======================== */
+.crisp-client>div>a[data-maximized],
+.crisp-client>div>div[data-visible] {
+    bottom: 40px !important;
+}
+
+/* ========================
+   CRAZY MODE 🧠💥
+   ======================== */
+@keyframes crazyRainbow {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════ */
+/* CRAZY MODE — Gen Z vibes, still readable                  */
+/* ═══════════════════════════════════════════════════════════ */
+
+/* Floating emoji animation — gentle rise */
+@keyframes crazyFloat {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 0.4;
+    }
+
+    90% {
+        opacity: 0.4;
+    }
+
+    100% {
+        transform: translateY(-100vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* Slow rainbow gradient shift */
+@keyframes crazyRainbow {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Gentle hue drift */
+@keyframes crazyHue {
+    from {
+        filter: hue-rotate(0deg);
+    }
+
+    to {
+        filter: hue-rotate(360deg);
+    }
+}
+
+/* Comic Sans font + fire cursor + deep fried filter */
+.crazy-mode {
+    font-family: 'Comic Sans MS', 'Comic Sans', 'Chalkboard SE', cursive !important;
+    cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32'><text y='24' font-size='24'>🔥</text></svg>"), auto !important;
+    filter: contrast(1.06) saturate(1.12);
+}
+
+.crazy-mode * {
+    font-family: inherit !important;
+}
+
+/* Subtle rainbow overlay — very faint */
+.crazy-mode::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(124deg,
+            #ff2400, #e81d1d, #e8b71d, #e3e81d,
+            #1de840, #1ddde8, #2b1de8, #dd00f3,
+            #ff2400);
+    background-size: 1800% 1800%;
+    animation: crazyRainbow 18s ease infinite;
+    opacity: 0.04;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Rainbow headings — slow, readable */
+.crazy-mode h1,
+.crazy-mode h2,
+.crazy-mode h3 {
+    background: linear-gradient(90deg, #ff0000, #ff7700, #ffff00, #00ff00, #0000ff, #8b00ff) !important;
+    background-size: 200% auto !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+    animation: crazyRainbow 6s linear infinite !important;
+}
+
+/* Gentle hue shift on sections — very slow */
+.crazy-mode section:nth-child(even) {
+    animation: crazyHue 20s linear infinite;
+}
+
+/* Neon borders — subtle glow */
+.crazy-mode [class*="border"] {
+    border-color: rgba(255, 0, 255, 0.15) !important;
+    box-shadow: 0 0 8px rgba(255, 0, 255, 0.08), 0 0 16px rgba(0, 255, 255, 0.05) !important;
+}
+
+/* Buttons — just a color shift, no movement */
+.crazy-mode button:hover {
+    filter: hue-rotate(60deg);
+    transition: filter 0.3s;
+}
+
+/* ═══════════════════════════════════════════════════════
+   SKILLER WALKING ANIMATIONS
+   ═══════════════════════════════════════════════════════ */
+
+@keyframes skillerLegLeft {
+
+    0%,
+    100% {
+        transform: rotate(0deg);
+    }
+
+    50% {
+        transform: rotate(20deg);
+    }
+}
+
+@keyframes skillerLegRight {
+
+    0%,
+    100% {
+        transform: rotate(0deg);
+    }
+
+    50% {
+        transform: rotate(-20deg);
+    }
+}
+
+@keyframes skillerArmLeft {
+
+    0%,
+    100% {
+        transform: rotate(0deg);
+    }
+
+    50% {
+        transform: rotate(15deg);
+    }
+}
+
+@keyframes skillerArmRight {
+
+    0%,
+    100% {
+        transform: rotate(0deg);
+    }
+
+    50% {
+        transform: rotate(-15deg);
+    }
+}
+
+@keyframes skillerBlink {
+
+    0%,
+    45%,
+    55%,
+    100% {
+        transform: scaleY(1);
+    }
+
+    48%,
+    52% {
+        transform: scaleY(0.1);
+    }
+}
+
+@keyframes skillerBobble {
+
+    0%,
+    100% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-2px);
+    }
+}
+
+@keyframes skillerSnowfall {
+    0% {
+        transform: translateY(-8px);
+        opacity: 0;
+    }
+
+    20% {
+        opacity: 0.7;
+    }
+
+    100% {
+        transform: translateY(40px);
+        opacity: 0;
+    }
+}

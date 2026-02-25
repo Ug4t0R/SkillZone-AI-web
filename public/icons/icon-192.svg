@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192">
+  <rect width="192" height="192" rx="24" fill="#050505"/>
+  <rect x="8" y="8" width="176" height="176" rx="20" fill="none" stroke="#E31E24" stroke-width="3" opacity="0.3"/>
+  <text x="96" y="78" text-anchor="middle" font-family="Arial Black, sans-serif" font-weight="900" font-size="56" fill="#E31E24">SZ</text>
+  <text x="96" y="130" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700" font-size="18" fill="#ffffff" letter-spacing="8">GAMING</text>
+  <line x1="40" y1="140" x2="152" y2="140" stroke="#E31E24" stroke-width="2" opacity="0.4"/>
+</svg>

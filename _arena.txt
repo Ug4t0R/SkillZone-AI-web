@@ -1,0 +1,155 @@
+[
+  {
+    "position": 1,
+    "title": "Vodafone PLAYzone Arena",
+    "place_id": "ChIJhepKY9mTC0cRABtG385CVJ8",
+    "data_id": "0x470b93d9634aea85:0x9f5442cedf461b00",
+    "data_cid": "11480874806350846720",
+    "reviews_link": "https://serpapi.com/search.json?data_id=0x470b93d9634aea85%3A0x9f5442cedf461b00&engine=google_maps_reviews&hl=en",
+    "photos_link": "https://serpapi.com/search.json?data_id=0x470b93d9634aea85%3A0x9f5442cedf461b00&engine=google_maps_photos&hl=en",
+    "gps_coordinates": {
+      "latitude": 50.030778399999996,
+      "longitude": 14.4912975
+    },
+    "place_id_search": "https://serpapi.com/search.json?engine=google_maps&google_domain=google.com&hl=en&place_id=ChIJhepKY9mTC0cRABtG385CVJ8",
+    "provider_id": "/g/11rycrtdn9",
+    "rating": 4.3,
+    "reviews": 438,
+    "price": "$$",
+    "extracted_price": null,
+    "type": "Comedy club",
+    "types": [
+      "Comedy club",
+      "Sports club"
+    ],
+    "type_id": "comedy_club",
+    "type_ids": [
+      "comedy_club",
+      "sports_club"
+    ],
+    "address": "Roztylská 2321/19, 148 00 Praha 11-Chodov, Czechia",
+    "open_state": "Closed · Opens 11 AM",
+    "hours": "Closed · Opens 11 AM",
+    "operating_hours": {
+      "sunday": "11 AM–10 PM",
+      "monday": "11 AM–10 PM",
+      "tuesday": "11 AM–10 PM",
+      "wednesday": "11 AM–10 PM",
+      "thursday": "11 AM–10 PM",
+      "friday": "11 AM–1 AM",
+      "saturday": "11 AM–1 AM"
+    },
+    "phone": "+420 777 717 196",
+    "website": "https://www.playzonearena.cz/",
+    "extensions": [
+      {
+        "accessibility": [
+          "Wheelchair accessible entrance",
+          "Wheelchair accessible parking lot",
+          "Wheelchair accessible restroom",
+          "Wheelchair accessible seating"
+        ]
+      },
+      {
+        "offerings": [
+          "Alcohol",
+          "Beer",
+          "Cocktails",
+          "Dancing",
+          "Food",
+          "Food at bar",
+          "Happy hour food",
+          "Hard liquor",
+          "Wine"
+        ]
+      },
+      {
+        "dining_options": [
+          "Seating"
+        ]
+      },
+      {
+        "amenities": [
+          "Bar onsite",
+          "Restroom",
+          "Wi-Fi",
+          "Free Wi-Fi"
+        ]
+      },
+      {
+        "atmosphere": [
+          "Casual",
+          "Trendy"
+        ]
+      },
+      {
+        "crowd": [
+          "Groups"
+        ]
+      },
+      {
+        "planning": [
+          "Accepts reservations"
+        ]
+      },
+      {
+        "payments": [
+          "Credit cards",
+          "Debit cards",
+          "NFC mobile payments"
+        ]
+      },
+      {
+        "parking": [
+          "Paid parking garage",
+          "Paid parking lot"
+        ]
+      }
+    ],
+    "user_review": "\"Good service nice vibe good pcs yummy drinks and food 10/10 go again 👍\"",
+    "thumbnail": "https://lh3.googleusercontent.com/gps-cs-s/AHVAweqvX26_E-vsERrVZPxRxXVVVy2CMzEfioPnQPWM-KZi1n3W4c5LO9AcVWyH4diRWIwbO6Wi26noTNLPE1lt7UDVxZL8aBVKCMJxQkEjbZz5uGE-MhdVMdTSBNjQki-FreLsSdE4=w122-h92-k-no",
+    "serpapi_thumbnail": "https://serpapi.com/images/url/NYmzeXicBcFbcoIwFADQFV0ZIlLtTD9Q0_ogCmhvHH6cGiJEaGJJFHR_XUR303P-fivnrvbV85pqOCiNKRt5s7IVRjup3UCYb6-8WhAWrBctMOrkz_1AwiOFu6VZi3nSZ_0BER9kxp70rEyi04QzWOfK10MeiFG8nUQC-WMRFCrjy-60DbkioTb7TZxQv3Evn3Ps83j8NcX1jK36tKaXU_4c3T4osKpAVux3080lrRW8tzK2u4IGb51PCFQTAjVo8w-5m0Pr"
+  },
+  {
+    "position": 2,
+    "title": "SkillZone Gaming Club Háje",
+    "place_id": "ChIJW4S6ZQCTC0cRNK3fP2NHOFs",
+    "data_id": "0x470b930065ba845b:0x5b3847633fdfad34",
+    "data_cid": "6573082147746196788",
+    "reviews_link": "https://serpapi.com/search.json?data_id=0x470b930065ba845b%3A0x5b3847633fdfad34&engine=google_maps_reviews&hl=en",
+    "photos_link": "https://serpapi.com/search.json?data_id=0x470b930065ba845b%3A0x5b3847633fdfad34&engine=google_maps_photos&hl=en",
+    "gps_coordinates": {
+      "latitude": 50.031500099999995,
+      "longitude": 14.5284873
+    },
+    "place_id_search": "https://serpapi.com/search.json?engine=google_maps&google_domain=google.com&hl=en&place_id=ChIJW4S6ZQCTC0cRNK3fP2NHOFs",
+    "provider_id": "/g/11vym5r_dh",
+    "rating": 4.7,
+    "reviews": 30,
+    "type": "Internet cafe",
+    "types": [
+      "Internet cafe"
+    ],
+    "type_id": "internet_cafe",
+    "type_ids": [
+      "internet_cafe"
+    ],
+    "address": "Uvnitř vnitrobloku vedle OC Háje, Arkalycká 877/4, Háje, 149 00 Praha 4, Czechia",
+    "open_state": "Open · Closes 3 AM · Reopens 12 PM",
+    "hours": "Open · Closes 3 AM · Reopens 12 PM",
+    "operating_hours": {
+      "saturday": "12 PM–3 AM",
+      "sunday": "12 PM–3 AM",
+      "monday": "12 PM–3 AM",
+      "tuesday": "12 PM–3 AM",
+      "wednesday": "12 PM–3 AM",
+      "thursday": "12 PM–3 AM",
+      "friday": "12 PM–3 AM"
+    },
+    "phone": "+420 777 766 114",
+    "website": "http://skillzone.cz/haje",
+    "user_review": "\"Everything was gaa great, PCs, equipment, management.\"",
+    "thumbnail": "https://lh3.googleusercontent.com/p/AF1QipN0UF6Al9pJ9TOQzoFuWMlZJAMHx5PDqT2u5Zw-=w163-h92-k-no",
+    "serpapi_thumbnail": "https://serpapi.com/images/url/lJE_KHicuxmXUVJSUGylr5-TYayXnp-fnpNaWpxalJyfV5KaV6KXnJ-rX6Dv6GYYmFngZxDqZuaYY1ngZRniH1iV71Ya7psT5eXo61FhGuBSGGJUahpVrmtbbmhmrJthaaSbrZuXDwCRiCCm"
+  }
+]

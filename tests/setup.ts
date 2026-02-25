@@ -1,0 +1,26 @@
+import '@testing-library/jest-dom/vitest';
+
+// Mock localStorage
+const store: Record<string, string> = {};
+const localStorageMock = {
+    getItem: (key: string) => store[key] ?? null,
+    setItem: (key: string, value: string) => { store[key] = value; },
+    removeItem: (key: string) => { delete store[key]; },
+    clear: () => { Object.keys(store).forEach(k => delete store[k]); },
+    get length() { return Object.keys(store).length; },
+    key: (i: number) => Object.keys(store)[i] ?? null,
+};
+Object.defineProperty(window, 'localStorage', { value: localStorageMock });
+
+// Mock crypto.randomUUID
+Object.defineProperty(globalThis, 'crypto', {
+    value: {
+        randomUUID: () => '12345678-1234-1234-1234-123456789abc',
+        getRandomValues: (arr: Uint8Array) => arr,
+    },
+});
+
+// Reset mocks between tests
+beforeEach(() => {
+    localStorageMock.clear();
+});

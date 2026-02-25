@@ -1,0 +1,5 @@
+# gcloudignore - exclude unnecessary files from Cloud Run deployment
+node_modules/
+.git/
+.gemini/
+*.md
