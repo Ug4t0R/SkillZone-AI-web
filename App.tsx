@@ -66,6 +66,14 @@ const App: React.FC = () => {
   const [isQuizOpen, setIsQuizOpen] = useState(false);
   const [isAimOpen, setIsAimOpen] = useState(false);
   const { isBrainrot, setBrainrot, isCorporate, setCorporate, language } = useAppContext();
+  const [isCrispEnabled, setIsCrispEnabled] = useState(() => localStorage.getItem('sz_crisp_enabled') === 'true');
+
+  // Sync Crisp state when DevMenu toggles it
+  useEffect(() => {
+    const sync = () => setIsCrispEnabled(localStorage.getItem('sz_crisp_enabled') === 'true');
+    window.addEventListener('sz_crisp_changed', sync);
+    return () => window.removeEventListener('sz_crisp_changed', sync);
+  }, []);
   const { sections } = useSections();
   const [teamVisible, setTeamVisible] = useState(() => localStorage.getItem('sz_team_visible') !== 'false');
   const [dbOffline, setDbOffline] = useState(false);
@@ -374,7 +382,7 @@ const App: React.FC = () => {
           <main>{renderView()}</main>
           <Footer sections={sections} onNavigate={navigateTo} />
 
-          <CrispChat />
+          {isCrispEnabled && <CrispChat />}
           <ContactWidget />
           {sections.livefeed && <LiveFeed onChatOpen={() => setIsAiChatOpen(true)} />}
           {sections.skiller && <SkillerAvatar onChatOpen={() => setIsAiChatOpen(true)} />}

@@ -252,7 +252,7 @@ const DevMenu: React.FC<DevMenuProps> = ({ isOpen, onClose }) => {
             case 'chats':
                 return <ChatsTab addLog={addLog} chatHistory={chatHistory} setChatHistory={setChatHistory} />;
             case 'seo':
-                return <SeoTab />;
+                return <SeoTab addLog={addLog} />;
             case 'story':
                 return <HistoryTab addLog={addLog} />;
             case 'protocol':
@@ -441,25 +441,28 @@ const DevMenu: React.FC<DevMenuProps> = ({ isOpen, onClose }) => {
                             </span>
                         </label>
                         {/* Crisp Toggle */}
-                        <label className="flex items-center gap-2 cursor-pointer group">
-                            <input
-                                type="checkbox"
-                                defaultChecked={false}
-                                onChange={e => {
-                                    const w = window as any;
-                                    if (w.$crisp) {
-                                        if (e.target.checked) {
-                                            w.$crisp.push(['do', 'chat:show']);
-                                        } else {
-                                            w.$crisp.push(['do', 'chat:hide']);
-                                        }
-                                    }
-                                }}
-                                className="w-3 h-3 rounded bg-black/50 border border-white/10 accent-cyan-500"
-                            />
-                            <span className="text-[10px] text-gray-400 font-mono group-hover:text-white transition-colors">
-                                💬 Show Crisp
-                            </span>
+                        <label className="flex items-center gap-2 cursor-pointer group" onClick={() => {
+                            const next = localStorage.getItem('sz_crisp_enabled') !== 'true';
+                            localStorage.setItem('sz_crisp_enabled', String(next));
+                            const w = window as any;
+                            if (w.$crisp) {
+                                w.$crisp.push(['do', next ? 'chat:show' : 'chat:hide']);
+                            }
+                            window.dispatchEvent(new Event('sz_crisp_changed'));
+                        }}>
+                            {(() => {
+                                const enabled = localStorage.getItem('sz_crisp_enabled') === 'true';
+                                return (
+                                    <>
+                                        <div className={`w-7 h-4 rounded-full flex items-center transition-colors ${enabled ? 'bg-cyan-500' : 'bg-white/10'}`}>
+                                            <div className={`w-3 h-3 rounded-full bg-white shadow transition-transform ${enabled ? 'translate-x-3.5' : 'translate-x-0.5'}`} />
+                                        </div>
+                                        <span className="text-[10px] text-gray-400 font-mono group-hover:text-white transition-colors">
+                                            {enabled ? '💬 Crisp ON' : 'Live Chat'}
+                                        </span>
+                                    </>
+                                );
+                            })()}
                         </label>
                     </div>
                 )}

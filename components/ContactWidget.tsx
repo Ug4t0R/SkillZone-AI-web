@@ -98,31 +98,33 @@ const ContactWidget: React.FC = () => {
                         </div>
                     ))}
 
-                    {/* Crisp Chat Trigger */}
-                    <div className="flex items-center justify-between p-3 rounded-md hover:bg-white/5 border-t border-white/10 mt-2">
-                        <div className="flex flex-col max-w-[60%]">
-                            <div className="flex items-center gap-2">
-                                <MessageSquare className="w-4 h-4 text-sz-red" />
-                                <span className="font-bold text-sm font-orbitron text-white truncate">
-                                    Online Podpora
-                                </span>
+                    {/* Crisp Chat Trigger — only shown when Crisp is enabled */}
+                    {localStorage.getItem('sz_crisp_enabled') === 'true' && (
+                        <div className="flex items-center justify-between p-3 rounded-md hover:bg-white/5 border-t border-white/10 mt-2">
+                            <div className="flex flex-col max-w-[60%]">
+                                <div className="flex items-center gap-2">
+                                    <MessageSquare className="w-4 h-4 text-sz-red" />
+                                    <span className="font-bold text-sm font-orbitron text-white truncate">
+                                        Online Podpora
+                                    </span>
+                                </div>
+                                <span className="text-[10px] text-gray-400 uppercase tracking-wide truncate">Live Chat (Crisp)</span>
                             </div>
-                            <span className="text-[10px] text-gray-400 uppercase tracking-wide truncate">Live Chat (Crisp)</span>
-                        </div>
 
-                        <button
-                            onClick={() => {
-                                if (window.$crisp) {
-                                    window.$crisp.push(['do', 'chat:show']);
-                                    window.$crisp.push(['do', 'chat:open']);
-                                    setIsOpen(false);
-                                }
-                            }}
-                            className="h-10 px-4 rounded-full bg-sz-red hover:bg-sz-red-dark text-white text-xs font-bold font-orbitron uppercase flex items-center justify-center transition-all shadow-[0_0_10px_rgba(227,30,36,0.3)] hover:scale-105"
-                        >
-                            Napsat
-                        </button>
-                    </div>
+                            <button
+                                onClick={() => {
+                                    if (window.$crisp) {
+                                        window.$crisp.push(['do', 'chat:show']);
+                                        window.$crisp.push(['do', 'chat:open']);
+                                        setIsOpen(false);
+                                    }
+                                }}
+                                className="h-10 px-4 rounded-full bg-sz-red hover:bg-sz-red-dark text-white text-xs font-bold font-orbitron uppercase flex items-center justify-center transition-all shadow-[0_0_10px_rgba(227,30,36,0.3)] hover:scale-105"
+                            >
+                                Napsat
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
 

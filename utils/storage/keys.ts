@@ -9,6 +9,7 @@ export const CLIENT_PREFS = {
     THEME: 'theme',
     LANGUAGE: 'lang',
     ANIMATIONS: 'sz_animations_enabled',
+    CRISP_ENABLED: 'sz_crisp_enabled', // default: 'false' (disabled)
 } as const;
 
 // Helper for client-side preferences only
