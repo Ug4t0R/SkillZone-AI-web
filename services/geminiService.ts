@@ -66,6 +66,15 @@ CORE OSOBNOST (Jak se chováš): ${settings.manual.corePersonality}
 
 NEZNÁMÁ TÉMATA (Jak reagovat na nesmysly): ${settings.manual.unknownTopicResponse}
 
+POBOČKY SkillZone (Znáš to zpaměti, odpovídej přirozeně):
+${(settings.manual.branches || []).map(b => `• ${b.name} — ${b.address}\n  Otevírací doba: ${b.hours}${b.note ? `\n  Info: ${b.note}` : ''}`).join('\n')}
+
+KLÍČOVÁ SLOVA → REAKCE (Pokud uživatel zmíní toto téma, reaguj takhle):
+${(settings.manual.keywords || []).map(k => `• Zmíní: "${k.trigger}" → ${k.reaction}`).join('\n')}
+
+TABU (Nikdy tyto věci neřeš, odsekni a přesměruj):
+${(settings.manual.taboo || []).map(t => `• ${t}`).join('\n')}
+
 ČASTÉ DOTAZY (Návod, jak zhruba odpovědět):
 ${settings.manual.faq.map(f => `Dotaz zní jako: "${f.questionPattern}" -> Odpověz ve smyslu: "${f.answerGuide}"`).join('\n')}
 -----------------------------------------` : '';
@@ -372,5 +381,47 @@ ${dataDump}`,
     } catch (error) {
         console.error('[Stats] Generation failed:', error);
         return "Došlo k chybě při komunikaci s mozkem (Gemini). Zkus to znovu.";
+    }
+};
+
+/**
+ * Generate or enhance a press release using AI.
+     * Pass any partial data and AI fills in the rest.
+     */
+export const generatePressRelease = async (
+    partial: { title?: string; perex?: string; content?: string; category?: string; notes?: string }
+): Promise<{ title: string; perex: string; content: string; category: string; author: string } | null> => {
+    try {
+        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+        const context = [
+            partial.title && `Název: ${partial.title}`,
+            partial.perex && `Perex: ${partial.perex}`,
+            partial.content && `Obsah (draft): ${partial.content}`,
+            partial.category && `Kategorie: ${partial.category}`,
+            partial.notes && `Poznámka: ${partial.notes}`,
+        ].filter(Boolean).join('\n');
+
+        const result = await ai.models.generateContent({
+            model: 'gemini-2.0-flash',
+            contents: `Jsi copywriter herního klubu SkillZone Praha. Vytvoř nebo dopiš tiskovou zprávu:\n\n${context}\n\nSkillZone: prémiový herní klub v Praze (Žižkov, Háje, Stodůlky). Styl: moderní, přátelský, gaming-friendly, ale seriózní. Obsah piš česky.`,
+            config: {
+                responseMimeType: "application/json",
+                responseSchema: {
+                    type: Type.OBJECT,
+                    properties: {
+                        title: { type: Type.STRING },
+                        perex: { type: Type.STRING },
+                        content: { type: Type.STRING },
+                        category: { type: Type.STRING, enum: ["announcement", "event", "partnership", "update", "other"] },
+                        author: { type: Type.STRING },
+                    },
+                    required: ["title", "perex", "content", "category", "author"]
+                }
+            }
+        });
+        return JSON.parse(result.text || 'null');
+    } catch (error) {
+        console.error('[Press] AI generation failed:', error);
+        return null;
     }
 };

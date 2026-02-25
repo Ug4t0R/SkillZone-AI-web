@@ -1,13 +1,15 @@
-// DevMenu Feed (Broadcast) Tab Component — with News Scanner
-import React, { useState } from 'react';
-import { CloudLightning, Play, List, Brain, RefreshCw, Newspaper, Globe, Zap, ExternalLink } from 'lucide-react';
+// DevMenu Feed (Broadcast) Tab Component — with News Scanner + Press Releases
+import React, { useState, useEffect } from 'react';
+import { CloudLightning, Play, List, Brain, RefreshCw, Newspaper, Globe, Zap, ExternalLink, FileEdit, Plus, Eye, EyeOff, Trash2, Wand2, ChevronDown, ChevronRight } from 'lucide-react';
 import { addAdminMessage, getAdminMessages, clearAdminMessages, saveDailyAiFeed } from '../../utils/devTools';
 import { getSupabase } from '../../services/supabaseClient';
-import { generateDailyFeed, FeedMessage } from '../../services/geminiService';
+import { generateDailyFeed, FeedMessage, generatePressRelease } from '../../services/geminiService';
 import { fetchGamingNews, getNewsSourceStatus, NewsItem } from '../../services/newsService';
 import { getWeather } from '../../services/weatherService';
 import { useAppContext } from '../../context/AppContext';
 import RichTextEditor from './RichTextEditor';
+import { PressRelease } from '../../types';
+import { fetchAll, upsertRow, deleteRow, TABLES } from '../../services/webDataService';
 
 interface FeedTabProps {
     addLog: (msg: string, type?: 'info' | 'error' | 'success') => void;
@@ -39,6 +41,74 @@ const FeedTab: React.FC<FeedTabProps> = ({ addLog, adminMessages, setAdminMessag
     const [isScanning, setIsScanning] = useState(false);
     const [scannedNews, setScannedNews] = useState<NewsItem[]>([]);
     const [sourceStatus, setSourceStatus] = useState<{ name: string; count: number; error: boolean }[]>([]);
+
+    // ─── Press Releases ───
+    const [pressItems, setPressItems] = useState<PressRelease[]>([]);
+    const [pressLoading, setPressLoading] = useState(false);
+    const [showPressForm, setShowPressForm] = useState(false);
+    const [pressForm, setPressForm] = useState({ title: '', perex: '', content: '', category: 'announcement', author: 'SkillZone', notes: '' });
+    const [pressEnhancing, setPressEnhancing] = useState(false);
+    const [pressSaving, setPressSaving] = useState(false);
+    const [expandedPress, setExpandedPress] = useState<string | null>(null);
+    const CATEGORY_LABELS: Record<string, string> = { announcement: '📢 Oznámení', event: '🎮 Akce', partnership: '🤝 Partnerství', update: '🔄 Update', other: '📄 Ostatní' };
+    const CATEGORY_COLORS: Record<string, string> = { announcement: 'text-amber-400 border-amber-500/30', event: 'text-green-400 border-green-500/30', partnership: 'text-blue-400 border-blue-500/30', update: 'text-purple-400 border-purple-500/30', other: 'text-gray-400 border-white/10' };
+
+    const loadPress = async () => {
+        setPressLoading(true);
+        try {
+            const data = await fetchAll<PressRelease>(TABLES.PRESS, [], 'date');
+            setPressItems(data.reverse());
+        } catch { } finally { setPressLoading(false); }
+    };
+    useEffect(() => { loadPress(); }, []);
+
+    const handleEnhanceWithAI = async () => {
+        setPressEnhancing(true);
+        addLog('AI doplňuje press zprávu...', 'info');
+        try {
+            const result = await generatePressRelease(pressForm);
+            if (result) {
+                setPressForm(prev => ({ ...prev, ...result }));
+                addLog('AI press zpráva doplněna!', 'success');
+            } else { addLog('AI nevrátilo výsledek.', 'error'); }
+        } catch { addLog('AI chyba.', 'error'); } finally { setPressEnhancing(false); }
+    };
+
+    const handleSavePress = async () => {
+        if (!pressForm.title.trim()) return;
+        setPressSaving(true);
+        const item: PressRelease = {
+            id: 'press_' + Date.now().toString(36),
+            title: pressForm.title,
+            perex: pressForm.perex,
+            content: pressForm.content,
+            category: pressForm.category as PressRelease['category'],
+            author: pressForm.author || 'SkillZone',
+            date: new Date().toISOString(),
+            hidden: false,
+            isCustom: true,
+        };
+        const ok = await upsertRow(TABLES.PRESS, item);
+        if (ok) {
+            setPressItems(prev => [item, ...prev]);
+            setPressForm({ title: '', perex: '', content: '', category: 'announcement', author: 'SkillZone', notes: '' });
+            setShowPressForm(false);
+            addLog('Press zpráva uložena!', 'success');
+        } else { addLog('Uložení selhalo.', 'error'); }
+        setPressSaving(false);
+    };
+
+    const handleToggleHidden = async (item: PressRelease) => {
+        const updated = { ...item, hidden: !item.hidden };
+        const ok = await upsertRow(TABLES.PRESS, updated);
+        if (ok) setPressItems(prev => prev.map(p => p.id === item.id ? updated : p));
+    };
+
+    const handleDeletePress = async (id: string) => {
+        if (!confirm('Opravdu smazat press zprávu?')) return;
+        const ok = await deleteRow(TABLES.PRESS, id);
+        if (ok) setPressItems(prev => prev.filter(p => p.id !== id));
+    };
 
     const handleAddMsg = async () => {
         if (newAdminMsg.trim()) {
@@ -248,6 +318,130 @@ const FeedTab: React.FC<FeedTabProps> = ({ addLog, adminMessages, setAdminMessag
                             </div>
                         ))}
                     </div>
+                </div>
+            </div>
+
+            {/* ═══════ PRESS ZPRÁVY ═══════ */}
+            <div className="bg-zinc-800/50 p-6 border border-purple-500/20 rounded-lg relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-purple-500/5 rounded-bl-full pointer-events-none" />
+                <div className="flex items-center justify-between mb-5">
+                    <h3 className="text-lg font-bold text-white font-orbitron flex items-center gap-2 uppercase">
+                        <FileEdit className="text-purple-400 w-5 h-5" /> Press_Zprávy
+                    </h3>
+                    <div className="flex items-center gap-2">
+                        <button onClick={loadPress} disabled={pressLoading}
+                            className="p-2 bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white rounded border border-white/10 transition-all">
+                            <RefreshCw className={`w-3.5 h-3.5 ${pressLoading ? 'animate-spin' : ''}`} />
+                        </button>
+                        <button onClick={() => setShowPressForm(p => !p)}
+                            className="px-3 py-2 bg-purple-500/20 hover:bg-purple-500/30 text-purple-400 text-xs font-bold uppercase tracking-wider rounded border border-purple-500/30 transition-all flex items-center gap-1.5">
+                            <Plus className="w-3.5 h-3.5" /> Přidat zprávu
+                        </button>
+                    </div>
+                </div>
+
+                {/* Add Form */}
+                {showPressForm && (
+                    <div className="mb-5 p-4 bg-black/40 rounded-lg border border-purple-500/20 space-y-3">
+                        <div className="grid grid-cols-2 gap-3">
+                            <div>
+                                <label className="text-[10px] text-gray-500 uppercase font-bold tracking-wider block mb-1">Název *</label>
+                                <input value={pressForm.title} onChange={e => setPressForm(p => ({ ...p, title: e.target.value }))}
+                                    className="w-full bg-zinc-900 border border-white/10 rounded px-3 py-2 text-sm text-white focus:border-purple-400/50 focus:outline-none"
+                                    placeholder="Název tiskové zprávy..." />
+                            </div>
+                            <div>
+                                <label className="text-[10px] text-gray-500 uppercase font-bold tracking-wider block mb-1">Autor</label>
+                                <input value={pressForm.author} onChange={e => setPressForm(p => ({ ...p, author: e.target.value }))}
+                                    className="w-full bg-zinc-900 border border-white/10 rounded px-3 py-2 text-sm text-white focus:border-purple-400/50 focus:outline-none"
+                                    placeholder="SkillZone" />
+                            </div>
+                        </div>
+                        <div>
+                            <label className="text-[10px] text-gray-500 uppercase font-bold tracking-wider block mb-1">Kategorie</label>
+                            <div className="flex gap-1 flex-wrap">
+                                {Object.entries(CATEGORY_LABELS).map(([k, v]) => (
+                                    <button key={k} onClick={() => setPressForm(p => ({ ...p, category: k }))}
+                                        className={`px-2 py-1 rounded text-[10px] font-bold border transition-all ${pressForm.category === k ? 'bg-purple-500/20 text-purple-300 border-purple-500/40' : 'bg-zinc-800 text-gray-500 border-transparent hover:text-gray-300'}`}>
+                                        {v}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                        <div>
+                            <label className="text-[10px] text-gray-500 uppercase font-bold tracking-wider block mb-1">Poznámky pro AI (volitelné)</label>
+                            <input value={pressForm.notes} onChange={e => setPressForm(p => ({ ...p, notes: e.target.value }))}
+                                className="w-full bg-zinc-900 border border-white/10 rounded px-3 py-2 text-sm text-white focus:border-purple-400/50 focus:outline-none"
+                                placeholder="Např. 'Otevíráme novou pobočku v Brně, 15. 3. 2026'..." />
+                        </div>
+                        <div>
+                            <label className="text-[10px] text-gray-500 uppercase font-bold tracking-wider block mb-1">Perex (krátký popis)</label>
+                            <input value={pressForm.perex} onChange={e => setPressForm(p => ({ ...p, perex: e.target.value }))}
+                                className="w-full bg-zinc-900 border border-white/10 rounded px-3 py-2 text-sm text-white focus:border-purple-400/50 focus:outline-none"
+                                placeholder="Krátký titulek / podnadpis..." />
+                        </div>
+                        <div>
+                            <label className="text-[10px] text-gray-500 uppercase font-bold tracking-wider block mb-1">Obsah</label>
+                            <textarea value={pressForm.content} onChange={e => setPressForm(p => ({ ...p, content: e.target.value }))}
+                                className="w-full bg-zinc-900 border border-white/10 rounded px-3 py-2 text-sm text-white focus:border-purple-400/50 focus:outline-none min-h-[80px] resize-y font-mono text-xs"
+                                placeholder="Celý text tiskové zprávy (nebo nechej prázdné a nech AI vygenrovat)..." />
+                        </div>
+                        <div className="flex items-center gap-3">
+                            <button onClick={handleEnhanceWithAI} disabled={pressEnhancing}
+                                className="flex items-center gap-2 px-4 py-2 bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 text-xs font-bold uppercase rounded border border-amber-500/30 transition-all disabled:opacity-50">
+                                <Wand2 className={`w-3.5 h-3.5 ${pressEnhancing ? 'animate-spin' : ''}`} />
+                                {pressEnhancing ? 'AI generuje...' : '✨ Vylepšit AI'}
+                            </button>
+                            <button onClick={handleSavePress} disabled={pressSaving || !pressForm.title.trim()}
+                                className="flex items-center gap-2 px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white text-xs font-bold uppercase rounded transition-all disabled:opacity-50">
+                                {pressSaving ? 'Ukládám...' : 'Uložit'}
+                            </button>
+                            <button onClick={() => setShowPressForm(false)}
+                                className="text-xs text-gray-500 hover:text-white font-mono ml-auto">
+                                Zrušit
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {/* Press List */}
+                <div className="space-y-2">
+                    {pressLoading && <div className="text-center py-6 text-gray-600 font-mono text-xs animate-pulse">Načítám press zprávy...</div>}
+                    {!pressLoading && pressItems.length === 0 && (
+                        <div className="text-center py-8 text-gray-700 font-mono text-xs italic">Žádné press zprávy. Přidej první!</div>
+                    )}
+                    {pressItems.map(item => {
+                        const isExpanded = expandedPress === item.id;
+                        const [catText, catBorder] = (CATEGORY_COLORS[item.category] || 'text-gray-400 border-white/10').split(' ');
+                        return (
+                            <div key={item.id} className={`border rounded-lg overflow-hidden transition-all ${item.hidden ? 'opacity-50 border-white/5' : catBorder}`}>
+                                <div className="flex items-center gap-3 px-4 py-3 bg-black/30">
+                                    <button onClick={() => setExpandedPress(isExpanded ? null : item.id)} className="flex-1 flex items-center gap-3 text-left">
+                                        {isExpanded ? <ChevronDown className="w-3 h-3 text-gray-600 shrink-0" /> : <ChevronRight className="w-3 h-3 text-gray-600 shrink-0" />}
+                                        <span className={`text-[9px] font-bold font-mono px-1.5 py-0.5 border rounded ${catText} ${catBorder} bg-black/30`}>{CATEGORY_LABELS[item.category]}</span>
+                                        <span className="text-sm text-white font-semibold truncate">{item.title}</span>
+                                        {item.hidden && <span className="text-[9px] text-gray-600 font-mono bg-white/5 px-1.5 py-0.5 rounded">skryto</span>}
+                                    </button>
+                                    <span className="text-[9px] text-gray-600 font-mono shrink-0">{new Date(item.date).toLocaleDateString('cs-CZ')}</span>
+                                    <button onClick={() => handleToggleHidden(item)} title={item.hidden ? 'Zobrazit' : 'Skrýt'}
+                                        className="p-1.5 text-gray-600 hover:text-white rounded hover:bg-white/10 transition-colors">
+                                        {item.hidden ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+                                    </button>
+                                    <button onClick={() => handleDeletePress(item.id)}
+                                        className="p-1.5 text-gray-600 hover:text-red-400 rounded hover:bg-red-500/10 transition-colors">
+                                        <Trash2 className="w-3.5 h-3.5" />
+                                    </button>
+                                </div>
+                                {isExpanded && (
+                                    <div className="px-4 py-3 bg-black/20 space-y-2 border-t border-white/5">
+                                        {item.perex && <p className="text-[11px] text-gray-400 font-semibold italic">{item.perex}</p>}
+                                        {item.content && <p className="text-xs text-gray-500 leading-relaxed whitespace-pre-wrap">{item.content}</p>}
+                                        <div className="text-[9px] text-gray-700 font-mono">Autor: {item.author} · ID: {item.id}</div>
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
         </div>

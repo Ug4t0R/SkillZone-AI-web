@@ -19,6 +19,9 @@ export interface ChatSession {
     session_fingerprint?: string;
     visitor_id?: string;
     message_count?: number;
+    ip_address?: string;
+    screen_resolution?: string;
+    timezone?: string;
 }
 
 // ─── Session Fingerprint ─────────────────────────────────────────────
@@ -46,6 +49,20 @@ const getFingerprint = () => {
     return _fingerprint;
 };
 
+// ─── IP Detection ────────────────────────────────────────────────────
+let _ip: string | null = null;
+const getClientIp = async (): Promise<string> => {
+    if (_ip) return _ip;
+    try {
+        const res = await fetch('https://api.ipify.org?format=json', { signal: AbortSignal.timeout(3000) });
+        const data = await res.json();
+        _ip = data.ip || 'unknown';
+    } catch {
+        _ip = 'unknown';
+    }
+    return _ip!;
+};
+
 // ─── CHAT SESSIONS ───────────────────────────────────────────────────
 
 export const saveChatToHistory = async (
@@ -58,12 +75,16 @@ export const saveChatToHistory = async (
         const lastSession = history[history.length - 1];
         const isRecent = lastSession && (now.getTime() - new Date(lastSession.started_at).getTime() < 30 * 60 * 1000);
 
+        const ip = await getClientIp();
         const metadata = {
             user_nickname: userNickname || 'Anonymous',
             user_agent: navigator.userAgent.substring(0, 200),
             session_fingerprint: getFingerprint(),
             visitor_id: getOrCreateVisitorId(),
             message_count: messages.length,
+            ip_address: ip,
+            screen_resolution: `${window.screen.width}x${window.screen.height}`,
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         };
 
         if (isRecent) {

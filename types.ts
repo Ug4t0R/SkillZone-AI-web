@@ -79,10 +79,25 @@ export interface FaqEntry {
     answerGuide: string;
 }
 
+export interface BranchInfo {
+    name: string;       // Např. "Háje"
+    address: string;
+    hours: string;      // Čitelně: "12:00–00:00, s hráči do 03:00"
+    note?: string;      // Volitelná poznámka (nonstop, nová pobočka, ...)
+}
+
+export interface KeywordRule {
+    trigger: string;    // Klíčové slovo / fráze
+    reaction: string;   // Jak Skiller reaguje
+}
+
 export interface SkillerManual {
     corePersonality: string;       // The core traits and "vibe" of Skiller
     unknownTopicResponse: string;  // How to answer things he doesn't know
     faq: FaqEntry[];              // Specific scenarios/questions and how to answer them roughly
+    branches: BranchInfo[];       // Pobočky — jméno, adresa, otevírací doby
+    keywords: KeywordRule[];      // Klíčová slova → specifická reakce
+    taboo: string[];              // Témata, která Skiller nikdy neřeší
 }
 
 export interface AiSettings {
@@ -123,6 +138,19 @@ export interface UserProfile {
     conversationSummary?: string;  // AI summary of recent conversations
     knownFacts?: string[];         // Discovered facts ("studuje IT", "hraje CS2")
     adminInstructions?: string;    // Special instructions from staff on how Skiller should behave towards this user
+}
+
+export interface PressRelease {
+    id: string;
+    title: string;
+    perex: string;           // Short teaser/subtitle
+    content: string;         // Full body text
+    category: 'announcement' | 'event' | 'partnership' | 'update' | 'other';
+    author: string;
+    date: string;            // ISO date string
+    imageUrl?: string;
+    hidden?: boolean;        // Draft/hidden — not shown publicly
+    isCustom?: boolean;
 }
 
 export interface SupabaseConfig {

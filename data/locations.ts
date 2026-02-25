@@ -25,7 +25,7 @@ export const LOCATIONS_CS: GamingLocation[] = [
         imgUrl: '/bg/P4.webp',
         phone: '777 766 114',
         mapLink: 'https://share.google/XBcvMnkhHHB3eL13P',
-        openHours: '12:00 – 03:00+',
+        openHours: '12:00 – 00:00 (s hráči až do 03:00)',
         openYear: '2024',
         coordinates: { lat: 50.031670, lng: 14.527940 }
     },
@@ -39,7 +39,7 @@ export const LOCATIONS_CS: GamingLocation[] = [
         imgUrl: '/bg/P4.webp',
         phone: '777 766 115',
         mapLink: 'https://share.google/Bm7VrkmwoRSA3TwVI',
-        openHours: '13:00 – 23:00',
+        openHours: '13:00 – 21:00 (s hráči až do 23:00)',
         openYear: '2025',
         coordinates: { lat: 50.0417, lng: 14.3278 }
     },
@@ -84,7 +84,7 @@ export const LOCATIONS_EN: GamingLocation[] = [
         imgUrl: '/bg/P4.webp',
         phone: '777 766 114',
         mapLink: 'https://share.google/XBcvMnkhHHB3eL13P',
-        openHours: '12:00 – 03:00+',
+        openHours: '12:00 – Midnight (open till 3am if players present)',
         openYear: '2024',
         coordinates: { lat: 50.031670, lng: 14.527940 }
     },
@@ -98,7 +98,7 @@ export const LOCATIONS_EN: GamingLocation[] = [
         imgUrl: '/bg/P4.webp',
         phone: '777 766 115',
         mapLink: 'https://share.google/Bm7VrkmwoRSA3TwVI',
-        openHours: '13:00 – 23:00',
+        openHours: '13:00 – 21:00 (open till 23:00 if players present)',
         openYear: '2025',
         coordinates: { lat: 50.0417, lng: 14.3278 }
     },
