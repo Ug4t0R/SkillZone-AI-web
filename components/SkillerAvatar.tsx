@@ -1,21 +1,23 @@
 /**
  * SkillerAvatar — Stream Avatar-style mascot that walks on the LiveFeed bar.
- * 
+ *
  * Desktop: Walks left↔right on the bottom status bar with legs animation.
  *   Weather-aware accessories (umbrella, sunglasses, scarf).
  *   Speech bubbles with weather context + idle phrases.
  *   Click → open chat. Long-press (1s) → shoot down.
  *   When shot down, peeks from right edge every 30-60s.
- * 
+ *
  * Mobile: No walking — just peeks from top every 40-50s.
  *   Tap opens chat. Long-press shoots down.
- * 
- * Respects animation preferences.
+ *
+ * v2: + time-based phrases, hover glow, unread badge, time-on-site reaction,
+ *       wave-back on mouse leave, walking dust, emotes, double-click dance
  */
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { getAnimationsEnabled } from '../utils/storage/animations';
 import { getWeather, WeatherCondition } from '../services/weatherService';
 import { getDailyAiFeed } from '../utils/storage/chat';
+import { SkillerCharacter, SnowParticles, ExplosionEffect } from './skilleravatar/SkillerCharacter';
 
 // ═══════════════════════════════════════════════════════
 // DATA
@@ -36,7 +38,38 @@ const IDLE_PHRASES = [
     'Skill issue? Napiš mi.',
     'AFK? Probůdim tě!',
     'Elo hell je real...',
+    'noob spotted? nie, jsem tu já! 😏',
+    'Cursor na mě? sheesh 👀',
 ];
+
+/** Fráze závislé na čase */
+function getTimePhrases(): string[] {
+    const h = new Date().getHours();
+    if (h >= 5 && h < 9) return [
+        '☀️ Dobré ráno, early bird!',
+        'Ráno = quest accepted ☕',
+        'Ranní grind je OP, trust me',
+    ];
+    if (h >= 9 && h < 12) return [
+        'Dopolední session? To je dedikace 🎮',
+        'School skip? Respekt. 👑',
+    ];
+    if (h >= 12 && h < 14) return [
+        '🍕 Obědová pauza? Nebo rovnou gaming?',
+        'Lunch break gaming hits different',
+    ];
+    if (h >= 22 && h < 24) return [
+        '🌙 Noční grind, klasika',
+        'Večer, kdy rank čeká…',
+        'Late night? Ty jsi hardcore 😤',
+    ];
+    if (h >= 0 && h < 4) return [
+        '😴 Co...? Je skoro ráno, jdeš spát?',
+        '🌑 Půlnoční grind detected. Respect.',
+        'Tvoji rodiče spí. My grindíme. gg',
+    ];
+    return [];
+}
 
 const WEATHER_PHRASES: Record<WeatherCondition, string[]> = {
     sun: [
@@ -85,209 +118,12 @@ const SHOT_PHRASES = [
     '☠️ Wasted...',
 ];
 
-// ═══════════════════════════════════════════════════════
-// FULL GAMER BOT CHARACTER — front & side profile
-// ═══════════════════════════════════════════════════════
-
-export const SkillerCharacter: React.FC<{
-    mood: string;
-    isDead?: boolean;
-    weather?: WeatherCondition;
-    facingLeft?: boolean;
-    isWalking?: boolean;
-}> = ({ mood, isDead, weather, facingLeft, isWalking }) => {
-    const eyeColor = isDead ? '#666' : mood === 'HYPE' ? '#22c55e' : mood === 'TILT' ? '#ef4444' : mood === 'TIRED' ? '#f59e0b' : '#e31e24';
-    const glowColor = isDead ? 'transparent' : `${eyeColor}44`;
-    const mouthStyle = isDead ? 'scaleY(-1)' : mood === 'TILT' ? 'scaleY(-1)' : mood === 'TIRED' ? 'scaleY(0.3)' : 'none';
-    const side = isWalking;
-
-    return (
-        <div
-            className="relative flex flex-col items-center transition-all duration-300"
-            style={{ transform: facingLeft ? 'scaleX(-1)' : 'none', width: side ? '28px' : '36px' }}
-        >
-            {/* ─── WEATHER: Umbrella ─── */}
-            {!isDead && (weather === 'rain' || weather === 'storm') && (
-                <div className="absolute -top-6 left-1/2 -translate-x-1/2 z-30">
-                    <div className="w-9 h-[18px] bg-gradient-to-b from-sz-red to-red-700 rounded-t-full border border-red-400/50" />
-                    <div className="w-px h-[30px] bg-gray-400 mx-auto" />
-                </div>
-            )}
-
-            {/* ─── HEAD ─── */}
-            <div className="relative z-10">
-                {/* Headset band */}
-                <div className={`absolute -top-1.5 left-1/2 -translate-x-1/2 h-3 border-t-2 border-l-2 border-r-2 rounded-t-full transition-all duration-300 ${isDead ? 'border-gray-600' : 'border-zinc-500'}`}
-                    style={{ width: side ? '24px' : '36px' }}
-                />
-
-                {/* Ear cups — side: only right visible */}
-                {!side && (
-                    <div className={`absolute top-1 -left-1.5 w-2.5 h-4 rounded-l-md ${isDead ? 'bg-gray-700' : 'bg-zinc-700 border border-zinc-500'}`}>
-                        <div className={`w-1 h-2 mt-0.5 ml-0.5 rounded-sm ${isDead ? 'bg-gray-600' : 'bg-sz-red/50'}`} />
-                    </div>
-                )}
-                <div className={`absolute top-1 -right-1.5 w-2.5 h-4 rounded-r-md ${isDead ? 'bg-gray-700' : 'bg-zinc-700 border border-zinc-500'}`}>
-                    <div className={`w-1 h-2 mt-0.5 ml-1 rounded-sm ${isDead ? 'bg-gray-600' : 'bg-sz-red/50'}`} />
-                </div>
-
-                {/* Head / Visor — narrower when side */}
-                <div
-                    className={`h-8 rounded-md relative overflow-hidden transition-all duration-300 mx-auto ${isDead
-                        ? 'bg-zinc-800 border-2 border-gray-600 opacity-60'
-                        : 'bg-zinc-900 border-2 border-zinc-600'
-                        }`}
-                    style={{ width: side ? '20px' : '32px', boxShadow: isDead ? 'none' : `0 0 4px ${glowColor}` }}
-                >
-                    {/* Visor screen */}
-                    {!isDead && <div className="absolute inset-0.5 bg-gradient-to-b from-zinc-800 to-black rounded-sm" />}
-
-                    {/* Sunglasses (front only) */}
-                    {!isDead && weather === 'sun' && !side && (
-                        <div className="absolute top-1.5 left-0.5 right-0.5 h-2.5 bg-gray-900/80 rounded-sm z-10 flex items-center justify-center gap-1">
-                            <div className="w-2 h-1.5 bg-gray-800 rounded-sm border border-gray-600" />
-                            <div className="w-0.5 h-0.5 bg-gray-600" />
-                            <div className="w-2 h-1.5 bg-gray-800 rounded-sm border border-gray-600" />
-                        </div>
-                    )}
-
-                    {/* Eyes — side: 1 eye right-aligned, front: 2 eyes centered */}
-                    <div
-                        className={`relative z-[5] mt-1.5 ${side ? 'flex justify-end pr-1' : 'flex justify-center gap-1.5'}`}
-                        style={{ animation: !isDead ? 'skillerBlink 4s ease-in-out infinite' : 'none' }}
-                    >
-                        {isDead ? (
-                            <span className="text-[7px] text-gray-500 font-bold leading-none">✕</span>
-                        ) : (
-                            <>
-                                {!side && <div className="w-1.5 h-2 rounded-sm" style={{ background: eyeColor, boxShadow: `0 0 3px ${glowColor}`, opacity: 0.9 }} />}
-                                <div className="w-1.5 h-2 rounded-sm" style={{ background: eyeColor, boxShadow: `0 0 3px ${glowColor}`, opacity: 0.9 }} />
-                            </>
-                        )}
-                    </div>
-
-                    {/* Mouth */}
-                    <div className={`mt-1 relative z-[5] ${side ? 'flex justify-end pr-1.5' : 'flex justify-center'}`}>
-                        <div className={`h-0.5 rounded-full ${isDead ? 'bg-gray-600' : ''}`}
-                            style={{ width: side ? '4px' : '12px', transform: mouthStyle, background: isDead ? undefined : eyeColor, opacity: isDead ? 1 : 0.4 }}
-                        />
-                    </div>
-
-                    {/* Scan lines */}
-                    {!isDead && <div className="absolute inset-0 opacity-15" style={{ background: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 4px)' }} />}
-                </div>
-
-                {/* Scarf */}
-                {!isDead && weather === 'snow' && <div className="w-9 h-1.5 bg-red-500 rounded-sm mx-auto -mt-0.5 z-20 relative opacity-90" />}
-            </div>
-
-            {/* ─── BODY ─── */}
-            <div
-                className={`relative -mt-0.5 rounded-b-md transition-all duration-300 ${isDead
-                    ? 'bg-zinc-800 border border-gray-600 border-t-0 opacity-60'
-                    : 'bg-gradient-to-b from-zinc-800 to-zinc-900 border border-zinc-700/50 border-t-0'
-                    }`}
-                style={{ width: side ? '18px' : '32px', height: '20px' }}
-            >
-                {/* Zipper + logo (front only) */}
-                {!side && <>
-                    <div className={`absolute left-1/2 -translate-x-1/2 w-px h-full ${isDead ? 'bg-gray-600' : 'bg-sz-red/15'}`} />
-                    {!isDead && <div className="absolute top-0.5 left-1/2 -translate-x-1/2"><span className="text-[5px] font-black text-sz-red/40 font-orbitron leading-none">SZ</span></div>}
-                </>}
-
-                {/* Arms — side: one front, front: both sides */}
-                {side ? (
-                    <div className={`absolute -right-1 top-0 w-1.5 h-4 rounded-b-md z-10 ${isDead ? 'bg-zinc-800' : 'bg-zinc-700 border border-zinc-600/50'}`}
-                        style={{ transformOrigin: 'top center', animation: !isDead ? 'skillerArmRight 0.5s ease-in-out infinite' : 'none' }}
-                    />
-                ) : (
-                    <>
-                        <div className={`absolute -left-1.5 top-0 w-1.5 h-4 rounded-b-md ${isDead ? 'bg-zinc-800' : 'bg-zinc-800 border border-zinc-700/30'}`} />
-                        <div className={`absolute -right-1.5 top-0 w-1.5 h-4 rounded-b-md ${isDead ? 'bg-zinc-800' : 'bg-zinc-800 border border-zinc-700/30'}`} />
-                    </>
-                )}
-
-                {/* RGB strip */}
-                {!isDead && <div className="absolute bottom-0 left-0.5 right-0.5 h-px rounded-full" style={{ background: `linear-gradient(90deg, ${eyeColor}33, transparent, ${eyeColor}33)` }} />}
-            </div>
-
-            {/* ─── LEGS ─── */}
-            <div className={`flex -mt-px ${side ? 'gap-0 justify-end pr-0.5' : 'gap-0.5 justify-center'}`}>
-                {/* Front view: both legs static */}
-                {!side && (
-                    <div className={`w-1.5 h-3 rounded-b-sm ${isDead ? 'bg-gray-700' : 'bg-zinc-700 border-x border-b border-zinc-600/30'}`}>
-                        <div className={`w-2 h-1 rounded-sm mt-2 -ml-0.5 ${isDead ? 'bg-gray-600' : 'bg-zinc-600'}`} />
-                    </div>
-                )}
-                {/* Front leg (always visible, animated when side) */}
-                <div className={`w-1.5 h-3 rounded-b-sm ${isDead ? 'bg-gray-700' : 'bg-zinc-700 border-x border-b border-zinc-600/30'}`}
-                    style={{ transformOrigin: 'top center', animation: side && !isDead ? 'skillerLegLeft 0.5s ease-in-out infinite' : 'none' }}
-                >
-                    <div className={`w-2 h-1 rounded-sm mt-2 ${side ? '' : '-ml-0.5'} ${isDead ? 'bg-gray-600' : 'bg-zinc-600'}`} />
-                </div>
-                {/* Back leg (side only, offset behind) */}
-                {side && (
-                    <div className={`w-1.5 h-3 rounded-b-sm -ml-1 ${isDead ? 'bg-gray-700' : 'bg-zinc-600 border-x border-b border-zinc-500/20'}`}
-                        style={{ transformOrigin: 'top center', animation: !isDead ? 'skillerLegRight 0.5s ease-in-out infinite' : 'none', zIndex: -1 }}
-                    >
-                        <div className={`w-2 h-1 rounded-sm mt-2 ${isDead ? 'bg-gray-600' : 'bg-zinc-500'}`} />
-                    </div>
-                )}
-            </div>
-
-            {/* ─── WEATHER FX ─── */}
-            {!isDead && weather === 'storm' && <div className="absolute -top-1 -right-2 text-[8px] animate-pulse z-30">⚡</div>}
-        </div>
-    );
-};
-
-// ═══════════════════════════════════════════════════════
-// SNOW PARTICLES
-// ═══════════════════════════════════════════════════════
-
-const SnowParticles: React.FC = () => (
-    <div className="absolute -top-8 -left-4 w-20 h-12 pointer-events-none overflow-hidden">
-        {Array.from({ length: 5 }).map((_, i) => (
-            <div
-                key={i}
-                className="absolute text-[6px] text-white opacity-60"
-                style={{
-                    left: `${10 + i * 18}%`,
-                    animation: `skillerSnowfall ${1.5 + Math.random()}s linear ${Math.random() * 1.5}s infinite`,
-                }}
-            >
-                ❄
-            </div>
-        ))}
-    </div>
-);
-
-// ═══════════════════════════════════════════════════════
-// EXPLOSION EFFECT
-// ═══════════════════════════════════════════════════════
-
-const ExplosionEffect: React.FC = () => (
-    <div className="absolute inset-0 pointer-events-none">
-        {Array.from({ length: 8 }).map((_, i) => {
-            const angle = (i / 8) * 360;
-            const distance = 30 + Math.random() * 20;
-            return (
-                <div
-                    key={i}
-                    className="absolute w-2 h-2 bg-sz-red rounded-full animate-ping"
-                    style={{
-                        left: '50%',
-                        top: '50%',
-                        transform: `translate(-50%, -50%) translate(${Math.cos(angle * Math.PI / 180) * distance}px, ${Math.sin(angle * Math.PI / 180) * distance}px)`,
-                        animationDuration: `${0.3 + Math.random() * 0.3}s`,
-                        animationIterationCount: 1,
-                        opacity: 0.8,
-                    }}
-                />
-            );
-        })}
-    </div>
-);
+const WAVE_BACK_PHRASES = [
+    'Vrať se! 👋',
+    'Hej, kam jdeš? 👀',
+    'Don\'t leave me bro 😤',
+    'Čau čau… nebo se vrátíš? 🥺',
+];
 
 // ═══════════════════════════════════════════════════════
 // MAIN COMPONENT
@@ -295,11 +131,12 @@ const ExplosionEffect: React.FC = () => (
 
 interface SkillerAvatarProps {
     onChatOpen: () => void;
+    hasUnread?: boolean;
 }
 
-const SkillerAvatar: React.FC<SkillerAvatarProps> = ({ onChatOpen }) => {
+const SkillerAvatar: React.FC<SkillerAvatarProps> = ({ onChatOpen, hasUnread = false }) => {
     // Position & movement
-    const [posX, setPosX] = useState(50); // percentage across the screen
+    const [posX, setPosX] = useState(50);
     const [targetX, setTargetX] = useState(70);
     const [facingLeft, setFacingLeft] = useState(false);
     const [isWalking, setIsWalking] = useState(true);
@@ -327,6 +164,11 @@ const SkillerAvatar: React.FC<SkillerAvatarProps> = ({ onChatOpen }) => {
     // Mobile
     const [isMobile, setIsMobile] = useState(false);
 
+    // v2: idle actions
+    const [action, setAction] = useState<'dance' | 'jump' | 'wave' | 'sit' | null>(null);
+    const lastClickTime = useRef(0);
+    const hoverLeaveTimeout = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
     // Refs
     const animRef = useRef<number>(0);
     const bubbleTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -343,6 +185,37 @@ const SkillerAvatar: React.FC<SkillerAvatarProps> = ({ onChatOpen }) => {
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
 
+    // ─── SCROLL REACTION (Desktop only) ─────────────────
+    useEffect(() => {
+        if (!visible || isMobile || isShotDown) return;
+
+        let scrollTimeout: ReturnType<typeof setTimeout>;
+        let lastScrollY = window.scrollY;
+
+        const handleScroll = () => {
+            const currentScrollY = window.scrollY;
+            const diff = Math.abs(currentScrollY - lastScrollY);
+
+            // If scrolled more than 50px quickly
+            if (diff > 50) {
+                setIsWalking(false);
+                setIsPaused(true);
+                setFacingLeft(false); // Look at user
+                setBubble("Kampak scrolluješ? 👀");
+
+                clearTimeout(scrollTimeout);
+                scrollTimeout = setTimeout(() => {
+                    setBubble(null);
+                    setIsPaused(false);
+                }, 3000);
+            }
+            lastScrollY = currentScrollY;
+        };
+
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, [visible, isMobile, isShotDown]);
+
     useEffect(() => {
         if (!getAnimationsEnabled()) setVisible(false);
     }, []);
@@ -356,14 +229,11 @@ const SkillerAvatar: React.FC<SkillerAvatarProps> = ({ onChatOpen }) => {
         return () => clearInterval(interval);
     }, []);
 
-    // ─── NEWS PHRASES ───────────────────────────────────
+    // ─── NEWS PHRASES ────────────────────────────────────
     useEffect(() => {
         getDailyAiFeed().then(msgs => {
             if (msgs.length > 0) {
-                // Use the feed messages as news-style phrases
-                const phrases = msgs
-                    .map(m => `🎮 ${m.msg}`)
-                    .slice(0, 8);
+                const phrases = msgs.map(m => `🎮 ${m.msg}`).slice(0, 8);
                 setNewsPhrases(phrases);
             }
         }).catch(() => { });
@@ -379,18 +249,26 @@ const SkillerAvatar: React.FC<SkillerAvatarProps> = ({ onChatOpen }) => {
         else setMood('FOCUS');
     }, []);
 
-    // ─── DESKTOP: WALKING MOVEMENT ──────────────────────
+    // ─── TIME ON SITE reaction (after 2 min) ─────────────
+    useEffect(() => {
+        if (!visible || isShotDown) return;
+        const t = setTimeout(() => {
+            setBubble('Líbí se ti tu, co? 😏');
+            setTimeout(() => setBubble(null), 4000);
+        }, 2 * 60 * 1000);
+        return () => clearTimeout(t);
+    }, [visible, isShotDown]);
+
+    // ─── DESKTOP: WALKING MOVEMENT ───────────────────────
     useEffect(() => {
         if (!visible || isMobile || isShotDown) return;
 
         const pickTarget = () => {
-            // Walk to a random spot, biased away from current position
             const margin = 5;
             let newX: number;
             do {
                 newX = margin + Math.random() * (90 - margin);
-            } while (Math.abs(newX - posX) < 15); // Ensure movement is visible
-
+            } while (Math.abs(newX - posX) < 15);
             setTargetX(newX);
             setIsWalking(true);
             setIsPaused(false);
@@ -398,11 +276,9 @@ const SkillerAvatar: React.FC<SkillerAvatarProps> = ({ onChatOpen }) => {
 
         const cycle = () => {
             if (isPaused) {
-                // After pause, start walking again
                 pickTarget();
                 moveTimer.current = setTimeout(cycle, 15000 + Math.random() * 10000);
             } else {
-                // Pause for a moment (idle)
                 setIsWalking(false);
                 setIsPaused(true);
                 moveTimer.current = setTimeout(cycle, 8000 + Math.random() * 7000);
@@ -413,7 +289,42 @@ const SkillerAvatar: React.FC<SkillerAvatarProps> = ({ onChatOpen }) => {
         return () => { if (moveTimer.current) clearTimeout(moveTimer.current); };
     }, [visible, isMobile, isShotDown, isPaused, posX]);
 
-    // Ref to track current position for facing direction
+    // ─── IDLE ANIMATIONS ────────────────────────────────
+    useEffect(() => {
+        if (!visible || isMobile || isShotDown || isWalking || isHovered || isPaused) return; // wait till paused
+        // Wait, isPaused means he stopped walking. So we ONLY do it when isPaused is true.
+    }, [visible, isMobile, isShotDown, isWalking, isHovered, mood, isPaused]);
+
+    useEffect(() => {
+        if (!visible || isMobile || isShotDown || isWalking || isHovered || !isPaused) return;
+        let timeout: ReturnType<typeof setTimeout>;
+
+        const doAction = () => {
+            const actions: ('jump' | 'wave' | 'sit')[] = ['jump', 'wave', 'sit'];
+            const randomAction = actions[Math.floor(Math.random() * actions.length)];
+
+            if (randomAction === 'jump' && mood !== 'HYPE' && Math.random() > 0.3) {
+                timeout = setTimeout(doAction, 5000 + Math.random() * 10000);
+                return;
+            }
+
+            setAction(randomAction);
+            let duration = 0;
+            if (randomAction === 'jump') duration = 1200;
+            else if (randomAction === 'wave') duration = 1800;
+            else if (randomAction === 'sit') duration = 4000;
+
+            setTimeout(() => {
+                setAction(null);
+            }, duration);
+
+            timeout = setTimeout(doAction, 10000 + Math.random() * 15000);
+        };
+
+        timeout = setTimeout(doAction, 2000 + Math.random() * 5000);
+        return () => clearTimeout(timeout);
+    }, [visible, isMobile, isShotDown, isWalking, isHovered, mood, isPaused]);
+
     const posXRef = useRef(posX);
     useEffect(() => { posXRef.current = posX; }, [posX]);
 
@@ -424,12 +335,10 @@ const SkillerAvatar: React.FC<SkillerAvatarProps> = ({ onChatOpen }) => {
         const animate = () => {
             const currentPos = posXRef.current;
             const diff = targetX - currentPos;
-
             if (Math.abs(diff) < 0.3) {
                 setIsWalking(false);
                 setPosX(targetX);
             } else {
-                // Face the direction of movement
                 setFacingLeft(diff < 0);
                 const newPos = currentPos + diff * 0.03;
                 setPosX(newPos);
@@ -477,16 +386,19 @@ const SkillerAvatar: React.FC<SkillerAvatarProps> = ({ onChatOpen }) => {
     // ─── SPEECH BUBBLES ──────────────────────────────────
     useEffect(() => {
         if (!visible || isShotDown) return;
-        if (isMobile) return; // No bubbles on mobile
+        if (isMobile) return;
 
         const showBubble = () => {
             if (isHovered) return;
-            // 20% news, 30% weather, 50% idle
+            // 20% news, 15% time-based, 30% weather, 35% idle
             const roll = Math.random();
             let phrases: string[];
+            const timePhrases = getTimePhrases();
             if (roll < 0.2 && newsPhrases.length > 0) {
                 phrases = newsPhrases;
-            } else if (roll < 0.5 && weather !== 'unknown') {
+            } else if (roll < 0.35 && timePhrases.length > 0) {
+                phrases = timePhrases;
+            } else if (roll < 0.65 && weather !== 'unknown') {
                 phrases = WEATHER_PHRASES[weather];
             } else {
                 phrases = IDLE_PHRASES;
@@ -547,7 +459,19 @@ const SkillerAvatar: React.FC<SkillerAvatarProps> = ({ onChatOpen }) => {
         setLongPressProgress(0);
     }, []);
 
+    // ─── CLICK: double-click dance, restore, chat ────────
     const handleClick = useCallback(() => {
+        const now = Date.now();
+        // Double-click → dance easter egg
+        if (now - lastClickTime.current < 400 && !isShotDown) {
+            lastClickTime.current = 0;
+            setAction('dance');
+            setBubble('🕺 lets gooo!');
+            setTimeout(() => { setAction(null); setBubble(null); }, 2000);
+            return;
+        }
+        lastClickTime.current = now;
+
         if (isShotDown && isPeeking) {
             setIsShotDown(false);
             setIsPeeking(false);
@@ -559,6 +483,28 @@ const SkillerAvatar: React.FC<SkillerAvatarProps> = ({ onChatOpen }) => {
         setBubble(null);
         onChatOpen();
     }, [onChatOpen, isShotDown, isPeeking]);
+
+    // ─── WAVE BACK on mouse leave after hover ────────────
+    const handleMouseEnter = useCallback(() => {
+        if (hoverLeaveTimeout.current) clearTimeout(hoverLeaveTimeout.current);
+        setIsHovered(true);
+        if (!isShotDown && action !== 'dance') {
+            setBubble('Ooo, koukáš? 👀 | Hold → 💥 | 2× → 🕺');
+        }
+    }, [isShotDown, action]);
+
+    const handleMouseLeave = useCallback(() => {
+        setIsHovered(false);
+        handlePressEnd();
+        // After 1s of leaving, wave back
+        hoverLeaveTimeout.current = setTimeout(() => {
+            if (!isShotDown) {
+                const phrase = WAVE_BACK_PHRASES[Math.floor(Math.random() * WAVE_BACK_PHRASES.length)];
+                setBubble(phrase);
+                setTimeout(() => setBubble(null), 3000);
+            }
+        }, 800);
+    }, [handlePressEnd, isShotDown]);
 
     if (!visible) return null;
 
@@ -619,7 +565,11 @@ const SkillerAvatar: React.FC<SkillerAvatarProps> = ({ onChatOpen }) => {
                     title="Chat se Skillerem"
                     aria-label="Open chat with Skiller"
                 >
-                    <SkillerCharacter mood={mood} weather={weather} />
+                    <SkillerCharacter mood={mood} weather={weather} action={action} />
+                    {/* Unread badge */}
+                    {hasUnread && (
+                        <div className="absolute -top-1 -right-1 w-3 h-3 bg-sz-red rounded-full border border-black animate-pulse z-50" />
+                    )}
                     {showExplosion && <ExplosionEffect />}
                     {longPressProgress > 0 && longPressProgress < 1 && (
                         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
@@ -650,16 +600,16 @@ const SkillerAvatar: React.FC<SkillerAvatarProps> = ({ onChatOpen }) => {
         <div
             className="fixed z-[90] transition-none"
             style={{
-                bottom: '32px', // just above the h-8 LiveFeed bar
+                bottom: '32px',
                 left: `${posX}%`,
                 transform: 'translateX(-50%)',
             }}
         >
-            {/* Speech Bubble — only when standing still */}
-            {((bubble && !isWalking) || isHovered) && (
-                <div className="absolute -top-16 left-1/2 -translate-x-1/2 pointer-events-none animate-in fade-in slide-in-from-bottom-2 duration-200">
-                    <div className="bg-black/90 border border-sz-red/40 text-white text-xs font-mono px-3 py-1.5 rounded-lg shadow-lg relative max-w-[300px] whitespace-nowrap text-center">
-                        {isHovered ? 'Click → Chat 💬 | Hold → 💥' : bubble}
+            {/* Speech Bubble */}
+            {bubble && (!isWalking || isHovered) && (
+                <div className="absolute -top-[72px] left-1/2 -translate-x-1/2 pointer-events-none animate-in fade-in slide-in-from-bottom-2 duration-200 z-50">
+                    <div className="bg-black/90 border border-sz-red/40 text-white text-[11px] font-mono px-3 py-1.5 rounded-lg shadow-lg relative max-w-[300px] whitespace-nowrap text-center leading-relaxed">
+                        {bubble}
                         <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-black/90 border-r border-b border-sz-red/40 rotate-45" />
                     </div>
                 </div>
@@ -684,24 +634,35 @@ const SkillerAvatar: React.FC<SkillerAvatarProps> = ({ onChatOpen }) => {
             {/* Snow particles */}
             {weather === 'snow' && <SnowParticles />}
 
+            {/* Unread badge */}
+            {hasUnread && !isHovered && (
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-sz-red rounded-full border border-black animate-pulse z-50" />
+            )}
+
             {/* Avatar body */}
             <button
                 onClick={handleClick}
                 onMouseDown={handlePressStart}
                 onMouseUp={handlePressEnd}
-                onMouseLeave={(e) => { setIsHovered(false); handlePressEnd(); }}
-                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={handleMouseLeave}
+                onMouseEnter={handleMouseEnter}
                 onTouchStart={handlePressStart}
                 onTouchEnd={handlePressEnd}
-                className={`pointer-events-auto cursor-pointer transition-transform duration-200 ${isHovered ? 'scale-110' : 'scale-100'} hover:drop-shadow-[0_0_16px_rgba(227,30,36,0.6)] flex flex-col items-center`}
-                title="Chat se Skillerem (drž 1s → sestřel)"
+                className={`pointer-events-auto cursor-pointer transition-transform duration-200 ${isHovered ? 'scale-110' : 'scale-100'} flex flex-col items-center`}
+                title="Chat se Skillerem (drž 1s → sestřel, 2× klik → 🕺)"
                 aria-label="Open chat with Skiller"
                 style={{
-                    // Walking bobble effect
-                    animation: isWalking ? 'skillerBobble 0.4s ease-in-out infinite' : 'none',
+                    animation: isWalking && action !== 'dance' ? 'skillerBobble 0.4s ease-in-out infinite' : 'none',
                 }}
             >
-                <SkillerCharacter mood={mood} weather={weather} facingLeft={facingLeft} isWalking={isWalking} />
+                <SkillerCharacter
+                    mood={mood}
+                    weather={weather}
+                    facingLeft={facingLeft}
+                    isWalking={isWalking}
+                    isHovered={isHovered}
+                    action={action}
+                />
             </button>
         </div>
     );

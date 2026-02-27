@@ -225,5 +225,6 @@ export const TABLES = {
     DAILY_FEED: 'web_daily_feed',
     OWNER_PROFILE: 'web_owner_profile',
     SITEMAP: 'web_sitemap',
+    USER_PROFILES: 'web_user_profiles',
 } as const;
 

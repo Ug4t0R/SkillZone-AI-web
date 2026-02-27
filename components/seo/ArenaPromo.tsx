@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { ShieldAlert, Crosshair, Map, Zap, Target } from 'lucide-react';
-import { AppView } from '../types';
+import { AppView } from '../../types';
 import { trackView, trackClick, trackConversion } from '../../services/analytics';
 
 interface ArenaPromoProps {

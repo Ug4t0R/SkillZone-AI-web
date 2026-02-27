@@ -1,10 +1,11 @@
 /**
  * User and Owner profiles — Supabase-backed.
- * Includes persistent visitor identity and AI-powered memory.
+ * User profiles use dedicated `web_user_profiles` table (NOT web_settings key-value).
+ * Owner profile uses `web_owner_profile` table.
  */
 import { UserProfile, OwnerProfileData } from '../../types';
 import { DEFAULT_OWNER_PROFILE_CS, DEFAULT_OWNER_PROFILE_EN } from '../../constants';
-import { getSetting, setSetting, deleteSetting, getSettingsByPrefix, fetchById, upsertRow, TABLES } from '../../services/webDataService';
+import { fetchById, upsertRow, TABLES } from '../../services/webDataService';
 
 const VISITOR_ID_KEY = 'sz_visitor_id';
 
@@ -19,45 +20,130 @@ export const getOrCreateVisitorId = (): string => {
     return id;
 };
 
-const USER_PROFILE_KEY = 'sz_skiller_profile';
+// ─── DB Row type ─────────────────────────────────────────────────────
+
+interface UserProfileRow {
+    visitor_id: string;
+    nickname?: string;
+    interaction_count: number;
+    last_visit: string;
+    favorite_games?: string[];
+    persona?: string;
+    conversation_summary?: string;
+    known_facts?: string[];
+    admin_instructions?: string;
+    updated_at?: string;
+}
+
+function toRow(visitorId: string, profile: UserProfile): UserProfileRow {
+    return {
+        visitor_id: visitorId,
+        nickname: profile.nickname,
+        interaction_count: profile.interactionCount,
+        last_visit: profile.lastVisit,
+        favorite_games: profile.favoriteGames,
+        persona: profile.persona,
+        conversation_summary: profile.conversationSummary,
+        known_facts: profile.knownFacts,
+        admin_instructions: profile.adminInstructions,
+        updated_at: new Date().toISOString(),
+    };
+}
+
+function fromRow(row: UserProfileRow): UserProfile {
+    return {
+        visitorId: row.visitor_id,
+        nickname: row.nickname,
+        interactionCount: row.interaction_count ?? 0,
+        lastVisit: row.last_visit ?? new Date().toISOString(),
+        favoriteGames: row.favorite_games,
+        persona: row.persona,
+        conversationSummary: row.conversation_summary,
+        knownFacts: row.known_facts,
+        adminInstructions: row.admin_instructions,
+    };
+}
+
+// ─── USER PROFILE CRUD ───────────────────────────────────────────────
 
 export const getUserProfile = async (): Promise<UserProfile> => {
     const visitorId = getOrCreateVisitorId();
-    const profileKey = `skiller_profile_${visitorId}`;
+    try {
+        const { getSupabase } = await import('../../services/supabaseClient');
+        const sb = getSupabase();
+        const { data, error } = await sb
+            .from(TABLES.USER_PROFILES)
+            .select('*')
+            .eq('visitor_id', visitorId)
+            .maybeSingle();
 
-    // Load from Supabase using the isolated visitor key
-    const data = await getSetting<UserProfile | null>(profileKey, null);
-    const profile = data || { interactionCount: 0, lastVisit: new Date().toISOString(), visitorId };
-
-    // Always ensure the persistent visitor ID matches the one generated for this device
-    if (!profile.visitorId || profile.visitorId !== visitorId) {
-        profile.visitorId = visitorId;
+        if (!error && data) {
+            return fromRow(data as UserProfileRow);
+        }
+    } catch {
+        // Fall through to default
     }
-    return profile;
+
+    // New visitor — return default profile
+    return { interactionCount: 0, lastVisit: new Date().toISOString(), visitorId };
 };
 
 export const saveUserProfile = async (profile: UserProfile): Promise<void> => {
     const visitorId = getOrCreateVisitorId();
-    const profileKey = `skiller_profile_${visitorId}`;
-    await setSetting(profileKey, profile);
+    try {
+        const { getSupabase } = await import('../../services/supabaseClient');
+        const sb = getSupabase();
+        await sb.from(TABLES.USER_PROFILES).upsert(toRow(visitorId, profile));
+    } catch (e) {
+        console.warn('[Profiles] Failed to save user profile', e);
+    }
 };
 
 export const saveRemoteUserProfile = async (visitorId: string, profile: UserProfile): Promise<boolean> => {
     if (!visitorId || !profile) return false;
-    const profileKey = `skiller_profile_${visitorId}`;
-    return await setSetting(profileKey, profile);
+    try {
+        const { getSupabase } = await import('../../services/supabaseClient');
+        const sb = getSupabase();
+        const { error } = await sb.from(TABLES.USER_PROFILES).upsert(toRow(visitorId, profile));
+        return !error;
+    } catch {
+        return false;
+    }
 };
 
 export const getAllUserProfiles = async (): Promise<{ visitorId: string, profile: UserProfile }[]> => {
-    const settings = await getSettingsByPrefix<UserProfile>('skiller_profile_');
-    return settings.map(s => ({
-        visitorId: s.key.replace('skiller_profile_', ''),
-        profile: s.value
-    }));
+    try {
+        const { getSupabase } = await import('../../services/supabaseClient');
+        const sb = getSupabase();
+        const { data, error } = await sb
+            .from(TABLES.USER_PROFILES)
+            .select('*')
+            .order('last_visit', { ascending: false });
+
+        if (!error && data) {
+            return (data as UserProfileRow[]).map(row => ({
+                visitorId: row.visitor_id,
+                profile: fromRow(row),
+            }));
+        }
+    } catch {
+        // Fall through
+    }
+    return [];
 };
 
 export const deleteUserProfile = async (visitorId: string): Promise<boolean> => {
-    return await deleteSetting(`skiller_profile_${visitorId}`);
+    try {
+        const { getSupabase } = await import('../../services/supabaseClient');
+        const sb = getSupabase();
+        const { error } = await sb
+            .from(TABLES.USER_PROFILES)
+            .delete()
+            .eq('visitor_id', visitorId);
+        return !error;
+    } catch {
+        return false;
+    }
 };
 
 /**
@@ -196,4 +282,3 @@ export const saveOwnerProfile = async (profile: OwnerProfileData): Promise<void>
 export const resetOwnerProfile = async (): Promise<void> => {
     await upsertRow(TABLES.OWNER_PROFILE, toDbRow(DEFAULT_OWNER_PROFILE_CS));
 };
-

@@ -222,7 +222,7 @@ const ConfidentialWatermark: React.FC = () => {
 const EmailPopup: React.FC = () => {
     const [visible, setVisible] = useState(false);
     const [emailIdx, setEmailIdx] = useState(0);
-    const timerRef = useRef<ReturnType<typeof setTimeout>>();
+    const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const EMAILS = [
         { from: 'HR oddělení', subject: 'Připomínka: vyplnění dotazníku zaměstnanecké spokojenosti' },

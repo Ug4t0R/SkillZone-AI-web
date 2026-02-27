@@ -7,6 +7,7 @@ import { LIVE_FEED_MESSAGES } from '../../constants';
 import { getSupabase } from '../../services/supabaseClient';
 import { fetchAll, upsertRow, deleteAllRows, TABLES } from '../../services/webDataService';
 import { getOrCreateVisitorId } from './profiles';
+import { hasAnalyticsConsent } from '../../components/CookieBanner';
 
 export interface ChatSession {
     id: string;
@@ -75,7 +76,7 @@ export const saveChatToHistory = async (
         const lastSession = history[history.length - 1];
         const isRecent = lastSession && (now.getTime() - new Date(lastSession.started_at).getTime() < 30 * 60 * 1000);
 
-        const ip = await getClientIp();
+        const ip = hasAnalyticsConsent() ? await getClientIp() : 'consent_declined';
         const metadata = {
             user_nickname: userNickname || 'Anonymous',
             user_agent: navigator.userAgent.substring(0, 200),

@@ -146,6 +146,8 @@ export async function fetchAllGmbReviews(
                         ai_tag: null,
                         is_featured: false,
                         google_url: '',
+                        owner_response: r.reviewReply?.comment || null,
+                        owner_response_date: r.reviewReply?.updateTime?.split('T')[0] || null,
                     });
                 }
 

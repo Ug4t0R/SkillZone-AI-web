@@ -3,7 +3,7 @@ import { Brain, Trash2, RefreshCw, Smartphone, Search, AlertCircle, Save, Eye, P
 import { UserProfile, ChatMessage } from '../../types';
 import { getAllUserProfiles, deleteUserProfile, getOrCreateVisitorId, saveRemoteUserProfile } from '../../utils/devTools';
 import { generateSkillerStats } from '../../services/geminiService';
-import { SkillerCharacter } from '../SkillerAvatar';
+import { SkillerCharacter } from '../skilleravatar/SkillerCharacter';
 import { WeatherCondition, WeatherData, getWeather } from '../../services/weatherService';
 import ReactMarkdown from 'react-markdown';
 import { getSkillerState } from '../../utils/storage/aiSettings';
@@ -142,8 +142,10 @@ const SkillerTab: React.FC = () => {
     const [previewWalking, setPreviewWalking] = useState(false);
     const [previewDead, setPreviewDead] = useState(false);
     const [previewFacingLeft, setPreviewFacingLeft] = useState(false);
+    const [previewVariant, setPreviewVariant] = useState<any>('default');
 
     const moods = ['NORMAL', 'HYPE', 'TILT', 'TIRED'] as const;
+    const variants = ['default', 'cyberpunk', 'ghost', 'arcade', 'ninja', 'mage'] as const;
     const weathers: WeatherCondition[] = ['unknown', 'sun', 'rain', 'snow', 'storm', 'cloudy', 'fog'];
     const weatherEmojis: Record<string, string> = { unknown: '—', sun: '☀️', rain: '🌧️', snow: '❄️', storm: '⛈️', cloudy: '☁️', fog: '🌫️' };
     const moodColors: Record<string, string> = { NORMAL: 'text-sz-red', HYPE: 'text-green-400', TILT: 'text-red-400', TIRED: 'text-yellow-400' };
@@ -322,52 +324,72 @@ const SkillerTab: React.FC = () => {
                 </div>
 
                 {/* Preview area — front & side */}
-                <div className="flex items-end justify-center gap-12 bg-zinc-900/80 rounded-lg p-8 mb-4 border border-white/5 min-h-[160px]">
+                <div className="flex flex-col md:flex-row items-end justify-center gap-16 md:gap-24 bg-zinc-900/80 rounded-lg p-12 mb-4 border border-white/5 min-h-[220px]">
                     {/* Front View */}
                     <div className="flex flex-col items-center">
-                        <div className="text-[10px] text-gray-500 font-mono mb-3 uppercase">Front</div>
-                        <div style={{ transform: 'scale(3)', transformOrigin: 'bottom center' }}>
+                        <div className="text-[10px] text-gray-500 font-mono mb-8 uppercase">Front</div>
+                        <div style={{ transform: 'scale(3.5)', transformOrigin: 'bottom center' }}>
                             <SkillerCharacter
                                 mood={previewMood}
                                 isDead={previewDead}
                                 weather={previewWeather === 'unknown' ? undefined : previewWeather}
                                 facingLeft={false}
                                 isWalking={false}
+                                variant={previewVariant}
                             />
                         </div>
                     </div>
 
                     {/* Side View */}
                     <div className="flex flex-col items-center">
-                        <div className="text-[10px] text-gray-500 font-mono mb-3 uppercase">Side</div>
-                        <div style={{ transform: 'scale(3)', transformOrigin: 'bottom center' }}>
+                        <div className="text-[10px] text-gray-500 font-mono mb-8 uppercase">Side</div>
+                        <div style={{ transform: 'scale(3.5)', transformOrigin: 'bottom center' }}>
                             <SkillerCharacter
                                 mood={previewMood}
                                 isDead={previewDead}
                                 weather={previewWeather === 'unknown' ? undefined : previewWeather}
                                 facingLeft={previewFacingLeft}
                                 isWalking={true}
+                                variant={previewVariant}
                             />
                         </div>
                     </div>
 
                     {/* Walking View */}
                     <div className="flex flex-col items-center">
-                        <div className="text-[10px] text-gray-500 font-mono mb-3 uppercase">Live</div>
-                        <div style={{ transform: 'scale(3)', transformOrigin: 'bottom center', animation: previewWalking ? 'skillerBobble 0.4s ease-in-out infinite' : 'none' }}>
+                        <div className="text-[10px] text-gray-500 font-mono mb-8 uppercase">Live</div>
+                        <div style={{ transform: 'scale(3.5)', transformOrigin: 'bottom center', animation: previewWalking ? 'skillerBobble 0.4s ease-in-out infinite' : 'none' }}>
                             <SkillerCharacter
                                 mood={previewMood}
                                 isDead={previewDead}
                                 weather={previewWeather === 'unknown' ? undefined : previewWeather}
                                 facingLeft={previewFacingLeft}
                                 isWalking={previewWalking}
+                                variant={previewVariant}
                             />
                         </div>
                     </div>
                 </div>
 
                 {/* Controls */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {/* Variant (Skin) */}
+                    <div className="col-span-2 md:col-span-4 mb-2">
+                        <div className="text-[10px] text-gray-500 font-mono uppercase mb-2 flex items-center gap-1">
+                            <Palette className="w-3 h-3 text-cyan-400" /> Skin / Vzhled
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                            {variants.map(v => (
+                                <button key={v} onClick={() => setPreviewVariant(v)}
+                                    className={`px-3 py-1.5 rounded text-xs font-mono font-bold transition-all uppercase ${previewVariant === v
+                                        ? `bg-white/10 text-white border border-white/30 shadow-[0_0_10px_rgba(255,255,255,0.1)]`
+                                        : 'bg-zinc-800 text-gray-500 hover:text-gray-300 border border-transparent'
+                                        }`}
+                                >{v}</button>
+                            ))}
+                        </div>
+                    </div>
+
                     {/* Mood */}
                     <div>
                         <div className="text-[10px] text-gray-500 font-mono uppercase mb-2 flex items-center gap-1">

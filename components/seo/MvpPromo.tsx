@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Crown, Trophy, Crosshair, Zap, MousePointer2 } from 'lucide-react';
-import { AppView } from '../types';
+import { AppView } from '../../types';
 import { trackView, trackClick, trackConversion } from '../../services/analytics';
 
 interface MvpPromoProps {

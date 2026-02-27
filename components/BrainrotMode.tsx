@@ -93,38 +93,58 @@ const FloatingEmojis: React.FC = () => {
 };
 
 // ═══════════════════════════════════════════════════════
-// SUBWAY SURFERS PiP — bottom-left corner
+// SUBWAY SURFERS SPLIT-SCREEN — True TikTok brainrot experience
 // ═══════════════════════════════════════════════════════
 
-const SubwaySurfersPiP: React.FC = () => {
+const SubwaySurfersSplitScreen: React.FC = () => {
     const [dismissed, setDismissed] = useState(false);
+    const videoId = "n_Dv4JMmAWE";
 
     if (dismissed) return null;
 
     return (
-        <div className="fixed bottom-4 left-4 z-[9995] group">
-            <div className="relative w-[120px] h-[180px] md:w-[160px] md:h-[240px] rounded-xl overflow-hidden border-2 border-white/20 shadow-2xl shadow-purple-500/20">
+        <div className="fixed inset-0 z-[9991] pointer-events-none flex flex-col md:flex-row justify-end items-end md:items-stretch overflow-hidden">
+            {/* Split screen: takes bottom half on mobile, right third/half on desktop */}
+            <div className="relative w-full h-[40vh] md:w-[400px] md:h-full lg:w-[500px] border-t-8 md:border-t-0 md:border-l-8 border-black shadow-[0_0_50px_rgba(0,0,0,0.8)] pointer-events-auto group">
                 {/* Muted Subway Surfers gameplay loop */}
                 <iframe
-                    src="https://www.youtube.com/embed/iKggOfcKM28?autoplay=1&mute=1&loop=1&controls=0&showinfo=0&playlist=iKggOfcKM28&playsinline=1&modestbranding=1"
-                    className="w-full h-full border-0 pointer-events-none"
+                    src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&controls=0&showinfo=0&playlist=${videoId}&playsinline=1&modestbranding=1&fs=0`}
+                    className="w-full h-full border-0 pointer-events-none object-cover"
+                    style={{ filter: 'saturate(1.5) contrast(1.2)' }}
                     allow="autoplay; encrypted-media"
                     title="subway-surfers"
                     tabIndex={-1}
                 />
+
+                {/* TikTok style UI overlay */}
+                <div className="absolute inset-0 pointer-events-none flex flex-col justify-end p-4 bg-gradient-to-t from-black/80 via-transparent to-transparent">
+                    <div className="flex justify-between items-end">
+                        <div className="flex flex-col gap-1">
+                            <span className="text-white font-bold text-lg drop-shadow-md">@brainrot_central</span>
+                            <span className="text-white/90 text-sm drop-shadow-md">Satisfying Subway Surfers Gameplay #fyp #viral #satisfying</span>
+                            <span className="text-white/80 font-bold text-xs flex items-center gap-1 mt-1 drop-shadow-md">
+                                🎵 original sound - Brainrot
+                            </span>
+                        </div>
+                        <div className="flex flex-col gap-3 items-center">
+                            <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm text-xl border border-white/30">🤍</div>
+                            <div className="text-white text-xs font-bold drop-shadow-md">9.9M</div>
+                            <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm text-xl border border-white/30">💬</div>
+                            <div className="text-white text-xs font-bold drop-shadow-md">142K</div>
+                            <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm text-xl border border-white/30">↪️</div>
+                            <div className="text-white text-xs font-bold drop-shadow-md">Share</div>
+                        </div>
+                    </div>
+                </div>
+
                 {/* Close button */}
                 <button
                     onClick={() => setDismissed(true)}
-                    className="absolute top-1 right-1 w-6 h-6 md:w-5 md:h-5 bg-black/60 text-white rounded-full text-[10px] font-bold opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                    className="absolute top-2 right-2 md:top-4 md:right-4 w-8 h-8 md:w-10 md:h-10 bg-black/80 hover:bg-red-600 text-white rounded-full text-xs md:text-sm font-bold border-2 border-white/20 hover:border-white transition-colors flex items-center justify-center z-50 pointer-events-auto"
+                    title="Dismiss video"
                 >
                     ✕
                 </button>
-                {/* Label */}
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent px-2 py-1">
-                    <span className="text-[9px] font-bold text-white/80 uppercase tracking-wider">
-                        🏂 for your attention
-                    </span>
-                </div>
             </div>
         </div>
     );
@@ -288,7 +308,7 @@ const BrainrotMode: React.FC<{ isActive: boolean; onToggle: () => void }> = ({ i
         <>
             <SigmaQuoteTicker />
             <FloatingEmojis />
-            <SubwaySurfersPiP />
+            <SubwaySurfersSplitScreen />
             <AchievementPopup />
             <AuraCounter />
             <ControlButtons onRealToggle={onToggle} />

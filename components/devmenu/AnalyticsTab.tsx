@@ -1,6 +1,6 @@
 // DevMenu Analytics Tab — live stats, visitor tracking, behavior analysis
 import React, { useState, useEffect } from 'react';
-import { Activity, Users, Globe, Monitor, Clock, TrendingUp, Zap, BarChart3, RefreshCw, Settings2, Save } from 'lucide-react';
+import { Activity, Users, Globe, Monitor, Clock, TrendingUp, Zap, BarChart3, RefreshCw, Settings2, Save, Wifi, Trash2 } from 'lucide-react';
 import { getSupabase } from '../../services/supabaseClient';
 import { getSetting, setSetting } from '../../services/webDataService';
 
@@ -19,6 +19,7 @@ interface LiveStats {
     devices: { device: string; count: number }[];
     browsers: { browser: string; count: number }[];
     recentEvents: any[];
+    liveVisitorDetails: { session_id: string; page_path: string; device: string; language: string; last_seen: string }[];
 }
 
 const AnalyticsTab: React.FC<AnalyticsTabProps> = ({ addLog }) => {
@@ -59,7 +60,8 @@ const AnalyticsTab: React.FC<AnalyticsTabProps> = ({ addLog }) => {
                 .from('web_visitors')
                 .select('*')
                 .gte('last_seen', fiveMinAgo)
-                .eq('is_active', true);
+                .eq('is_active', true)
+                .order('last_seen', { ascending: false });
 
             // Today's analytics events
             const { data: todayEvents } = await sb
@@ -146,12 +148,35 @@ const AnalyticsTab: React.FC<AnalyticsTabProps> = ({ addLog }) => {
                 devices,
                 browsers,
                 recentEvents: events.slice(0, 20),
+                liveVisitorDetails: live.map((v: any) => ({
+                    session_id: v.session_id,
+                    page_path: v.page_path || '/',
+                    device: v.device || 'unknown',
+                    language: v.language || '?',
+                    last_seen: v.last_seen,
+                })),
             });
             addLog(`Analytics loaded: ${live.length} live, ${pageViews.length} views today.`, 'success');
         } catch (err) {
             addLog(`Analytics load error: ${err}`, 'error');
         }
         setLoading(false);
+    };
+
+    const purgeOldVisitors = async () => {
+        try {
+            const sb = getSupabase();
+            const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+            const { error } = await sb.from('web_visitors').delete().lt('last_seen', cutoff);
+            if (!error) {
+                addLog('Old visitor records purged (>24h).', 'success');
+                loadStats();
+            } else {
+                addLog(`Purge failed: ${error.message}`, 'error');
+            }
+        } catch (err) {
+            addLog(`Purge error: ${err}`, 'error');
+        }
     };
 
     const StatCard: React.FC<{ label: string; value: string | number; icon: React.ReactNode; color?: string }> = ({ label, value, icon, color = 'text-sz-red' }) => (
@@ -277,6 +302,43 @@ const AnalyticsTab: React.FC<AnalyticsTabProps> = ({ addLog }) => {
                         </div>
                     </div>
 
+                    {/* Live Visitors Detail */}
+                    <div className="bg-zinc-800/30 border border-white/5 rounded-lg p-4">
+                        <div className="flex items-center justify-between mb-4">
+                            <h4 className="text-xs font-bold text-white uppercase font-mono flex items-center gap-2">
+                                <Wifi className="w-3 h-3 text-green-400" /> Live Visitors ({stats.liveVisitorDetails.length})
+                            </h4>
+                            <button
+                                onClick={purgeOldVisitors}
+                                className="flex items-center gap-1.5 px-2 py-1 bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 text-[10px] font-mono font-bold uppercase rounded border border-red-500/20 transition-colors"
+                                title="Smazat záznamy starší než 24h"
+                            >
+                                <Trash2 className="w-3 h-3" /> Purge old
+                            </button>
+                        </div>
+                        {stats.liveVisitorDetails.length === 0 ? (
+                            <p className="text-gray-600 text-xs font-mono italic">No active visitors right now.</p>
+                        ) : (
+                            <div className="space-y-1.5">
+                                {stats.liveVisitorDetails.map((v, i) => {
+                                    const ageMs = Date.now() - new Date(v.last_seen).getTime();
+                                    const ageSecs = Math.floor(ageMs / 1000);
+                                    const dotColor = ageMs < 2 * 60 * 1000 ? 'bg-green-400' : ageMs < 10 * 60 * 1000 ? 'bg-yellow-400' : 'bg-gray-500';
+                                    const ageLabel = ageSecs < 60 ? `${ageSecs}s ago` : `${Math.floor(ageSecs / 60)}m ago`;
+                                    return (
+                                        <div key={i} className="flex items-center gap-3 text-[10px] font-mono py-1 border-b border-white/5 last:border-0">
+                                            <span className={`w-2 h-2 rounded-full shrink-0 ${dotColor} animate-pulse`} />
+                                            <span className="text-gray-300 flex-1 truncate">{v.page_path}</span>
+                                            <span className="text-gray-500">{v.device}</span>
+                                            <span className="text-gray-600">{v.language}</span>
+                                            <span className="text-gray-600 w-14 text-right shrink-0">{ageLabel}</span>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
+                    </div>
+
                     {/* Recent Events */}
                     <div className="bg-zinc-800/30 border border-white/5 rounded-lg p-4">
                         <h4 className="text-xs font-bold text-white uppercase mb-4 font-mono flex items-center gap-2">
@@ -287,10 +349,10 @@ const AnalyticsTab: React.FC<AnalyticsTabProps> = ({ addLog }) => {
                                 <div key={i} className="flex items-center gap-3 text-[10px] font-mono py-1 border-b border-white/5">
                                     <span className="text-gray-600 w-16">{new Date(e.timestamp).toLocaleTimeString()}</span>
                                     <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase ${e.event_type === 'page_view' ? 'bg-blue-500/20 text-blue-400' :
-                                            e.event_type === 'section_view' ? 'bg-green-500/20 text-green-400' :
-                                                e.event_type === 'click' ? 'bg-yellow-500/20 text-yellow-400' :
-                                                    e.event_type === 'conversion' ? 'bg-purple-500/20 text-purple-400' :
-                                                        'bg-white/10 text-gray-400'
+                                        e.event_type === 'section_view' ? 'bg-green-500/20 text-green-400' :
+                                            e.event_type === 'click' ? 'bg-yellow-500/20 text-yellow-400' :
+                                                e.event_type === 'conversion' ? 'bg-purple-500/20 text-purple-400' :
+                                                    'bg-white/10 text-gray-400'
                                         }`}>{e.event_type}</span>
                                     <span className="text-gray-400 truncate flex-1">{JSON.stringify(e.event_data)}</span>
                                     <span className="text-gray-600">{e.device}</span>

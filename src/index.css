@@ -779,3 +779,92 @@ html:not(.dark) [style*="box-shadow"] {
         opacity: 0;
     }
 }
+
+/* ─── v2: Emote pop above head ─── */
+@keyframes skillerEmotePop {
+    0% {
+        transform: translateX(-50%) scale(0) rotate(-15deg);
+        opacity: 0;
+    }
+
+    70% {
+        transform: translateX(-50%) scale(1.2) rotate(5deg);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateX(-50%) scale(1) rotate(0deg);
+        opacity: 1;
+    }
+}
+
+@keyframes skillerEmoteFloat {
+
+    0%,
+    100% {
+        transform: translateX(-50%) translateY(0px);
+    }
+
+    50% {
+        transform: translateX(-50%) translateY(-2px);
+    }
+}
+
+/* ─── v2: Walking dust particles ─── */
+@keyframes skillerDust {
+    0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 0.5;
+    }
+
+    100% {
+        transform: translate(var(--dust-dx, -4px), -6px) scale(0);
+        opacity: 0;
+    }
+}
+
+/* ─── v2: Double-click dance wiggle ─── */
+@keyframes skillerDance {
+
+    0%,
+    100% {
+        transform: rotate(0deg) translateY(0px);
+    }
+
+    25% {
+        transform: rotate(-8deg) translateY(-3px);
+    }
+
+    75% {
+        transform: rotate(8deg) translateY(-3px);
+    }
+}
+
+/* ─── v2: Idle Animations ─── */
+@keyframes skillerWave {
+
+    0%,
+    100% {
+        transform: rotate(0deg);
+    }
+
+    25% {
+        transform: rotate(-80deg);
+    }
+
+    75% {
+        transform: rotate(45deg);
+    }
+}
+
+@keyframes skillerJump {
+
+    0%,
+    100% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-12px);
+    }
+}

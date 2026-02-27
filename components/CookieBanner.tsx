@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Cookie, ChevronDown, ChevronUp, Shield, X } from 'lucide-react';
 
+/** Helper — is called from chat.ts to conditionally collect IP */
+export const hasAnalyticsConsent = (): boolean => {
+    return localStorage.getItem('sz_cookie_consent') === 'accepted';
+};
+
 const CookieBanner: React.FC = () => {
     const [visible, setVisible] = useState(false);
     const [showLegal, setShowLegal] = useState(false);
