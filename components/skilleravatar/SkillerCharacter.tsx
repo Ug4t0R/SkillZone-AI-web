@@ -167,7 +167,7 @@ export const SkillerCharacter: React.FC<{
                             style={{ width: '36px' }}
                         />
                     ) : (
-                        <div className={`absolute -top-1.5 left-1/2 -translate-x-1/2 w-2.5 h-4 border-t-2 border-x-2 rounded-t-[3px] z-10 transition-all duration-300 ${isDead ? 'border-gray-600' : headsetColor}`} />
+                        <div className={`absolute -top-1.5 left-1 w-3 h-4 border-t-2 border-x-2 rounded-t-[3px] z-10 transition-all duration-300 ${isDead ? 'border-gray-600' : headsetColor}`} />
                     )
                 )}
 
@@ -183,7 +183,7 @@ export const SkillerCharacter: React.FC<{
                             </div>
                         </>
                     ) : (
-                        <div className={`absolute top-1 left-1/2 -translate-x-1/2 w-3 h-4 rounded-md z-20 ${isDead ? 'bg-gray-700' : earCupBg}`}>
+                        <div className={`absolute top-1 left-1.5 w-3 h-4 rounded-[4px] z-20 ${isDead ? 'bg-gray-700' : earCupBg}`}>
                             <div className={`w-1 h-2 mt-0.5 mx-auto rounded-sm ${isDead ? 'bg-gray-600' : `bg-[${primaryColor}]/70`}`} style={{ backgroundColor: isDead ? undefined : primaryColor, opacity: 0.7 }} />
                         </div>
                     )
@@ -210,7 +210,7 @@ export const SkillerCharacter: React.FC<{
 
                     {/* Eyes */}
                     <div
-                        className={`relative z-[5] mt-1.5 ${side ? 'flex justify-end pr-[1px]' : 'flex justify-center gap-1.5'}`}
+                        className={`relative z-[5] mt-1.5 ${side ? 'flex justify-end pr-[2px]' : 'flex justify-center gap-1.5'}`}
                         style={{ animation: !isDead && variant !== 'arcade' ? 'skillerBlink 4s ease-in-out infinite' : 'none' }}
                     >
                         {isDead ? (
@@ -223,7 +223,7 @@ export const SkillerCharacter: React.FC<{
                                         <div className={`w-1.5 h-2 ${variant === 'arcade' ? 'rounded-none' : 'rounded-sm'}`} style={{ background: eyeColor, boxShadow: `0 0 5px ${glowColor}`, opacity: 1 }} />
                                     </>
                                 ) : (
-                                    <div className={`w-[3px] h-2 ${variant === 'arcade' ? 'rounded-none' : 'rounded-sm'}`} style={{ background: eyeColor, boxShadow: `0 0 5px ${glowColor}`, opacity: 1 }} />
+                                    <div className={`w-1 h-2 ${variant === 'arcade' ? 'rounded-none' : 'rounded-sm'}`} style={{ background: eyeColor, boxShadow: `0 0 5px ${glowColor}`, opacity: 1 }} />
                                 )}
                             </>
                         )}
