@@ -13,6 +13,7 @@ description: SkillZone AI Web project rules & conventions
 
 ## Communication & Workflow
 - **Komunikuj česky**, kód a komentáře v kódu anglicky.
+- **Tón komunikace (Tykání)**: Veškeré texty pro uživatele na webu (včetně chybových hlášek, tlačítek a Coming Soon stránky) musí být psány přátelsky a neformálně (tykání). Např. "Máš registraci?", "Vstup", nikoliv "Máte registraci?", "Vstupte". Přísný zákaz vykání!
 - **Lokální práce** — Nepushuj na GitHub, dokud uživatel neřekne. Pracujeme lokálně.
 - Dev server běží na portu **1336**.
 - **Deploy**: Cloud Run přes GitHub Actions (`deploy.yml`).

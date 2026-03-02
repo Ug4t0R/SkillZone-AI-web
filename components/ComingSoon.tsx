@@ -14,7 +14,8 @@ const BRANCHES = [
         name: 'SkillZone Žižkov — Nonstop',
         address: 'Orebitská 630/4, Praha 3',
         phone: '+420 777 766 113',
-        hours: 'NONSTOP 24/7',
+        hours_cs: 'NONSTOP 24/7',
+        hours_en: 'NONSTOP 24/7',
         emoji: '🔴',
         maps: 'https://maps.app.goo.gl/QXsEJ7R7yR7KM6cZ6',
         wa: 'https://wa.me/420777766113',
@@ -23,7 +24,8 @@ const BRANCHES = [
         name: 'SkillZone Háje',
         address: 'Arkalycká 877/4, Praha 4',
         phone: '+420 777 766 114',
-        hours: '12:00 – 03:00',
+        hours_cs: '12:00 – 00:00 (s hráči do 03:00)',
+        hours_en: '12:00 – 00:00 (w/ players until 03:00)',
         emoji: '🟢',
         maps: 'https://maps.app.goo.gl/eUPW2HhSJxqMDGFq9',
         wa: 'https://wa.me/420777766114',
@@ -32,7 +34,8 @@ const BRANCHES = [
         name: 'SkillZone Stodůlky',
         address: 'Mukařovského 1986/7, Praha 5',
         phone: '+420 777 766 115',
-        hours: '13:00 – 23:00',
+        hours_cs: '13:00 – 21:00 (s hráči do 23:00)',
+        hours_en: '13:00 – 21:00 (w/ players until 23:00)',
         emoji: '🔵',
         maps: 'https://maps.app.goo.gl/B4vN6RwTi3Q7DPXHA',
         wa: 'https://wa.me/420777766115',
@@ -241,18 +244,13 @@ const ComingSoon: React.FC<ComingSoonProps> = ({ targetDate, onUnlock, onPlayAim
         return () => clearInterval(id);
     }, []);
 
-    // Handle VIP Submission
     const handleVipSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         // The code is '1337', which is 'MTMzNw==' in base64
         if (btoa(vipCode) === 'MTMzNw==') {
             setVipSuccess(true);
             setVipError(false);
-            if (onUnlock) {
-                setTimeout(() => {
-                    onUnlock();
-                }, 4000); // Wait 4s to show the cool success message before unlocking
-            }
+            // Wait for user to explicitly click "Continue" button
         } else {
             setVipError(true);
             setVipCode('');
@@ -304,9 +302,9 @@ const ComingSoon: React.FC<ComingSoonProps> = ({ targetDate, onUnlock, onPlayAim
                     <p className="mt-6 text-gray-400 max-w-lg mx-auto leading-relaxed border border-green-500/20 bg-green-900/10 p-4 rounded-xl font-mono text-sm">
                         Mrkni na novej web. Je stále <span className="text-yellow-500">work in progress</span> a obsahuje dummy data, tak to prosím <span className="text-red-500 font-bold">nešiř dál</span>. Užij si VIP preview! 🤫
                     </p>
-                    <div className="mt-8 w-64 h-1 bg-gray-800 rounded-full overflow-hidden">
-                        <div className="h-full bg-green-500 animate-[loadingBar_4s_ease-in-out_forwards]" />
-                    </div>
+                    <button onClick={() => { if (onUnlock) onUnlock(); }} className="mt-8 px-8 py-3 bg-green-600 hover:bg-green-500 text-white font-bold font-mono rounded-xl transition-all shadow-lg shadow-green-500/20 animate-pulse hover:animate-none">
+                        ROZUMÍM, POKRAČUJEME 🚀
+                    </button>
                 </div>
             )}
 
@@ -374,11 +372,11 @@ const ComingSoon: React.FC<ComingSoonProps> = ({ targetDate, onUnlock, onPlayAim
                         <div className="text-center md:text-left flex-1">
                             <h3 className="text-2xl font-orbitron font-bold text-white flex items-center justify-center md:justify-start gap-2 mb-2">
                                 <User className="text-red-500" />
-                                {language === 'cs' ? 'MÁTE U NÁS REGISTRACI?' : 'HAVE AN ACCOUNT?'}
+                                {language === 'cs' ? 'MÁŠ U NÁS REGISTRACI?' : 'HAVE AN ACCOUNT?'}
                             </h3>
                             <p className="text-gray-400 text-sm leading-relaxed max-w-md">
                                 {language === 'cs'
-                                    ? 'Nový web sice ještě ladíme, ale váš osobní profil je stále dostupný. Zkontrolujte si kredity, historii a úroveň!'
+                                    ? 'Nový web sice ještě ladíme, ale tvůj osobní profil je stále dostupný. Zkontroluj si kredity, historii a úroveň přímo v mobilu!'
                                     : 'While we are fine-tuning the new website, your personal profile remains accessible. Check your credits, history, and level!'}
                             </p>
 
@@ -400,14 +398,9 @@ const ComingSoon: React.FC<ComingSoonProps> = ({ targetDate, onUnlock, onPlayAim
                                 <div className="bg-white p-3 rounded-xl shadow-2xl transform transition-transform hover:scale-105 hover:rotate-2">
                                     <QRCode value="https://profil.skillzone.cz" size={120} />
                                 </div>
-                                <a
-                                    href="https://profil.skillzone.cz"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="mt-4 text-xs font-mono text-red-400 hover:text-red-300 transition-colors uppercase tracking-widest hover:underline"
-                                >
-                                    profil.skillzone.cz ↗
-                                </a>
+                                <span className="mt-4 text-[10px] font-mono text-gray-400 uppercase tracking-widest text-center">
+                                    Naskenuj QR kód<br />pro přístup k profilu
+                                </span>
                             </div>
                         )}
                     </div>
@@ -441,7 +434,7 @@ const ComingSoon: React.FC<ComingSoonProps> = ({ targetDate, onUnlock, onPlayAim
                                         💬 WA
                                     </a>
                                 </div>
-                                <div className="text-[9px] text-gray-600 font-mono mt-1.5">🕐 {b.hours}</div>
+                                <div className="text-[9px] text-gray-600 font-mono mt-1.5">🕐 {language === 'cs' ? b.hours_cs : b.hours_en}</div>
                             </div>
                         ))}
                     </div>
@@ -449,7 +442,7 @@ const ComingSoon: React.FC<ComingSoonProps> = ({ targetDate, onUnlock, onPlayAim
                     {(onPlayAim || onPlayReaction) && (
                         <div className="mt-12 text-center w-full">
                             <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest font-mono mb-4 text-center">
-                                {language === 'cs' ? 'Zkraťte si čekání tréninkem' : 'Kill some time training'}
+                                {language === 'cs' ? 'Zkrať si čekání tréninkem' : 'Kill some time training'}
                             </h3>
                             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                                 {onPlayAim && (
@@ -473,12 +466,12 @@ const ComingSoon: React.FC<ComingSoonProps> = ({ targetDate, onUnlock, onPlayAim
                         </h3>
                         <p className="text-gray-400 text-xs md:text-sm font-mono leading-relaxed max-w-lg mx-auto mb-6">
                             {language === 'cs'
-                                ? 'Náš BOSS Ug4t0R naslouchá a zajišťuje kvalitu! Je to jeden z nás, žádnej korporát. Zastihnete ho buď osobně na baru, nebo rovnou napřímo:'
-                                : 'Our BOSS Ug4t0R listens and ensures quality! He is one of us, no corporate guy. Catch him personally at the bar, or contact him directly:'}
+                                ? 'Náš BOSS Ug4t0R naslouchá a zajišťuje kvalitu! Je to jeden z nás, žádnej korporát. Zastihneš ho rovnou napřímo:'
+                                : 'Our BOSS Ug4t0R listens and ensures quality! He is one of us, no corporate guy. Contact him directly:'}
                         </p>
                         <div className="flex flex-wrap items-center justify-center gap-4">
-                            <a href="tel:+420777766113" className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-green-400 hover:text-green-300 font-mono transition-colors text-sm">
-                                📞 {language === 'cs' ? 'Zavolat na Bar / Bossovi' : 'Call Bar / Boss'}
+                            <a href="tel:+420777766112" className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-green-400 hover:text-green-300 font-mono transition-colors text-sm">
+                                📞 {language === 'cs' ? 'Zavolat přímo Bossovi' : 'Call Boss directly'}
                             </a>
                             <a href="https://instagram.com/skillzone.cz" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-pink-400 hover:text-pink-300 font-mono transition-colors text-sm">
                                 📸 INSTAGRAM
@@ -501,9 +494,14 @@ const ComingSoon: React.FC<ComingSoonProps> = ({ targetDate, onUnlock, onPlayAim
                             setShowVipInput(true);
                             setTimeout(() => vipInputRef.current?.focus(), 100);
                         }}
-                        className="w-8 h-8 opacity-0 hover:opacity-10 transition-opacity"
+                        className="group flex flex-col items-center gap-1 mt-4 transition-all opacity-30 hover:opacity-100"
                         aria-label="Secret Access"
-                    />
+                    >
+                        <Lock className="w-4 h-4 text-gray-500 group-hover:text-red-500 transition-colors" />
+                        <span className="text-[8px] font-mono text-gray-600 tracking-[0.3em] group-hover:text-red-400 transition-colors uppercase">
+                            {language === 'cs' ? 'Vstup pro elitu' : 'Entry for the elite'}
+                        </span>
+                    </button>
                 ) : (
                     <form onSubmit={handleVipSubmit} className="flex items-center gap-2 mt-2 animate-in slide-in-from-bottom border border-white/10 p-1 rounded-lg bg-black/50">
                         <Lock className="w-4 h-4 text-gray-500 ml-2" />

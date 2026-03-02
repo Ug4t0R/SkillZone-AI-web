@@ -94,7 +94,7 @@ const App: React.FC = () => {
     window.addEventListener('sz_crisp_changed', sync);
     return () => window.removeEventListener('sz_crisp_changed', sync);
   }, []);
-  const { sections } = useSections();
+  const { sections, loading: sectionsLoading } = useSections();
   const [teamVisible, setTeamVisible] = useState(() => localStorage.getItem('sz_team_visible') !== 'false');
   const [dbOffline, setDbOffline] = useState(false);
   const [comingSoonDate, setComingSoonDate] = useState<string | null>(null);
@@ -230,13 +230,12 @@ const App: React.FC = () => {
     if (user && user.email === AUTHORIZED_EMAIL) {
       setIsAdminLoggedIn(true);
       localStorage.setItem('skillzone_admin', 'true');
-    } else if (user) {
-      // Wrong email — force sign out
-      await signOut();
+    } else {
+      if (user) await signOut(); // Wrong email — force sign out
       setIsAdminLoggedIn(false);
       localStorage.removeItem('skillzone_admin');
+      setIsDevMenuOpen(false); // Close it if it was open via fallback
     }
-    // If no user at all, don't reset — respect localStorage init
   };
 
   const handleDevTrigger = async () => {
@@ -445,7 +444,13 @@ const App: React.FC = () => {
 
   // ─── COMING SOON MODE (toggled via DevMenu or ?comingsoon preview) ───
   const forceComingSoon = new URLSearchParams(window.location.search).has('comingsoon') && !isAdminLoggedIn;
-  if ((sections.comingSoon && !isAdminLoggedIn && !vipUnlocked) || forceComingSoon) {
+  const isComingSoonActive = (sections.comingSoon && !isAdminLoggedIn && !vipUnlocked) || forceComingSoon;
+
+  if (sectionsLoading) {
+    return <div className="min-h-screen bg-black" />; // Prevent flash while loading settings
+  }
+
+  if (isComingSoonActive) {
     return (
       <>
         <ComingSoon
@@ -454,6 +459,16 @@ const App: React.FC = () => {
           onPlayAim={() => setIsAimOpen(true)}
           onPlayReaction={() => setIsReactionOpen(true)}
         />
+        {isAimOpen && (
+          <Suspense fallback={null}>
+            <AimChallenge onClose={() => setIsAimOpen(false)} />
+          </Suspense>
+        )}
+        {isReactionOpen && (
+          <Suspense fallback={null}>
+            <ReactionChallenge onClose={() => setIsReactionOpen(false)} />
+          </Suspense>
+        )}
         {/* Hidden admin access — click bottom-right corner */}
         <button
           onClick={handleDevTrigger}
