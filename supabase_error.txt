@@ -1,0 +1,16 @@
+Initialising login role...
+Connecting to remote database...
+Do you want to push these migrations to the remote database?
+ • 20260227000000_rental_inquiries.sql
+ • 20260228000000_b2b.sql
+ • 20260228000001_rpc.sql
+
+ [Y/n] y
+Applying migration 20260227000000_rental_inquiries.sql...
+NOTICE (42P07): relation "rental_inquiries" already exists, skipping
+Applying migration 20260228000000_b2b.sql...
+NOTICE (42701): column "dic" of relation "rental_inquiries" already exists, skipping
+NOTICE (42701): column "company_address" of relation "rental_inquiries" already exists, skipping
+NOTICE (42701): column "invoice_email" of relation "rental_inquiries" already exists, skipping
+Applying migration 20260228000001_rpc.sql...
+Finished supabase db push.

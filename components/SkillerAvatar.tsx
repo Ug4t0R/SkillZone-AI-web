@@ -139,8 +139,8 @@ const SkillerAvatar: React.FC<SkillerAvatarProps> = ({ onChatOpen, hasUnread = f
     const [posX, setPosX] = useState(50);
     const [targetX, setTargetX] = useState(70);
     const [facingLeft, setFacingLeft] = useState(false);
-    const [isWalking, setIsWalking] = useState(true);
-    const [isPaused, setIsPaused] = useState(false);
+    const [isWalking, setIsWalking] = useState(false);
+    const [isPaused, setIsPaused] = useState(true);
 
     // UI state
     const [bubble, setBubble] = useState<string | null>(null);
@@ -148,6 +148,9 @@ const SkillerAvatar: React.FC<SkillerAvatarProps> = ({ onChatOpen, hasUnread = f
     const [mood, setMood] = useState<string>('CHILL');
     const [visible, setVisible] = useState(true);
     const [ghostVisible, setGhostVisible] = useState(true);
+
+    // Elevator state (desktop) — 'hidden' | 'half' (just eyes peek) | 'full' (fully risen)
+    const [isElevated, setIsElevated] = useState<'hidden' | 'half' | 'full'>('hidden');
 
     // Shoot-down
     const [isShotDown, setIsShotDown] = useState(false);
@@ -176,6 +179,7 @@ const SkillerAvatar: React.FC<SkillerAvatarProps> = ({ onChatOpen, hasUnread = f
     const longPressTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
     const longPressStart = useRef<number>(0);
     const progressInterval = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
+    const elevatorTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
     // ─── INIT ────────────────────────────────────────────
     useEffect(() => {
@@ -196,11 +200,10 @@ const SkillerAvatar: React.FC<SkillerAvatarProps> = ({ onChatOpen, hasUnread = f
             const currentScrollY = window.scrollY;
             const diff = Math.abs(currentScrollY - lastScrollY);
 
-            // If scrolled more than 50px quickly
-            if (diff > 50) {
+            if (diff > 50 && isElevated === 'full') {
                 setIsWalking(false);
                 setIsPaused(true);
-                setFacingLeft(false); // Look at user
+                setFacingLeft(false);
                 setBubble("Kampak scrolluješ? 👀");
 
                 clearTimeout(scrollTimeout);
@@ -214,7 +217,7 @@ const SkillerAvatar: React.FC<SkillerAvatarProps> = ({ onChatOpen, hasUnread = f
 
         window.addEventListener('scroll', handleScroll, { passive: true });
         return () => window.removeEventListener('scroll', handleScroll);
-    }, [visible, isMobile, isShotDown]);
+    }, [visible, isMobile, isShotDown, isElevated]);
 
     useEffect(() => {
         if (!getAnimationsEnabled()) setVisible(false);
@@ -259,9 +262,98 @@ const SkillerAvatar: React.FC<SkillerAvatarProps> = ({ onChatOpen, hasUnread = f
         return () => clearTimeout(t);
     }, [visible, isShotDown]);
 
-    // ─── DESKTOP: WALKING MOVEMENT ───────────────────────
+    // ─── ELEVATOR CYCLE (desktop) ────────────────────────
+    // Cycle: hidden → (half-peek or full rise, random) → hidden → repeat
     useEffect(() => {
         if (!visible || isMobile || isShotDown) return;
+
+        const scheduleElevator = () => {
+            // Hidden phase: wait 20-50s, then rise
+            const hideDelay = 20000 + Math.random() * 30000;
+            elevatorTimer.current = setTimeout(() => {
+                const surfaceX = 15 + Math.random() * 70;
+                setPosX(surfaceX);
+                setTargetX(surfaceX);
+                setIsWalking(false);
+                setIsPaused(true);
+
+                // 30% chance of half-peek, 70% full rise
+                const doHalfPeek = Math.random() < 0.3;
+
+                if (doHalfPeek) {
+                    // Half-peek: just eyes peeking out for 4-8s
+                    setIsElevated('half');
+                    const peekPhrases = ['👀', '...', '🤫', '👁️'];
+                    setBubble(peekPhrases[Math.floor(Math.random() * peekPhrases.length)]);
+                    const peekDuration = 4000 + Math.random() * 4000;
+                    elevatorTimer.current = setTimeout(() => {
+                        setIsElevated('hidden');
+                        setBubble(null);
+                        // Sometimes follow half-peek with full rise
+                        if (Math.random() < 0.5) {
+                            elevatorTimer.current = setTimeout(() => {
+                                setPosX(surfaceX);
+                                setTargetX(surfaceX);
+                                setIsElevated('full');
+                                const arrivalPhrases = ['Tak hele, jsem tu! 😄', 'Neodolal jsem 😏', 'Ok ok, jdu ven 🚀'];
+                                setBubble(arrivalPhrases[Math.floor(Math.random() * arrivalPhrases.length)]);
+                                setTimeout(() => setBubble(null), 3000);
+                                const showDuration = 10000 + Math.random() * 20000;
+                                elevatorTimer.current = setTimeout(() => {
+                                    setIsElevated('hidden');
+                                    setIsWalking(false);
+                                    setIsPaused(true);
+                                    setBubble(null);
+                                    setTimeout(() => scheduleElevator(), 800);
+                                }, showDuration);
+                            }, 2000 + Math.random() * 3000);
+                        } else {
+                            setTimeout(() => scheduleElevator(), 800);
+                        }
+                    }, peekDuration);
+                } else {
+                    // Full rise
+                    setIsElevated('full');
+                    const arrivalPhrases = ['Čau! 👋', 'Skiller tu! 🟢', 'Někdo volal? 😏', 'Yo! 🎮', '🔔 *ding*'];
+                    setBubble(arrivalPhrases[Math.floor(Math.random() * arrivalPhrases.length)]);
+                    setTimeout(() => setBubble(null), 3000);
+                    const showDuration = 10000 + Math.random() * 20000;
+                    elevatorTimer.current = setTimeout(() => {
+                        setIsElevated('hidden');
+                        setIsWalking(false);
+                        setIsPaused(true);
+                        setBubble(null);
+                        setTimeout(() => scheduleElevator(), 800);
+                    }, showDuration);
+                }
+            }, hideDelay);
+        };
+
+        // First appearance: show quickly (3-8s after load)
+        const initialDelay = 3000 + Math.random() * 5000;
+        elevatorTimer.current = setTimeout(() => {
+            const surfaceX = 20 + Math.random() * 60;
+            setPosX(surfaceX);
+            setTargetX(surfaceX);
+            setIsElevated('full');
+            setIsPaused(true);
+
+            const showDuration = 15000 + Math.random() * 15000;
+            elevatorTimer.current = setTimeout(() => {
+                setIsElevated('hidden');
+                setIsWalking(false);
+                setIsPaused(true);
+                setBubble(null);
+                setTimeout(() => scheduleElevator(), 800);
+            }, showDuration);
+        }, initialDelay);
+
+        return () => { if (elevatorTimer.current) clearTimeout(elevatorTimer.current); };
+    }, [visible, isMobile, isShotDown]);
+
+    // ─── DESKTOP: WALKING MOVEMENT (only when fully elevated) ──
+    useEffect(() => {
+        if (!visible || isMobile || isShotDown || isElevated !== 'full') return;
 
         const pickTarget = () => {
             const margin = 5;
@@ -277,26 +369,21 @@ const SkillerAvatar: React.FC<SkillerAvatarProps> = ({ onChatOpen, hasUnread = f
         const cycle = () => {
             if (isPaused) {
                 pickTarget();
-                moveTimer.current = setTimeout(cycle, 15000 + Math.random() * 10000);
+                moveTimer.current = setTimeout(cycle, 8000 + Math.random() * 6000);
             } else {
                 setIsWalking(false);
                 setIsPaused(true);
-                moveTimer.current = setTimeout(cycle, 8000 + Math.random() * 7000);
+                moveTimer.current = setTimeout(cycle, 4000 + Math.random() * 4000);
             }
         };
 
-        moveTimer.current = setTimeout(cycle, 10000 + Math.random() * 8000);
+        moveTimer.current = setTimeout(cycle, 3000 + Math.random() * 3000);
         return () => { if (moveTimer.current) clearTimeout(moveTimer.current); };
-    }, [visible, isMobile, isShotDown, isPaused, posX]);
+    }, [visible, isMobile, isShotDown, isPaused, posX, isElevated]);
 
-    // ─── IDLE ANIMATIONS ────────────────────────────────
+    // ─── IDLE ANIMATIONS (only when elevated) ────────────
     useEffect(() => {
-        if (!visible || isMobile || isShotDown || isWalking || isHovered || isPaused) return; // wait till paused
-        // Wait, isPaused means he stopped walking. So we ONLY do it when isPaused is true.
-    }, [visible, isMobile, isShotDown, isWalking, isHovered, mood, isPaused]);
-
-    useEffect(() => {
-        if (!visible || isMobile || isShotDown || isWalking || isHovered || !isPaused) return;
+        if (!visible || isMobile || isShotDown || isWalking || isHovered || !isPaused || isElevated !== 'full') return;
         let timeout: ReturnType<typeof setTimeout>;
 
         const doAction = () => {
@@ -323,14 +410,14 @@ const SkillerAvatar: React.FC<SkillerAvatarProps> = ({ onChatOpen, hasUnread = f
 
         timeout = setTimeout(doAction, 2000 + Math.random() * 5000);
         return () => clearTimeout(timeout);
-    }, [visible, isMobile, isShotDown, isWalking, isHovered, mood, isPaused]);
+    }, [visible, isMobile, isShotDown, isWalking, isHovered, mood, isPaused, isElevated]);
 
     const posXRef = useRef(posX);
     useEffect(() => { posXRef.current = posX; }, [posX]);
 
     // ─── SMOOTH ANIMATION (desktop) ─────────────────────
     useEffect(() => {
-        if (!visible || isMobile || isShotDown) return;
+        if (!visible || isMobile || isShotDown || isElevated !== 'full') return;
 
         const animate = () => {
             const currentPos = posXRef.current;
@@ -347,7 +434,7 @@ const SkillerAvatar: React.FC<SkillerAvatarProps> = ({ onChatOpen, hasUnread = f
         };
         animRef.current = requestAnimationFrame(animate);
         return () => cancelAnimationFrame(animRef.current);
-    }, [targetX, visible, isMobile, isShotDown]);
+    }, [targetX, visible, isMobile, isShotDown, isElevated]);
 
     // ─── GHOST VISIBILITY (mobile only) ──────────────────
     useEffect(() => {
@@ -383,14 +470,13 @@ const SkillerAvatar: React.FC<SkillerAvatarProps> = ({ onChatOpen, hasUnread = f
         return () => clearTimeout(timeout);
     }, [isShotDown, visible, isMobile]);
 
-    // ─── SPEECH BUBBLES ──────────────────────────────────
+    // ─── SPEECH BUBBLES (only when elevated) ─────────────
     useEffect(() => {
-        if (!visible || isShotDown) return;
+        if (!visible || isShotDown || isElevated === 'hidden') return;
         if (isMobile) return;
 
         const showBubble = () => {
             if (isHovered) return;
-            // 20% news, 15% time-based, 30% weather, 35% idle
             const roll = Math.random();
             let phrases: string[];
             const timePhrases = getTimePhrases();
@@ -406,12 +492,12 @@ const SkillerAvatar: React.FC<SkillerAvatarProps> = ({ onChatOpen, hasUnread = f
             const phrase = phrases[Math.floor(Math.random() * phrases.length)];
             setBubble(phrase);
             setTimeout(() => setBubble(null), 4000);
-            bubbleTimer.current = setTimeout(showBubble, 12000 + Math.random() * 15000);
+            bubbleTimer.current = setTimeout(showBubble, 8000 + Math.random() * 8000);
         };
 
-        bubbleTimer.current = setTimeout(showBubble, 5000 + Math.random() * 5000);
+        bubbleTimer.current = setTimeout(showBubble, 3000 + Math.random() * 3000);
         return () => { if (bubbleTimer.current) clearTimeout(bubbleTimer.current); };
-    }, [visible, isHovered, isShotDown, isMobile, weather]);
+    }, [visible, isHovered, isShotDown, isMobile, weather, isElevated]);
 
     // ─── LONG-PRESS → SHOOT DOWN ─────────────────────────
     const handlePressStart = useCallback(() => {
@@ -447,6 +533,7 @@ const SkillerAvatar: React.FC<SkillerAvatarProps> = ({ onChatOpen, hasUnread = f
                 setShowExplosion(false);
                 setBubble(null);
                 setGhostVisible(false);
+                setIsElevated('hidden');
                 setIsShotDown(true);
                 setIsWalking(false);
             }, 800);
@@ -496,7 +583,6 @@ const SkillerAvatar: React.FC<SkillerAvatarProps> = ({ onChatOpen, hasUnread = f
     const handleMouseLeave = useCallback(() => {
         setIsHovered(false);
         handlePressEnd();
-        // After 1s of leaving, wave back
         hoverLeaveTimeout.current = setTimeout(() => {
             if (!isShotDown) {
                 const phrase = WAVE_BACK_PHRASES[Math.floor(Math.random() * WAVE_BACK_PHRASES.length)];
@@ -561,12 +647,12 @@ const SkillerAvatar: React.FC<SkillerAvatarProps> = ({ onChatOpen, hasUnread = f
                     onClick={handleClick}
                     onTouchStart={handlePressStart}
                     onTouchEnd={handlePressEnd}
-                    className="pointer-events-auto relative"
+                    onMouseLeave={() => setShowExplosion(false)}
+                    className="pointer-events-auto relative cursor-pointer outline-none select-none"
                     title="Chat se Skillerem"
                     aria-label="Open chat with Skiller"
                 >
                     <SkillerCharacter mood={mood} weather={weather} action={action} />
-                    {/* Unread badge */}
                     {hasUnread && (
                         <div className="absolute -top-1 -right-1 w-3 h-3 bg-sz-red rounded-full border border-black animate-pulse z-50" />
                     )}
@@ -595,19 +681,37 @@ const SkillerAvatar: React.FC<SkillerAvatarProps> = ({ onChatOpen, hasUnread = f
         );
     }
 
-    // ─── DESKTOP: WALKING ON LIVEFEED BAR ────────────────
+    // ─── DESKTOP: ELEVATOR FROM STATUS BAR ───────────────
+    // The avatar is clipped by an overflow:hidden container anchored
+    // to the LiveFeed bar. translateY controls the rise/sink animation.
+    // Character height is ~60px. When hidden, translateY pushes it below the clip.
+    const avatarHeight = 70; // px — total character height including bubble space
+
+    // Calculate translateY based on elevator state
+    const getTranslateY = () => {
+        switch (isElevated) {
+            case 'full': return '0px';
+            case 'half': return `${avatarHeight - 18}px`; // only top ~18px visible (eyes+head)
+            case 'hidden': return `${avatarHeight + 30}px`; // +30 guarantees mood emoji is fully hidden
+        }
+    };
+
     return (
-        <div
-            className="fixed z-[90] transition-none"
-            style={{
-                bottom: '32px',
-                left: `${posX}%`,
-                transform: 'translateX(-50%)',
-            }}
-        >
-            {/* Speech Bubble */}
-            {bubble && (!isWalking || isHovered) && (
-                <div className="absolute -top-[72px] left-1/2 -translate-x-1/2 pointer-events-none animate-in fade-in slide-in-from-bottom-2 duration-200 z-50">
+        <>
+            {/* Speech Bubble — OUTSIDE the clip container so it's never cut off */}
+            {bubble && (!isWalking || isHovered || isElevated !== 'full') && (
+                <div
+                    className="fixed z-[91] pointer-events-none animate-in fade-in slide-in-from-bottom-2 duration-200"
+                    style={{
+                        bottom: isElevated === 'full'
+                            ? `${32 + avatarHeight + 8}px`
+                            : isElevated === 'half'
+                                ? `${32 + 22}px`
+                                : `${32 + 4}px`,
+                        left: `${posX}%`,
+                        transform: 'translateX(-50%)',
+                    }}
+                >
                     <div className="bg-black/90 border border-sz-red/40 text-white text-[11px] font-mono px-3 py-1.5 rounded-lg shadow-lg relative max-w-[300px] whitespace-nowrap text-center leading-relaxed">
                         {bubble}
                         <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-black/90 border-r border-b border-sz-red/40 rotate-45" />
@@ -615,56 +719,92 @@ const SkillerAvatar: React.FC<SkillerAvatarProps> = ({ onChatOpen, hasUnread = f
                 </div>
             )}
 
-            {showExplosion && <ExplosionEffect />}
-
-            {/* Long-press progress ring */}
-            {longPressProgress > 0 && longPressProgress < 1 && (
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
-                    <svg className="w-16 h-16" viewBox="0 0 64 64">
-                        <circle cx="32" cy="32" r="28" fill="none" stroke="rgba(227,30,36,0.2)" strokeWidth="3" />
-                        <circle cx="32" cy="32" r="28" fill="none" stroke="#e31e24" strokeWidth="3"
-                            strokeDasharray={`${longPressProgress * 175.9} 175.9`}
-                            strokeLinecap="round"
-                            transform="rotate(-90 32 32)"
-                        />
-                    </svg>
-                </div>
-            )}
-
-            {/* Snow particles */}
-            {weather === 'snow' && <SnowParticles />}
-
-            {/* Unread badge */}
-            {hasUnread && !isHovered && (
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-sz-red rounded-full border border-black animate-pulse z-50" />
-            )}
-
-            {/* Avatar body */}
-            <button
-                onClick={handleClick}
-                onMouseDown={handlePressStart}
-                onMouseUp={handlePressEnd}
-                onMouseLeave={handleMouseLeave}
-                onMouseEnter={handleMouseEnter}
-                onTouchStart={handlePressStart}
-                onTouchEnd={handlePressEnd}
-                className={`pointer-events-auto cursor-pointer transition-transform duration-200 ${isHovered ? 'scale-110' : 'scale-100'} flex flex-col items-center`}
-                title="Chat se Skillerem (drž 1s → sestřel, 2× klik → 🕺)"
-                aria-label="Open chat with Skiller"
+            {/* Elevator shaft — clipping container above the LiveFeed bar */}
+            <div
+                className="fixed z-[90] pointer-events-none"
                 style={{
-                    animation: isWalking && action !== 'dance' ? 'skillerBobble 0.4s ease-in-out infinite' : 'none',
+                    bottom: '32px',
+                    left: `${posX}%`,
+                    transform: 'translateX(-50%)',
+                    height: `${avatarHeight}px`,
+                    width: '80px',
+                    overflow: 'hidden',
                 }}
             >
-                <SkillerCharacter
-                    mood={mood}
-                    weather={weather}
-                    facingLeft={facingLeft}
-                    isWalking={isWalking}
-                    isHovered={isHovered}
-                    action={action}
-                />
-            </button>
-        </div>
+                {/* Inner elevator carriage — slides up/down */}
+                <div
+                    className="absolute bottom-0 left-1/2 pointer-events-auto"
+                    style={{
+                        transform: `translateX(-50%) translateY(${getTranslateY()})`,
+                        transition: 'transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                    }}
+                >
+                    {showExplosion && <ExplosionEffect />}
+
+                    {/* Long-press progress ring */}
+                    {longPressProgress > 0 && longPressProgress < 1 && (
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+                            <svg className="w-16 h-16" viewBox="0 0 64 64">
+                                <circle cx="32" cy="32" r="28" fill="none" stroke="rgba(227,30,36,0.2)" strokeWidth="3" />
+                                <circle cx="32" cy="32" r="28" fill="none" stroke="#e31e24" strokeWidth="3"
+                                    strokeDasharray={`${longPressProgress * 175.9} 175.9`}
+                                    strokeLinecap="round"
+                                    transform="rotate(-90 32 32)"
+                                />
+                            </svg>
+                        </div>
+                    )}
+
+                    {/* Snow particles */}
+                    {weather === 'snow' && <SnowParticles />}
+
+                    {/* Unread badge */}
+                    {hasUnread && !isHovered && (
+                        <div className="absolute -top-1 -right-1 w-3 h-3 bg-sz-red rounded-full border border-black animate-pulse z-50" />
+                    )}
+
+                    {/* Avatar body */}
+                    <button
+                        onClick={handleClick}
+                        onMouseDown={handlePressStart}
+                        onMouseUp={handlePressEnd}
+                        onMouseLeave={handleMouseLeave}
+                        onMouseEnter={handleMouseEnter}
+                        onTouchStart={handlePressStart}
+                        onTouchEnd={handlePressEnd}
+                        className={`pointer-events-auto cursor-pointer transition-transform duration-200 ${isHovered ? 'scale-110' : 'scale-100'} flex flex-col items-center`}
+                        title="Chat se Skillerem (drž 1s → sestřel, 2× klik → 🕺)"
+                        aria-label="Open chat with Skiller"
+                        style={{
+                            animation: isWalking && action !== 'dance' ? 'skillerBobble 0.4s ease-in-out infinite' : 'none',
+                        }}
+                    >
+                        <SkillerCharacter
+                            mood={mood}
+                            weather={weather}
+                            facingLeft={facingLeft}
+                            isWalking={isWalking}
+                            isHovered={isHovered}
+                            action={action}
+                        />
+                    </button>
+                </div>
+            </div>
+
+            {/* Hatch door indicator on the LiveFeed bar */}
+            <div
+                className="fixed z-[89] pointer-events-none"
+                style={{
+                    bottom: '32px',
+                    left: `${posX}%`,
+                    transform: 'translateX(-50%)',
+                    transition: 'left 0.3s ease-out, opacity 0.5s ease',
+                    opacity: isElevated !== 'hidden' ? 1 : 0,
+                }}
+            >
+                <div className="w-10 h-[2px] bg-gradient-to-r from-transparent via-sz-red/40 to-transparent" />
+            </div>
+        </>
     );
 };
 

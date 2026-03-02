@@ -30,6 +30,30 @@
     "screenshots": [],
     "shortcuts": [
         {
+            "name": "⚡ Reaction Challenge",
+            "short_name": "Reaction",
+            "url": "/?game=reaction",
+            "description": "Otestuj své reflexy! Solo, Duel, nebo Party.",
+            "icons": [
+                {
+                    "src": "/icons/icon-192.png",
+                    "sizes": "192x192"
+                }
+            ]
+        },
+        {
+            "name": "🎯 Aim Challenge",
+            "short_name": "Aim",
+            "url": "/?game=aim",
+            "description": "Aim trainer — otestuj přesnost a rychlost!",
+            "icons": [
+                {
+                    "src": "/icons/icon-192.png",
+                    "sizes": "192x192"
+                }
+            ]
+        },
+        {
             "name": "Pobočky",
             "short_name": "Zóny",
             "url": "/?view=locations",

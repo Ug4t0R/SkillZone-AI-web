@@ -17,7 +17,7 @@ import { PROTOCOL_DATA_CS } from '../data/protocol';
 import { LOCATIONS_CS } from '../data/locations';
 import { EVENTS_DATA_CS } from '../data/events';
 import { useAppContext } from '../context/AppContext';
-import { BrainTab, VisualsTab, FeedTab, ChatsTab, HistoryTab, ProtocolTab, LocationsTab, EventsTab, SkillerTab, LogEntry, ChatSession } from './devmenu/index';
+import { BrainTab, VisualsTab, FeedTab, ChatsTab, HistoryTab, ProtocolTab, LocationsTab, EventsTab, SkillerTab, RentalsTab, LogEntry, ChatSession } from './devmenu/index';
 import SeoTab from './devmenu/SeoTab';
 import OwnerProfileTab from './devmenu/OwnerProfileTab';
 import ReviewsTab from './devmenu/ReviewsTab';
@@ -29,13 +29,14 @@ import AnalyticsTab from './devmenu/AnalyticsTab';
 import ContentTab from './devmenu/ContentTab';
 import SectionsTab from './devmenu/SectionsTab';
 import PressTab from './devmenu/PressTab';
+import WhatsAppTab from './devmenu/WhatsAppTab';
 
 interface DevMenuProps {
     isOpen: boolean;
     onClose: () => void;
 }
 
-type TabId = 'chats' | 'feed' | 'story' | 'protocol' | 'locations' | 'events' | 'brain' | 'skiller' | 'visuals' | 'seo' | 'owner' | 'reviews' | 'services' | 'whyus' | 'skillcheck' | 'gallery' | 'analytics' | 'content' | 'sections' | 'press';
+type TabId = 'chats' | 'feed' | 'story' | 'protocol' | 'locations' | 'rentals' | 'events' | 'brain' | 'skiller' | 'visuals' | 'seo' | 'owner' | 'reviews' | 'services' | 'whyus' | 'skillcheck' | 'gallery' | 'analytics' | 'content' | 'sections' | 'press' | 'whatsapp';
 
 // ─── GROUPED SIDEBAR CONFIG ──────────────────────────────────────────
 
@@ -62,6 +63,7 @@ const TAB_GROUPS: TabGroup[] = [
             { id: 'skiller', label: 'Skiller', icon: MessageCircle, description: 'Local Chatbot Memory' },
             { id: 'chats', label: 'Sessions', icon: MessageCircle, description: 'Chat conversation history' },
             { id: 'analytics', label: 'Analytics', icon: BarChart3, description: 'Live stats & visitors' },
+            { id: 'whatsapp', label: 'WhatsApp', icon: MessageSquare, description: 'WhatsApp inbox & messages' },
         ],
     },
     {
@@ -80,6 +82,7 @@ const TAB_GROUPS: TabGroup[] = [
         emoji: '🌐',
         items: [
             { id: 'locations', label: 'Zones', icon: MapPin, description: 'Branch locations' },
+            { id: 'rentals', label: 'Rentals', icon: MapPin, description: 'Private rental inquiries' },
             { id: 'events', label: 'WarRoom', icon: Calendar, description: 'Events & tournaments' },
             { id: 'protocol', label: 'Rules', icon: Shield, description: 'Server protocol rules' },
             { id: 'story', label: 'History', icon: History, description: 'Story & timeline' },
@@ -259,6 +262,8 @@ const DevMenu: React.FC<DevMenuProps> = ({ isOpen, onClose }) => {
                 return <ProtocolTab addLog={addLog} />;
             case 'locations':
                 return <LocationsTab addLog={addLog} />;
+            case 'rentals':
+                return <RentalsTab addLog={addLog} />;
             case 'events':
                 return <EventsTab addLog={addLog} />;
             case 'owner':
@@ -281,6 +286,8 @@ const DevMenu: React.FC<DevMenuProps> = ({ isOpen, onClose }) => {
                 return <SectionsTab addLog={addLog} />;
             case 'press':
                 return <PressTab addLog={addLog} />;
+            case 'whatsapp':
+                return <WhatsAppTab addLog={addLog} />;
             default:
                 return null;
         }

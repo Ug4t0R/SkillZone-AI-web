@@ -30,6 +30,9 @@ const SkillerAvatar = React.lazy(() => import('./components/SkillerAvatar'));
 const CookieBanner = React.lazy(() => import('./components/CookieBanner'));
 const TeamSection = React.lazy(() => import('./components/TeamSection'));
 const AllLocationsMap = React.lazy(() => import('./components/AllLocationsMap'));
+const LocationDetail = React.lazy(() => import('./components/locations/LocationDetail'));
+const RentalWizard = React.lazy(() => import('./components/rentals/RentalWizard'));
+const ReservationStatus = React.lazy(() => import('./components/rentals/ReservationStatus'));
 import SkeletonLoader from './components/SkeletonLoader';
 import { useAppContext } from './context/AppContext';
 import { useSections } from './services/sectionConfig';
@@ -41,6 +44,7 @@ import { initAnalytics, trackView } from './services/analytics';
 import { getSetting, checkSupabaseHealth, onHealthChange } from './services/webDataService';
 import MaintenanceMode from './components/MaintenanceMode';
 import ComingSoon from './components/ComingSoon';
+import { LOCATIONS_CS } from './data/locations';
 
 // Lazy load heavy components for better initial load performance
 const DevMenu = React.lazy(() => import('./components/DevMenu'));
@@ -49,6 +53,7 @@ const VoucherRedeemPage = React.lazy(() => import('./components/VoucherRedeemPag
 const ChatAssistant = React.lazy(() => import('./components/ChatAssistant'));
 const SkillCheck = React.lazy(() => import('./components/SkillCheck'));
 const AimChallenge = React.lazy(() => import('./components/AimChallenge'));
+const ReactionChallenge = React.lazy(() => import('./components/ReactionChallenge'));
 
 // SEO Stealth Promo Landing Pages
 const ArenaPromo = React.lazy(() => import('./components/seo/ArenaPromo'));
@@ -65,8 +70,23 @@ const App: React.FC = () => {
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(() => localStorage.getItem('skillzone_admin') === 'true');
   const [isQuizOpen, setIsQuizOpen] = useState(false);
   const [isAimOpen, setIsAimOpen] = useState(false);
+  const [isReactionOpen, setIsReactionOpen] = useState(false);
+  const [vipUnlocked, setVipUnlocked] = useState(false);
   const { isBrainrot, setBrainrot, isCorporate, setCorporate, language } = useAppContext();
   const [isCrispEnabled, setIsCrispEnabled] = useState(() => localStorage.getItem('sz_crisp_enabled') === 'true');
+
+  // PWA shortcut: auto-open game from ?game= URL param
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const game = params.get('game');
+    if (game === 'reaction') {
+      setIsReactionOpen(true);
+      window.history.replaceState({}, '', '/');
+    } else if (game === 'aim') {
+      setIsAimOpen(true);
+      window.history.replaceState({}, '', '/');
+    }
+  }, []);
 
   // Sync Crisp state when DevMenu toggles it
   useEffect(() => {
@@ -233,17 +253,104 @@ const App: React.FC = () => {
       case 'booking':
         return <BookingSelection onChangeView={setCurrentView} />;
       case 'locations':
-        return <Locations />;
+        return <Locations onChangeView={setCurrentView} />;
       case 'pricing':
         return <div className="pt-20"><Pricing /></div>;
       case 'history':
         return <div className="pt-20"><HistorySection /></div>;
       case 'services':
         return <div className="pt-20"><Services /><CyberSeparator /><Reviews /></div>;
+      case 'rentals':
+        return (
+          <Suspense fallback={<SkeletonLoader />}>
+            <RentalWizard onChangeView={setCurrentView} />
+          </Suspense>
+        );
+      case 'reservation-status':
+        return (
+          <Suspense fallback={<SkeletonLoader />}>
+            <ReservationStatus onChangeView={setCurrentView} />
+          </Suspense>
+        );
       case 'gallery':
         return <div className="pt-20"><Gallery /></div>;
       case 'map':
         return <div className="pt-20 min-h-screen"><AllLocationsMap /></div>;
+
+      // BRANCHES
+      case 'branch_zizkov':
+        return (
+          <Suspense fallback={<SkeletonLoader />}>
+            <LocationDetail
+              onChangeView={setCurrentView}
+              data={{
+                id: 'zizkov',
+                title: 'Žižkov',
+                description: 'Legendární doupě v Orebitské. Nejstarší a stále nejvytíženější klub e-sportovní scény.',
+                subtitle: 'NONSTOP HERNA PRAHA 3',
+                heroImage: LOCATIONS_CS.find(l => l.id === 'zizkov')?.imgUrl || '',
+                address: 'Orebitská 630/4, 130 00 Praha 3',
+                openHours: 'NONSTOP 24/7',
+                specs: ['RTX 4070 Ti', '240Hz Monitory', 'Lounge Bar'],
+              }}
+            />
+          </Suspense>
+        );
+      case 'branch_haje':
+        return (
+          <Suspense fallback={<SkeletonLoader />}>
+            <LocationDetail
+              onChangeView={setCurrentView}
+              data={{
+                id: 'haje',
+                title: 'Háje',
+                description: 'Rozlehlá moderní herna blízko metra Háje s oddělenou VIP místností.',
+                subtitle: 'HERNÍ KLUB PRAHA 4',
+                heroImage: LOCATIONS_CS.find(l => l.id === 'haje')?.imgUrl || '',
+                address: 'Arkalycká 877/4, 149 00 Praha 4',
+                openHours: '12:00 – 03:00',
+                specs: ['Privátní místnost', 'Závodní simulátor', 'PlayStation zóna'],
+              }}
+            />
+          </Suspense>
+        );
+      case 'branch_stodulky':
+        return (
+          <Suspense fallback={<SkeletonLoader />}>
+            <LocationDetail
+              onChangeView={setCurrentView}
+              data={{
+                id: 'stodulky',
+                title: 'Stodůlky',
+                description: 'Budoucí Mecca všech hráčů na Praze 5. Připravujeme zcela nový koncept.',
+                subtitle: 'PŘIPRAVUJEME',
+                heroImage: LOCATIONS_CS.find(l => l.id === 'stodulky')?.imgUrl || '',
+                address: 'Mukařovského 1986/7, 155 00 Praha 5',
+                openHours: 'Připravujeme na 2026',
+                specs: ['Nejnovější HW architektura', 'Gastro zázemí', 'Cybersport zóna'],
+              }}
+            />
+          </Suspense>
+        );
+      case 'branch_bootcamp':
+        return (
+          <Suspense fallback={<SkeletonLoader />}>
+            <LocationDetail
+              onChangeView={setCurrentView}
+              data={{
+                id: 'bootcamp',
+                title: 'Bootcamp',
+                description: 'Plně soukromá pobočka pro teambuildingy a pětkové týmy.',
+                subtitle: 'SOUKROMÝ PRONÁJEM',
+                heroImage: LOCATIONS_CS.find(l => l.id === 'bootcamp')?.imgUrl || '',
+                address: 'Blahoslavova 2, 130 00 Praha 3',
+                openHours: 'Dle rezervace',
+                specs: ['10x RTX PC', 'Kuchyňka + Koupelna', 'Spaní pro 6 osob'],
+              }}
+            />
+          </Suspense>
+        );
+
       case 'gift':
         return (
           <Suspense fallback={<SkeletonLoader />}>
@@ -338,10 +445,15 @@ const App: React.FC = () => {
 
   // ─── COMING SOON MODE (toggled via DevMenu or ?comingsoon preview) ───
   const forceComingSoon = new URLSearchParams(window.location.search).has('comingsoon') && !isAdminLoggedIn;
-  if ((sections.comingSoon && !isAdminLoggedIn) || forceComingSoon) {
+  if ((sections.comingSoon && !isAdminLoggedIn && !vipUnlocked) || forceComingSoon) {
     return (
       <>
-        <ComingSoon targetDate={comingSoonDate} />
+        <ComingSoon
+          targetDate={comingSoonDate}
+          onUnlock={() => setVipUnlocked(true)}
+          onPlayAim={() => setIsAimOpen(true)}
+          onPlayReaction={() => setIsReactionOpen(true)}
+        />
         {/* Hidden admin access — click bottom-right corner */}
         <button
           onClick={handleDevTrigger}
@@ -428,18 +540,39 @@ const App: React.FC = () => {
           </Suspense>
         )}
 
+        {isReactionOpen && (
+          <Suspense fallback={null}>
+            <ReactionChallenge onClose={() => setIsReactionOpen(false)} />
+          </Suspense>
+        )}
+
         {/* Floating Aim Challenge trigger */}
-        {currentView === 'home' && !isAimOpen && !isQuizOpen && !isDevMenuOpen && sections.aimchallenge && (
-          <button
-            onClick={() => setIsAimOpen(true)}
-            className="fixed bottom-16 left-6 z-40 group hidden md:block"
-            title="Aim Challenge"
-          >
-            <div className="bg-zinc-900/90 backdrop-blur-sm border border-sz-red/30 hover:border-sz-red text-white px-4 py-3 rounded-xl shadow-lg hover:shadow-sz-red/20 transition-all hover:scale-105 active:scale-95 flex items-center gap-2">
-              <span className="text-lg">🎯</span>
-              <span className="font-orbitron text-xs font-bold uppercase tracking-wider text-sz-red group-hover:text-white transition-colors">Aim Challenge</span>
-            </div>
-          </button>
+        {/* Floating game triggers */}
+        {currentView === 'home' && !isAimOpen && !isReactionOpen && !isQuizOpen && !isDevMenuOpen && (
+          <div className="fixed bottom-16 left-6 z-40 flex flex-col gap-2">
+            {sections.aimchallenge && (
+              <button
+                onClick={() => setIsAimOpen(true)}
+                className="group hidden md:block"
+                title="Aim Challenge"
+              >
+                <div className="bg-zinc-900/90 backdrop-blur-sm border border-sz-red/30 hover:border-sz-red text-white px-4 py-3 rounded-xl shadow-lg hover:shadow-sz-red/20 transition-all hover:scale-105 active:scale-95 flex items-center gap-2">
+                  <span className="text-lg">🎯</span>
+                  <span className="font-orbitron text-xs font-bold uppercase tracking-wider text-sz-red group-hover:text-white transition-colors">Aim Challenge</span>
+                </div>
+              </button>
+            )}
+            <button
+              onClick={() => setIsReactionOpen(true)}
+              className="group"
+              title="Reaction Challenge"
+            >
+              <div className="bg-zinc-900/90 backdrop-blur-sm border border-yellow-500/30 hover:border-yellow-500 text-white px-4 py-3 rounded-xl shadow-lg hover:shadow-yellow-500/20 transition-all hover:scale-105 active:scale-95 flex items-center gap-2">
+                <span className="text-lg">⚡</span>
+                <span className="font-orbitron text-xs font-bold uppercase tracking-wider text-yellow-400 group-hover:text-white transition-colors">Reaction</span>
+              </div>
+            </button>
+          </div>
         )}
       </div>
 

@@ -18,6 +18,8 @@ export { default as SectionsTab } from './SectionsTab';
 export { default as GalleryTab } from './GalleryTab';
 export { default as SkillerTab } from './SkillerTab';
 export { default as PressTab } from './PressTab';
+export { default as RentalsTab } from './RentalsTab';
+export { default as WhatsAppTab } from './WhatsAppTab';
 
 // Export type interfaces that might be needed across tabs
 export * from './types';

@@ -1,0 +1,11 @@
+autodetect: true
+createTime: '2026-02-27T18:43:05.195055143Z'
+github:
+  name: SkillZone-AI-web
+  owner: Ug4t0R
+  push:
+    branch: ^master$
+id: ebba2e12-830b-4f7d-a064-3d5a17686cba
+name: skillzone-auto-deploy
+resourceName: projects/gen-lang-client-0307617452/locations/global/triggers/ebba2e12-830b-4f7d-a064-3d5a17686cba
+serviceAccount: projects/gen-lang-client-0307617452/serviceAccounts/847266866094-compute@developer.gserviceaccount.com

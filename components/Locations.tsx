@@ -8,8 +8,14 @@ import InteractiveMap from './InteractiveMap';
 import TravelTimeWidget from './TravelTimeWidget';
 import { useAppContext } from '../context/AppContext';
 import { getMergedLocations } from '../utils/devTools';
+import { pushRoute } from '../services/routeConfig';
+import { AppView } from '../types';
 
-const Locations: React.FC = () => {
+interface LocationsProps {
+    onChangeView?: (view: AppView) => void;
+}
+
+const Locations: React.FC<LocationsProps> = ({ onChangeView }) => {
     const [reveal, setReveal] = useState(false);
     const [mapView, setMapView] = useState<'tactical' | 'real'>('tactical');
     const [locationsData, setLocationsData] = useState<GamingLocation[]>([]);
@@ -123,12 +129,30 @@ const Locations: React.FC = () => {
                                         {loc.specs.map((spec, i) => (<div key={i} className="flex items-center gap-2 text-xs font-mono text-gray-700 dark:text-gray-400 uppercase"><span className="text-sz-red text-lg leading-none">•</span>{spec}</div>))}
                                     </div>
                                     <TravelTimeWidget location={loc} />
-                                    <div className="border-t border-gray-200 dark:border-white/5 pt-6 flex justify-between items-end">
-                                        <div className="flex flex-col gap-1">
-                                            <div className="flex items-center gap-3 text-gray-900 dark:text-white"><Clock className="w-4 h-4 text-sz-red" /><span className="font-bold tracking-wide text-sm">{loc.openHours}</span></div>
-                                            <div className="flex items-center gap-3 text-gray-600 dark:text-gray-400 font-mono text-xs"><Phone className="w-4 h-4 text-sz-red" />{loc.phone}</div>
+                                    <div className="border-t border-gray-200 dark:border-white/5 pt-6 flex flex-col gap-4">
+                                        <div className="flex justify-between items-end">
+                                            <div className="flex flex-col gap-1">
+                                                <div className="flex items-center gap-3 text-gray-900 dark:text-white"><Clock className="w-4 h-4 text-sz-red" /><span className="font-bold tracking-wide text-sm">{loc.openHours}</span></div>
+                                                <div className="flex items-center gap-3 text-gray-600 dark:text-gray-400 font-mono text-xs"><Phone className="w-4 h-4 text-sz-red" />{loc.phone}</div>
+                                            </div>
+                                            <a href={loc.mapLink} target="_blank" className="bg-zinc-800 hover:bg-sz-red text-white p-3 rounded-full transition-all" title="Navigovat"><Navigation className="w-5 h-5" /></a>
                                         </div>
-                                        <a href={loc.mapLink} target="_blank" className="bg-zinc-800 hover:bg-sz-red text-white p-3 rounded-full transition-all"><Navigation className="w-5 h-5" /></a>
+                                        <button
+                                            onClick={() => {
+                                                const targetView = `branch_${loc.id}` as AppView;
+                                                if (onChangeView) {
+                                                    onChangeView(targetView);
+                                                } else {
+                                                    // Fallback routing if used on homepage without props
+                                                    pushRoute(targetView);
+                                                    window.dispatchEvent(new Event('popstate'));
+                                                }
+                                                window.scrollTo(0, 0);
+                                            }}
+                                            className="w-full mt-2 bg-transparent text-gray-700 dark:text-gray-300 border border-black/10 dark:border-white/10 p-3 text-center uppercase font-orbitron text-xs font-bold hover:bg-sz-red hover:text-white hover:border-sz-red transition-colors"
+                                        >
+                                            {language === 'cs' ? 'Detail Pobočky' : 'Branch Details'}
+                                        </button>
                                     </div>
                                 </div>
                             </div>

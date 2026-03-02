@@ -26,9 +26,37 @@ const ROUTES: RouteEntry[] = [
     },
     {
         view: 'locations',
-        canonical: '/pobocky',
-        aliases: ['/locations', '/branches'],
+        canonical: '/provozovny',
+        aliases: ['/pobocky', '/locations', '/branches'],
         titleKey: 'nav_locations',
+    },
+    {
+        view: 'branch_zizkov',
+        canonical: '/provozovny/zizkov',
+        aliases: ['/zizkov'],
+        titleKey: 'nav_locations',
+        hidden: true,
+    },
+    {
+        view: 'branch_haje',
+        canonical: '/provozovny/haje',
+        aliases: ['/haje'],
+        titleKey: 'nav_locations',
+        hidden: true,
+    },
+    {
+        view: 'branch_stodulky',
+        canonical: '/provozovny/stodulky',
+        aliases: ['/stodulky'],
+        titleKey: 'nav_locations',
+        hidden: true,
+    },
+    {
+        view: 'branch_bootcamp',
+        canonical: '/provozovny/bootcamp',
+        aliases: ['/bootcamp'],
+        titleKey: 'nav_locations',
+        hidden: true,
     },
     {
         view: 'pricing',
@@ -53,6 +81,13 @@ const ROUTES: RouteEntry[] = [
         canonical: '/rezervace',
         aliases: ['/booking'],
         titleKey: 'nav_booking',
+    },
+    {
+        view: 'rentals',
+        canonical: '/pronajem',
+        aliases: ['/rentals', '/soukromy-pronajem'],
+        titleKey: 'nav_services', // fallback to something
+        hidden: true,             // Will be accessed via locations page primarily
     },
     {
         view: 'map',

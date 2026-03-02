@@ -226,5 +226,7 @@ export const TABLES = {
     OWNER_PROFILE: 'web_owner_profile',
     SITEMAP: 'web_sitemap',
     USER_PROFILES: 'web_user_profiles',
+    WHATSAPP_CONVERSATIONS: 'web_whatsapp_conversations',
+    WHATSAPP_MESSAGES: 'web_whatsapp_messages',
 } as const;
 

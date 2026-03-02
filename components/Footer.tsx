@@ -11,8 +11,19 @@ interface FooterProps {
 }
 
 const Footer: React.FC<FooterProps> = ({ sections, onNavigate }) => {
-    const { t } = useAppContext();
+    const { t, setBrainrot } = useAppContext();
     const [logoError, setLogoError] = useState(false);
+    const [versionClicks, setVersionClicks] = useState(0);
+
+    const handleVersionClick = () => {
+        const newCount = versionClicks + 1;
+        setVersionClicks(newCount);
+        if (newCount === 5) {
+            if (setBrainrot) setBrainrot(true);
+            window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll up to see the brainrot
+            setVersionClicks(0);
+        }
+    };
 
     const handleNav = (view: AppView) => {
         onNavigate?.(view);
@@ -76,6 +87,11 @@ const Footer: React.FC<FooterProps> = ({ sections, onNavigate }) => {
                                 <li><button onClick={() => handleNav('history')} className="hover:text-sz-red transition-colors">{arrow} {t('nav_story')}</button></li>
                             )}
                             <li>
+                                <button onClick={() => handleNav('reservation-status')} className="hover:text-sz-red transition-colors text-left flex items-center gap-1 group">
+                                    <span className="text-sz-red opacity-0 group-hover:opacity-100 transition-opacity">►</span> Stav mé rezervace
+                                </button>
+                            </li>
+                            <li>
                                 <button
                                     onClick={() => window.dispatchEvent(new CustomEvent('skillcheck:open'))}
                                     className="hover:text-sz-red transition-colors text-left flex items-center gap-1 group"
@@ -105,8 +121,20 @@ const Footer: React.FC<FooterProps> = ({ sections, onNavigate }) => {
                     </div>
                 </div>
 
-                <div className="border-t border-white/5 pt-8 text-center text-gray-600 text-xs font-mono">
+                <div className="border-t border-white/5 pt-8 flex flex-col items-center justify-center text-gray-600 text-xs font-mono relative">
                     <p>&copy; {new Date().getFullYear()} SkillZone.cz. {t('footer_rights')}</p>
+                    <button
+                        onClick={handleVersionClick}
+                        className="mt-2 text-gray-700 hover:text-sz-red transition-colors text-[11px] cursor-pointer"
+                        title="SkillZone Build Version"
+                    >
+                        v26.02.27
+                    </button>
+                    {versionClicks > 0 && versionClicks < 5 && (
+                        <div className="absolute -bottom-4 text-[9px] text-sz-red animate-pulse">
+                            {5 - versionClicks}
+                        </div>
+                    )}
                 </div>
             </div>
         </footer>

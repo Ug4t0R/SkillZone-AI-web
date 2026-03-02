@@ -245,57 +245,7 @@ const AimResults: React.FC<AimResultsProps> = ({
                 </button>
             </div>
 
-            {/* Leaderboard modal */}
-            {showLeaderboard && (
-                <div className="fixed inset-0 z-[10000] bg-black/80 flex items-center justify-center p-4">
-                    <div className="bg-gray-900 border border-white/10 rounded-xl max-w-lg w-full max-h-[80vh] overflow-hidden flex flex-col">
-                        <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
-                            <h2 className="text-white font-bold">🏆 {cs ? 'Žebříček' : 'Leaderboard'}</h2>
-                            <button onClick={() => onSetShowLeaderboard(false)}
-                                className="text-white/40 hover:text-white"><X className="w-5 h-5" /></button>
-                        </div>
 
-                        {/* Tabs */}
-                        <div className="flex border-b border-white/10">
-                            {(['mouse', 'touch'] as InputMode[]).map(mode => (
-                                <button key={mode}
-                                    onClick={() => onSetLeaderboardTab(mode)}
-                                    className={`flex-1 py-2 text-sm font-mono flex items-center justify-center gap-1 transition-colors
-                                            ${leaderboardTab === mode ? 'text-white border-b-2 border-red-500' : 'text-white/30 hover:text-white/60'}`}>
-                                    {mode === 'mouse' ? <><Monitor className="w-3 h-3" /> Desktop</> : <><Smartphone className="w-3 h-3" /> Touch</>}
-                                </button>
-                            ))}
-                        </div>
-
-                        {/* Entries */}
-                        <div className="flex-1 overflow-y-auto p-3 space-y-1">
-                            {leaderboard.length === 0 ? (
-                                <div className="text-center text-white/20 py-8 text-sm font-mono">
-                                    {cs ? 'Žádné záznamy' : 'No entries yet'}
-                                </div>
-                            ) : leaderboard.map((e, i) => (
-                                <div key={e.id || i}
-                                    className={`flex items-center gap-3 px-3 py-2 rounded-lg ${i < 3 ? 'bg-white/5' : ''}`}>
-                                    <span className="text-lg w-8 text-center">
-                                        {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : <span className="text-white/20 text-sm">{i + 1}</span>}
-                                    </span>
-                                    <div className="flex-1 min-w-0">
-                                        <div className="text-white text-sm font-semibold truncate">{e.player_name}</div>
-                                        <div className="text-white/20 text-xs font-mono">
-                                            {e.accuracy}% · {e.avg_reaction}ms · {e.difficulty || '?'}
-                                            {e.challenge_id && <span className="text-amber-400 ml-1">🏆</span>}
-                                        </div>
-                                    </div>
-                                    <div className="text-right">
-                                        <div className="text-white font-bold text-sm font-mono">{e.score}</div>
-                                        <div className="text-white/15 text-[10px] font-mono">{e.resolution || ''}</div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 };

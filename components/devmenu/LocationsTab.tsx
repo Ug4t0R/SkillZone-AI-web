@@ -11,7 +11,7 @@ interface LocationsTabProps {
 const EMPTY: GamingLocation = {
     id: '', name: '', type: LocationType.PUBLIC, address: '', description: '',
     specs: [], imgUrl: '', phone: '', mapLink: '', openHours: '', openYear: '',
-    coordinates: { lat: 0, lng: 0 }
+    coordinates: { lat: 0, lng: 0 }, floorPlanUrl: ''
 };
 
 const LocationsTab: React.FC<LocationsTabProps> = ({ addLog }) => {
@@ -66,11 +66,12 @@ const LocationsTab: React.FC<LocationsTabProps> = ({ addLog }) => {
                 <input value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} placeholder="Phone" className="bg-black/50 border border-white/10 rounded px-3 py-2 text-sm text-white font-mono focus:border-sz-red outline-none" />
             </div>
             <textarea value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} placeholder="Description" rows={2} className="w-full bg-black/50 border border-white/10 rounded px-3 py-2 text-sm text-white font-mono focus:border-sz-red outline-none resize-none" />
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
                 <input value={form.openHours} onChange={e => setForm({ ...form, openHours: e.target.value })} placeholder="Open Hours" className="bg-black/50 border border-white/10 rounded px-3 py-2 text-sm text-white font-mono focus:border-sz-red outline-none" />
                 <input value={form.openYear} onChange={e => setForm({ ...form, openYear: e.target.value })} placeholder="Open Year" className="bg-black/50 border border-white/10 rounded px-3 py-2 text-sm text-white font-mono focus:border-sz-red outline-none" />
                 <input value={form.imgUrl} onChange={e => setForm({ ...form, imgUrl: e.target.value })} placeholder="Image URL" className="bg-black/50 border border-white/10 rounded px-3 py-2 text-sm text-white font-mono focus:border-sz-red outline-none" />
-                <input value={form.mapLink} onChange={e => setForm({ ...form, mapLink: e.target.value })} placeholder="Map Link" className="bg-black/50 border border-white/10 rounded px-3 py-2 text-sm text-white font-mono focus:border-sz-red outline-none" />
+                <input value={form.mapLink} onChange={e => setForm({ ...form, mapLink: e.target.value })} placeholder="Map" className="bg-black/50 border border-white/10 rounded px-3 py-2 text-sm text-white font-mono focus:border-sz-red outline-none" />
+                <input value={form.floorPlanUrl || ''} onChange={e => setForm({ ...form, floorPlanUrl: e.target.value })} placeholder="Floor Plan URL (JPG/PNG)" className="bg-black/50 border border-white/10 rounded px-3 py-2 text-sm text-white font-mono focus:border-sz-red outline-none" />
             </div>
             <div>
                 <label className="text-[10px] text-gray-500 font-mono uppercase mb-1 block">Specs (one per line)</label>

@@ -4,6 +4,8 @@
  * branch contacts with Google Maps + WhatsApp links, and particle effects.
  */
 import React, { useEffect, useState, useRef, useCallback } from 'react';
+import { Globe, Lock, Unlock, User, Smartphone } from 'lucide-react';
+import QRCode from 'react-qr-code';
 import { useAppContext } from '../context/AppContext';
 
 // ─── Branch Contacts (same as MaintenanceMode) ──────────────────────
@@ -180,14 +182,33 @@ const TimeSep: React.FC = () => (
 // ─── Main Component ──────────────────────────────────────────────────
 interface ComingSoonProps {
     targetDate: string | null;
+    onUnlock?: () => void;
+    onPlayAim?: () => void;
+    onPlayReaction?: () => void;
 }
 
-const ComingSoon: React.FC<ComingSoonProps> = ({ targetDate }) => {
-    const { t } = useAppContext();
+const ComingSoon: React.FC<ComingSoonProps> = ({ targetDate, onUnlock, onPlayAim, onPlayReaction }) => {
+    const { t, language, setLanguage, allLanguages } = useAppContext();
     const timeLeft = useCountdown(targetDate);
     const hasCountdown = targetDate && timeLeft.total > 0;
     const [pulse, setPulse] = useState(false);
     const [prankType, setPrankType] = useState<'branch' | 'competitor' | 'tomas' | null>(null);
+
+    // VIP State
+    const [vipCode, setVipCode] = useState('');
+    const [vipError, setVipError] = useState(false);
+    const [vipSuccess, setVipSuccess] = useState(false);
+    const [showVipInput, setShowVipInput] = useState(false);
+    const vipInputRef = useRef<HTMLInputElement>(null);
+
+    // Device detection
+    const [isMobile, setIsMobile] = useState(false);
+    useEffect(() => {
+        setIsMobile(window.innerWidth < 768);
+        const handleResize = () => setIsMobile(window.innerWidth < 768);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     useEffect(() => {
         // Allow forced prank via URL for testing
@@ -220,6 +241,25 @@ const ComingSoon: React.FC<ComingSoonProps> = ({ targetDate }) => {
         return () => clearInterval(id);
     }, []);
 
+    // Handle VIP Submission
+    const handleVipSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        // The code is '1337', which is 'MTMzNw==' in base64
+        if (btoa(vipCode) === 'MTMzNw==') {
+            setVipSuccess(true);
+            setVipError(false);
+            if (onUnlock) {
+                setTimeout(() => {
+                    onUnlock();
+                }, 4000); // Wait 4s to show the cool success message before unlocking
+            }
+        } else {
+            setVipError(true);
+            setVipCode('');
+            setTimeout(() => setVipError(false), 1000);
+        }
+    };
+
     return (
         <div className="min-h-screen bg-zinc-950 text-white flex flex-col overflow-hidden relative">
             <ParticleCanvas />
@@ -229,11 +269,46 @@ const ComingSoon: React.FC<ComingSoonProps> = ({ targetDate }) => {
                 <div className="flex items-center gap-3">
                     <img src="/SkillZone_logo_red.png" alt="SkillZone" className="h-7 md:h-9 w-auto" />
                 </div>
-                <div className="flex items-center gap-2">
+
+                {/* Language Switcher */}
+                <div className="flex items-center gap-2 bg-black/40 border border-white/10 rounded-full px-2 py-1">
+                    <Globe className="w-4 h-4 text-white/50" />
+                    {allLanguages.map((lang) => (
+                        <button
+                            key={lang}
+                            onClick={() => setLanguage(lang)}
+                            className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold font-mono transition-all uppercase
+                                ${language === lang ? 'bg-red-600 text-white border border-red-500 shadow-lg shadow-red-500/20 scale-110' : 'text-gray-500 hover:text-white border border-transparent hover:bg-white/5'}`}
+                        >
+                            {lang}
+                        </button>
+                    ))}
+                </div>
+
+                <div className="hidden md:flex items-center gap-2">
                     <div className={`w-2 h-2 rounded-full transition-all duration-200 ${pulse ? 'bg-yellow-400 scale-150' : 'bg-yellow-500'}`} />
                     <span className="text-[10px] md:text-xs font-mono text-yellow-500 uppercase">WORK IN PROGRESS</span>
                 </div>
             </header>
+
+            {/* VIP Success Overlay Animation */}
+            {vipSuccess && (
+                <div className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center animate-in fade-in duration-500">
+                    <Unlock className="w-24 h-24 text-green-500 mb-6 animate-bounce" />
+                    <h2 className="text-4xl md:text-6xl font-orbitron font-black text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-600 mb-4 scale-in-center">
+                        ACCESS GRANTED
+                    </h2>
+                    <p className="text-xl md:text-2xl text-green-400 font-mono tracking-widest uppercase animate-pulse">
+                        Aha, elitní hráč! 👀
+                    </p>
+                    <p className="mt-6 text-gray-400 max-w-lg mx-auto leading-relaxed border border-green-500/20 bg-green-900/10 p-4 rounded-xl font-mono text-sm">
+                        Mrkni na novej web. Je stále <span className="text-yellow-500">work in progress</span> a obsahuje dummy data, tak to prosím <span className="text-red-500 font-bold">nešiř dál</span>. Užij si VIP preview! 🤫
+                    </p>
+                    <div className="mt-8 w-64 h-1 bg-gray-800 rounded-full overflow-hidden">
+                        <div className="h-full bg-green-500 animate-[loadingBar_4s_ease-in-out_forwards]" />
+                    </div>
+                </div>
+            )}
 
             {/* ─── Main Content ─── */}
             <main className="relative z-10 flex-1 flex flex-col items-center justify-center gap-8 md:gap-12 p-4 md:p-8 lg:p-12">
@@ -290,6 +365,55 @@ const ComingSoon: React.FC<ComingSoonProps> = ({ targetDate }) => {
                     </div>
                 </div>
 
+                {/* --- Profile Promo Promo --- */}
+                <div className="relative w-full max-w-3xl mt-4 rounded-2xl border border-red-500/20 bg-black/40 backdrop-blur-md p-6 overflow-hidden group hover:border-red-500/40 transition-all">
+                    {/* Glowing background blob */}
+                    <div className="absolute -inset-20 bg-gradient-to-r from-red-600/10 via-orange-500/10 to-transparent blur-3xl rounded-full opacity-50 pointer-events-none group-hover:opacity-70 transition-opacity" />
+
+                    <div className="relative flex flex-col md:flex-row items-center gap-8 justify-between">
+                        <div className="text-center md:text-left flex-1">
+                            <h3 className="text-2xl font-orbitron font-bold text-white flex items-center justify-center md:justify-start gap-2 mb-2">
+                                <User className="text-red-500" />
+                                {language === 'cs' ? 'MÁTE U NÁS REGISTRACI?' : 'HAVE AN ACCOUNT?'}
+                            </h3>
+                            <p className="text-gray-400 text-sm leading-relaxed max-w-md">
+                                {language === 'cs'
+                                    ? 'Nový web sice ještě ladíme, ale váš osobní profil je stále dostupný. Zkontrolujte si kredity, historii a úroveň!'
+                                    : 'While we are fine-tuning the new website, your personal profile remains accessible. Check your credits, history, and level!'}
+                            </p>
+
+                            {isMobile && (
+                                <a
+                                    href="https://profil.skillzone.cz"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="mt-6 inline-flex items-center justify-center w-full gap-2 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-orange-500 text-white font-bold py-4 px-8 rounded-xl transition-all shadow-lg shadow-red-500/30 transform active:scale-95"
+                                >
+                                    <Smartphone className="w-5 h-5" />
+                                    {language === 'cs' ? 'OTEVŘÍT MŮJ PROFIL' : 'OPEN MY PROFILE'}
+                                </a>
+                            )}
+                        </div>
+
+                        {!isMobile && (
+                            <div className="flex flex-col items-center shrink-0">
+                                <div className="bg-white p-3 rounded-xl shadow-2xl transform transition-transform hover:scale-105 hover:rotate-2">
+                                    <QRCode value="https://profil.skillzone.cz" size={120} />
+                                </div>
+                                <a
+                                    href="https://profil.skillzone.cz"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="mt-4 text-xs font-mono text-red-400 hover:text-red-300 transition-colors uppercase tracking-widest hover:underline"
+                                >
+                                    profil.skillzone.cz ↗
+                                </a>
+                            </div>
+                        )}
+                    </div>
+                </div>
+                {/* ------------------------- */}
+
                 {/* Branch Cards */}
                 <div className="w-full max-w-2xl">
                     <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest font-mono text-center mb-4">
@@ -321,25 +445,81 @@ const ComingSoon: React.FC<ComingSoonProps> = ({ targetDate }) => {
                             </div>
                         ))}
                     </div>
-                    {/* Social Links */}
-                    <div className="flex items-center gap-6 mt-4">
-                        <a href="https://discord.gg/skillzone" target="_blank" rel="noopener noreferrer"
-                            className="flex items-center gap-2 text-sm text-gray-400 hover:text-[#5865F2] transition-colors font-mono">
-                            <span>💬</span> DISCORD SERVER
-                        </a>
-                        <a href="https://instagram.com/skillzone" target="_blank" rel="noopener noreferrer"
-                            className="flex items-center gap-2 text-sm text-gray-400 hover:text-[#E1306C] transition-colors font-mono">
-                            <span>📸</span> INSTAGRAM
-                        </a>
+                    {/* Mini-Games to Kill Time */}
+                    {(onPlayAim || onPlayReaction) && (
+                        <div className="mt-12 text-center w-full">
+                            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest font-mono mb-4 text-center">
+                                {language === 'cs' ? 'Zkraťte si čekání tréninkem' : 'Kill some time training'}
+                            </h3>
+                            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                                {onPlayAim && (
+                                    <button onClick={onPlayAim} className="w-full sm:w-auto px-6 py-3 bg-red-600 hover:bg-red-500 text-white font-bold font-mono text-sm rounded-xl transition-all shadow-lg shadow-red-500/20 active:scale-95 flex items-center justify-center gap-2">
+                                        🎯 AIM CHALLENGE
+                                    </button>
+                                )}
+                                {onPlayReaction && (
+                                    <button onClick={onPlayReaction} className="w-full sm:w-auto px-6 py-3 bg-yellow-600 hover:bg-yellow-500 text-white font-bold font-mono text-sm rounded-xl transition-all shadow-lg shadow-yellow-500/20 active:scale-95 flex items-center justify-center gap-2">
+                                        ⚡ REACTION CHALLENGE
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Contact BOSS Ug4t0R */}
+                    <div className="mt-16 text-center border-t border-white/5 pt-8">
+                        <h3 className="text-xl font-bold text-white mb-2 font-orbitron">
+                            {language === 'cs' ? 'Dotazy? Pochvaly? Stížnosti?' : 'Questions? Praises? Complaints?'}
+                        </h3>
+                        <p className="text-gray-400 text-xs md:text-sm font-mono leading-relaxed max-w-lg mx-auto mb-6">
+                            {language === 'cs'
+                                ? 'Náš BOSS Ug4t0R naslouchá a zajišťuje kvalitu! Je to jeden z nás, žádnej korporát. Zastihnete ho buď osobně na baru, nebo rovnou napřímo:'
+                                : 'Our BOSS Ug4t0R listens and ensures quality! He is one of us, no corporate guy. Catch him personally at the bar, or contact him directly:'}
+                        </p>
+                        <div className="flex flex-wrap items-center justify-center gap-4">
+                            <a href="tel:+420777766113" className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-green-400 hover:text-green-300 font-mono transition-colors text-sm">
+                                📞 {language === 'cs' ? 'Zavolat na Bar / Bossovi' : 'Call Bar / Boss'}
+                            </a>
+                            <a href="https://instagram.com/skillzone.cz" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-pink-400 hover:text-pink-300 font-mono transition-colors text-sm">
+                                📸 INSTAGRAM
+                            </a>
+                        </div>
                     </div>
                 </div>
             </main>
 
             {/* ─── Footer ─── */}
-            <footer className="relative z-10 p-4 border-t border-white/5 text-center">
+            <footer className="relative z-10 p-4 border-t border-white/5 flex flex-col items-center gap-4">
                 <div className="text-[10px] text-gray-700 font-mono">
                     skillzone.cz • © {new Date().getFullYear()} SkillZone s.r.o.
                 </div>
+
+                {/* VIP Secret Trigger */}
+                {!showVipInput ? (
+                    <button
+                        onClick={() => {
+                            setShowVipInput(true);
+                            setTimeout(() => vipInputRef.current?.focus(), 100);
+                        }}
+                        className="w-8 h-8 opacity-0 hover:opacity-10 transition-opacity"
+                        aria-label="Secret Access"
+                    />
+                ) : (
+                    <form onSubmit={handleVipSubmit} className="flex items-center gap-2 mt-2 animate-in slide-in-from-bottom border border-white/10 p-1 rounded-lg bg-black/50">
+                        <Lock className="w-4 h-4 text-gray-500 ml-2" />
+                        <input
+                            ref={vipInputRef}
+                            type="password"
+                            value={vipCode}
+                            onChange={(e) => setVipCode(e.target.value)}
+                            placeholder="_"
+                            className={`bg-transparent outline-none border-none text-white font-mono w-24 text-center placeholder-gray-700
+                                ${vipError ? 'text-red-500 animate-shake' : ''}`}
+                            maxLength={10}
+                        />
+                        <button type="submit" className="hidden">Submit</button>
+                    </form>
+                )}
             </footer>
         </div>
     );

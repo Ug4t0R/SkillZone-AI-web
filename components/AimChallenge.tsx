@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { Volume2, VolumeX } from 'lucide-react';
+import { Volume2, VolumeX, Monitor, Smartphone } from 'lucide-react';
 import { X } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 import {
@@ -216,7 +216,8 @@ const AimChallenge: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         const precomputed = seq[idx];
         if (!precomputed) { endGame(); return; }
 
-        const newTarget: TargetState = {
+        const fallbackTime = performance.now();
+        const newTarget: TargetState & { perfSpawnTime?: number } = {
             x: precomputed.x, y: precomputed.y, size: precomputed.size,
             vx: precomputed.vx, vy: precomputed.vy, spawnTime: Date.now(),
             id: idx, seqIndex: idx,
@@ -227,6 +228,11 @@ const AimChallenge: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         seqIndexRef.current = idx + 1;
         setTargetsShown(idx + 1);
         targetsShownRef.current = idx + 1;
+
+        // Stamp exact time of trigger. We remove the double-rAF delay here 
+        // to record time closer to when JS issues the command, reflecting 
+        // full browser/monitor latency, identical to standard Human Benchmark logic.
+        (targetRef.current as any).perfSpawnTime = performance.now();
 
         if (timeoutRef.current) clearTimeout(timeoutRef.current);
         timeoutRef.current = setTimeout(() => {
@@ -318,25 +324,36 @@ const AimChallenge: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         return () => clearTimeout(t);
     }, [phase, spawnTarget]);
 
-    // ─── Handle Hit ─────────────────────────────────────────────────
-    const handleHit = useCallback((e: React.MouseEvent) => {
-        e.stopPropagation();
+    // ─── Handle Hit (Native or Synthetic) ───────────────────────────
+    const handleHit = useCallback((e: React.MouseEvent | MouseEvent | TouchEvent) => {
         const t = targetRef.current;
         if (!t || phaseRef.current !== 'playing') return;
         if (timeoutRef.current) clearTimeout(timeoutRef.current);
 
         const now = Date.now();
-        const reaction = now - t.spawnTime;
+        const perfNow = performance.now();
+        const exactSpawnTime = (t as any).perfSpawnTime || perfNow;
+        const reaction = Math.round(perfNow - exactSpawnTime);
         const d = difficultyRef.current;
 
         const arenaEl = arenaRef.current;
         let clickArenaX = 0, clickArenaY = 0;
+        let clientX = 0, clientY = 0;
+
+        if ('touches' in e) {
+            clientX = e.touches[0].clientX;
+            clientY = e.touches[0].clientY;
+        } else {
+            clientX = (e as MouseEvent | React.MouseEvent).clientX;
+            clientY = (e as MouseEvent | React.MouseEvent).clientY;
+        }
+
         if (arenaEl) {
             const rect = arenaEl.getBoundingClientRect();
             const scaleX = ARENA_W / rect.width;
             const scaleY = ARENA_H / rect.height;
-            clickArenaX = (e.clientX - rect.left) * scaleX;
-            clickArenaY = (e.clientY - rect.top) * scaleY;
+            clickArenaX = (clientX - rect.left) * scaleX;
+            clickArenaY = (clientY - rect.top) * scaleY;
         }
         const currentSize = d.shrinkTargets ? t.size * (1 - ((now - t.spawnTime) / d.targetLifetimeMs) * 0.6) : t.size;
         const centerX = t.x + currentSize / 2;
@@ -392,8 +409,8 @@ const AimChallenge: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         else { setTimeout(() => spawnTarget(), 150); }
     }, [spawnTarget, endGame]);
 
-    // ─── Handle Misclick ────────────────────────────────────────────
-    const handleMisclick = useCallback((e: React.MouseEvent) => {
+    // ─── Handle Misclick (Native or Synthetic) ──────────────────────
+    const handleMisclick = useCallback((e: React.MouseEvent | MouseEvent | TouchEvent) => {
         if (phaseRef.current !== 'playing' || !targetRef.current) return;
         sfx.misclick();
         setMissclicks(prev => prev + 1);
@@ -402,13 +419,54 @@ const AimChallenge: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             const rect = arenaEl.getBoundingClientRect();
             const scaleX = ARENA_W / rect.width;
             const scaleY = ARENA_H / rect.height;
-            const x = Math.round((e.clientX - rect.left) * scaleX);
-            const y = Math.round((e.clientY - rect.top) * scaleY);
+
+            let clientX = 0, clientY = 0;
+            if ('touches' in e) {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            } else {
+                clientX = (e as MouseEvent | React.MouseEvent).clientX;
+                clientY = (e as MouseEvent | React.MouseEvent).clientY;
+            }
+
+            const x = Math.round((clientX - rect.left) * scaleX);
+            const y = Math.round((clientY - rect.top) * scaleY);
             const t = targetRef.current;
             const dist = t ? Math.hypot(x - (t.x + t.size / 2), y - (t.y + t.size / 2)) : 999;
             misclickLogRef.current.push({ x, y, timestamp: Date.now(), nearestTargetDist: dist });
         }
     }, []);
+
+    // ─── Native input listeners for raw speed ────────────────────────
+    useEffect(() => {
+        if (phase !== 'playing') return;
+
+        const handleNativeDown = (e: MouseEvent | TouchEvent) => {
+            const targetEl = e.target as HTMLElement;
+            // Intercept clicks on the target or the arena directly
+            if (targetEl.closest('.aim-target-btn')) {
+                e.preventDefault();
+                e.stopPropagation();
+                handleHit(e);
+            } else if (targetEl.closest('.aim-arena-bg')) {
+                // It's a misclick on the background
+                handleMisclick(e);
+            }
+        };
+
+        const arenaEl = arenaRef.current;
+        if (arenaEl) {
+            arenaEl.addEventListener('mousedown', handleNativeDown, { capture: true });
+            arenaEl.addEventListener('touchstart', handleNativeDown, { capture: true, passive: false });
+        }
+
+        return () => {
+            if (arenaEl) {
+                arenaEl.removeEventListener('mousedown', handleNativeDown, { capture: true });
+                arenaEl.removeEventListener('touchstart', handleNativeDown, { capture: true });
+            }
+        };
+    }, [phase, handleHit, handleMisclick]);
 
     // ─── Submit Score ───────────────────────────────────────────────
     const handleSubmit = useCallback(async () => {
@@ -592,6 +650,64 @@ const AimChallenge: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                     onBackToMenu={() => { setPhase('menu'); }}
                 />
             )}
+            {/* ─── LEADERBOARD MODAL (renders in any phase) ───── */}
+            {showLeaderboard && (
+                <div className="fixed inset-0 z-[10000] bg-black/80 flex items-center justify-center p-4">
+                    <div className="bg-gray-900 border border-white/10 rounded-xl max-w-lg w-full max-h-[80vh] overflow-hidden flex flex-col">
+                        <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
+                            <h2 className="text-white font-bold">🏆 {cs ? 'Žebříček' : 'Leaderboard'}</h2>
+                            <button onClick={() => setShowLeaderboard(false)}
+                                className="text-white/40 hover:text-white"><X className="w-5 h-5" /></button>
+                        </div>
+
+                        {/* Tabs */}
+                        <div className="flex border-b border-white/10">
+                            {(['mouse', 'touch'] as InputMode[]).map(mode => (
+                                <button key={mode}
+                                    onClick={() => setLeaderboardTab(mode)}
+                                    className={`flex-1 py-2 text-sm font-mono flex items-center justify-center gap-1 transition-colors
+                                            ${leaderboardTab === mode ? 'text-white border-b-2 border-red-500' : 'text-white/30 hover:text-white/60'}`}>
+                                    {mode === 'mouse' ? <><Monitor className="w-3 h-3" /> Desktop</> : <><Smartphone className="w-3 h-3" /> Touch</>}
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Entries */}
+                        <div className="flex-1 overflow-y-auto p-3 space-y-1">
+                            {leaderboard.length === 0 ? (
+                                <div className="text-center text-white/20 py-8 text-sm font-mono">
+                                    {cs ? 'Žádné záznamy' : 'No entries yet'}
+                                </div>
+                            ) : leaderboard.map((e, i) => (
+                                <div key={e.id || i}
+                                    className={`flex items-center gap-3 px-3 py-2 rounded-lg ${i < 3 ? 'bg-white/5' : ''}`}>
+                                    <span className="text-lg w-8 text-center">
+                                        {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : <span className="text-white/20 text-sm">{i + 1}</span>}
+                                    </span>
+                                    <div className="flex-1 min-w-0">
+                                        <div className="text-white text-sm font-semibold truncate">{e.player_name}</div>
+                                        <div className="text-white/20 text-xs font-mono">
+                                            {e.accuracy}% · {e.avg_reaction}ms · {e.difficulty || '?'}
+                                            {e.challenge_id && <span className="text-amber-400 ml-1">🏆</span>}
+                                        </div>
+                                    </div>
+                                    <div className="text-right">
+                                        <div className="text-white font-bold text-sm font-mono">{e.score}</div>
+                                        <div className="text-white/15 text-[10px] font-mono">{e.resolution || ''}</div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+            <div
+                className="aim-arena-bg absolute inset-0 rounded-[30px] shadow-[inset_0_0_100px_rgba(0,0,0,0.8)] overflow-hidden pointer-events-auto"
+                style={{
+                    background: 'radial-gradient(circle at 50% 50%, #1a1a24 0%, #0a0a0f 100%)',
+                    cursor: 'crosshair',
+                }}
+            ></div>
         </div>
     );
 };
