@@ -76,12 +76,13 @@ const Pricing: React.FC = () => {
         return results;
     }, [calcLocation, calcHours, calcSeat, calcNight, calcSaturday, calcDayLAN]);
 
-    // Bonus effective pricing — bonuses STACK (cumulative)
+    // Bonus effective pricing — bonus values are cumulative
     const bonusInfo = useMemo(() => {
-        // Sum all bonuses for tiers <= slider value
+        // Find the highest matching tier (<= slider value)
         const matchedTiers = TOP_UP_BONUSES.filter(b => bonusSlider >= b.amount);
-        const bonusMinutes = matchedTiers.reduce((sum, b) => sum + b.bonus, 0);
-        const hasPerk = matchedTiers.some(b => b.perk === 'premium30');
+        const bestTier = matchedTiers[matchedTiers.length - 1];
+        const bonusMinutes = bestTier?.bonus ?? 0;
+        const hasPerk = bestTier?.perk === 'premium30';
         const effectiveRates = MEMBER_TIERS.map(tier => {
             const baseMinutes = (bonusSlider / tier.price) * 60;
             const totalMinutes = baseMinutes + bonusMinutes;
@@ -442,37 +443,42 @@ const Pricing: React.FC = () => {
                             {cs ? 'Víc dobíješ = víc dostaneš. Bonusové minuty se sčítají!' : 'More you top up = more you get. Bonus minutes stack!'}
                         </p>
 
-                        {/* Compact bonus table */}
+                        {/* Compact bonus table — 4 key breakpoints */}
                         <div className="rounded-lg overflow-hidden border border-black/5 dark:border-white/5">
                             {/* Header */}
                             <div className="grid grid-cols-3 text-[10px] font-mono uppercase text-gray-400 px-4 py-2 bg-gray-100 dark:bg-zinc-900/80 border-b border-black/5 dark:border-white/5">
                                 <span>{cs ? 'Dobití' : 'Top-up'}</span>
-                                <span className="text-center">{cs ? 'Bonus' : 'Bonus'}</span>
+                                <span className="text-center">{cs ? 'Bonus celkem' : 'Total bonus'}</span>
                                 <span className="text-right">Extra</span>
                             </div>
                             {TOP_UP_BONUSES.map((b, i) => {
-                                const stackedBonus = TOP_UP_BONUSES.slice(0, i + 1).reduce((sum, t) => sum + t.bonus, 0);
-                                const isHighlight = [1000, 1500, 2000].includes(b.amount);
-                                const bonusPct = Math.round(((stackedBonus / 60) * MEMBER_TIERS[MEMBER_TIERS.length - 1].price) / b.amount * 100);
+                                const maxBonus = TOP_UP_BONUSES[TOP_UP_BONUSES.length - 1].bonus;
+                                const pct = Math.round((b.bonus / maxBonus) * 100);
+                                const multiplierLabel = i === 0 ? null : '3×';
                                 return (
                                     <div key={b.amount}
-                                        className={`grid grid-cols-3 items-center px-4 py-2.5 border-b last:border-0 border-black/5 dark:border-white/5 transition-colors
-                                            ${isHighlight
-                                                ? 'bg-green-500/5 dark:bg-green-500/5'
-                                                : i % 2 === 0 ? 'bg-gray-50 dark:bg-zinc-900/30' : 'bg-white dark:bg-zinc-900/60'
-                                            }`}
+                                        className={`grid grid-cols-3 items-center px-4 py-3 border-b last:border-0 border-black/5 dark:border-white/5 transition-colors
+                                            ${b.perk ? 'bg-green-500/5 dark:bg-green-500/5' : i % 2 === 0 ? 'bg-gray-50 dark:bg-zinc-900/30' : 'bg-white dark:bg-zinc-900/60'}`}
                                     >
                                         {/* Amount */}
-                                        <span className={`font-mono font-bold text-sm ${isHighlight ? 'text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-400'}`}>
-                                            {b.amount},- Kč
-                                        </span>
-                                        {/* Bonus — cumulative total prominently */}
-                                        <div className="text-center">
-                                            <span className={`font-mono font-black text-sm ${isHighlight ? 'text-green-500' : 'text-green-400/80'}`}>
-                                                +{stackedBonus} min
+                                        <div>
+                                            <span className={`font-mono font-bold ${b.perk ? 'text-base text-gray-900 dark:text-white' : 'text-sm text-gray-600 dark:text-gray-400'}`}>
+                                                {b.amount.toLocaleString()},- Kč
                                             </span>
+                                            {multiplierLabel && (
+                                                <span className="ml-1.5 text-[9px] text-gray-400 font-mono">({cs ? '2× předchozí' : '2× prev'})</span>
+                                            )}
+                                        </div>
+                                        {/* Bonus — cumulative */}
+                                        <div className="text-center">
+                                            <span className={`font-mono font-black ${b.perk ? 'text-base text-green-500' : 'text-sm text-green-400/80'}`}>
+                                                +{b.bonus} min
+                                            </span>
+                                            {multiplierLabel && (
+                                                <span className="ml-1 text-[9px] text-green-600/50 font-mono">({multiplierLabel})</span>
+                                            )}
                                             <div className="w-full bg-gray-200 dark:bg-zinc-700 rounded-full h-1 mt-1 max-w-[80px] mx-auto">
-                                                <div className="bg-green-500 rounded-full h-1 transition-all" style={{ width: `${Math.min(bonusPct, 100)}%` }} />
+                                                <div className="bg-green-500 rounded-full h-1 transition-all" style={{ width: `${pct}%` }} />
                                             </div>
                                         </div>
                                         {/* Perk */}
@@ -490,7 +496,9 @@ const Pricing: React.FC = () => {
                             })}
                         </div>
                         <p className="text-[10px] text-gray-400 mt-3 italic font-mono">
-                            * {cs ? 'Bonusy se kumulují — za 2 000 Kč dostaneš celkem 480 min navíc + PREMIUM na 30 dní.' : 'Bonuses stack — 2 000 Kč gets you 480 min total + PREMIUM for 30 days.'}
+                            * {cs
+                                ? 'Pravidlo: 2× částka = 3× bonus. Platí do 2 000 Kč. Za 2 000 Kč získáš 540 min + PREMIUM na 30 dní.'
+                                : 'Rule: 2× amount = 3× bonus. Applies up to 2 000 Kč. At 2 000 Kč you get 540 min + PREMIUM for 30 days.'}
                         </p>
 
                         {/* Bonus slider calculator */}
@@ -503,8 +511,8 @@ const Pricing: React.FC = () => {
                             </div>
 
                             <div className="flex justify-between text-xs text-gray-400 font-mono mb-1">
-                                <span>200 Kč</span>
-                                <span>2000 Kč</span>
+                                <span>250 Kč</span>
+                                <span>2 000 Kč</span>
                             </div>
                             <input
                                 type="range"

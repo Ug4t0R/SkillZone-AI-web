@@ -17,6 +17,7 @@ export interface MemberTier {
 
 export interface TopUpBonus {
     amount: number;
+    /** Cumulative bonus minutes at this top-up level */
     bonus: number;
     perk: string | null;
 }
@@ -54,15 +55,12 @@ export const MEMBER_TIERS: MemberTier[] = [
     { id: 'ultras', icon: '🏆', name: 'ULTRAS', visits: '24+', price: 49, color: '#ef4444', gradient: 'from-red-500 to-red-700', featured: true },
 ];
 
+// Rule: 2× amount → 3× bonus (cumulative). Caps at 2 000 Kč, rule still applies above.
 export const TOP_UP_BONUSES: TopUpBonus[] = [
-    { amount: 250, bonus: 20, perk: null },
-    { amount: 500, bonus: 40, perk: null },
-    { amount: 750, bonus: 60, perk: null },
-    { amount: 1000, bonus: 80, perk: 'premium30' },
-    { amount: 1250, bonus: 100, perk: 'premium30' },
-    { amount: 1500, bonus: 120, perk: 'premium30' },
-    { amount: 1750, bonus: 140, perk: 'premium30' },
-    { amount: 2000, bonus: 160, perk: 'premium30' },
+    { amount: 250, bonus: 20, perk: null },         // base
+    { amount: 500, bonus: 60, perk: null },         // 2×250 → 3×20
+    { amount: 1000, bonus: 180, perk: 'premium30' },  // 2×500 → 3×60
+    { amount: 2000, bonus: 540, perk: 'premium30' },  // 2×1000 → 3×180
 ];
 
 export const EXTRA_FEES: ExtraFee[] = [
