@@ -544,12 +544,28 @@ const Pricing: React.FC = () => {
                                 </div>
                             )}
 
-                            {/* Effective rates */}
+                            {/* Effective rates — Guest first, then members */}
                             <div className="text-xs font-mono text-gray-400 mb-2 uppercase">
                                 {cs ? 'Tvoje reálná cena za hodinu' : 'Your effective hourly rate'}
                             </div>
-                            <div className="grid grid-cols-2 gap-2">
-                                {bonusInfo.rates.map(r => (
+                            {/* Guest (Sleeper) — full-width at top */}
+                            {(() => {
+                                const guest = bonusInfo.rates.find(r => r.tier === 'sleeper');
+                                if (!guest) return null;
+                                return (
+                                    <div className="rounded-lg p-3 text-center border border-black/5 dark:border-white/5 bg-gray-50 dark:bg-zinc-800/50 mb-2">
+                                        <div className="text-sm mb-0.5">{guest.icon} <span className="font-bold text-gray-700 dark:text-gray-300">{cs ? 'Host (neregistrovaný)' : 'Guest (unregistered)'}</span></div>
+                                        <div className="flex items-center justify-center gap-1">
+                                            <span className="text-gray-400 line-through text-xs">{guest.base} Kč/h</span>
+                                            <span className="font-black text-lg text-gray-900 dark:text-white">{guest.effective}</span>
+                                            <span className="text-gray-400 text-xs">Kč</span>
+                                        </div>
+                                    </div>
+                                );
+                            })()}
+                            {/* Members — 3-column grid below */}
+                            <div className="grid grid-cols-3 gap-2">
+                                {bonusInfo.rates.filter(r => r.tier !== 'sleeper').map(r => (
                                     <div key={r.tier} className={`rounded-lg p-3 text-center border ${r.tier === 'ultras' ? 'border-sz-red/30 bg-sz-red/5' : 'border-black/5 dark:border-white/5 bg-gray-50 dark:bg-zinc-800/50'
                                         }`}>
                                         <div className="text-sm mb-0.5">{r.icon} <span className="font-bold text-gray-700 dark:text-gray-300">{r.name}</span></div>

@@ -48,9 +48,13 @@ export async function getWeather(): Promise<WeatherData> {
     if (cached && Date.now() - cached.ts < CACHE_TTL) return cached.data;
 
     try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 3000); // 3s timeout
         const res = await fetch('https://wttr.in/Prague?format=j1', {
             headers: { 'Accept': 'application/json' },
+            signal: controller.signal,
         });
+        clearTimeout(timeout);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const json = await res.json();
 
@@ -83,7 +87,7 @@ export async function getWeather(): Promise<WeatherData> {
         cached = { data, ts: Date.now() };
         return data;
     } catch (err) {
-        console.warn('[Weather] Failed to fetch, using fallback', err);
+        console.debug('[Weather] Fetch failed, using fallback', err);
         // Return a safe fallback
         const fallback: WeatherData = {
             temp: 15,

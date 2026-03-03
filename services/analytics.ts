@@ -160,19 +160,21 @@ export function trackThemeChange(theme: string) {
  * Heartbeat — updates "last seen" for live visitor counting
  */
 let heartbeatInterval: ReturnType<typeof setInterval> | null = null;
+let _unloadHandler: (() => void) | null = null;
 
 export function startHeartbeat() {
     // Immediate first heartbeat
     sendHeartbeat();
-    // Then every 30 seconds
-    heartbeatInterval = setInterval(sendHeartbeat, 30000);
+    // Then every 60 seconds (was 30s — reduced to halve DB load)
+    heartbeatInterval = setInterval(sendHeartbeat, 60_000);
 
     // Flush on page unload
-    window.addEventListener('beforeunload', () => {
+    _unloadHandler = () => {
         queueEvent('session_end', { duration: getSessionDuration() });
         flushEvents();
         sendHeartbeat(true);
-    });
+    };
+    window.addEventListener('beforeunload', _unloadHandler);
 }
 
 async function sendHeartbeat(isLeaving = false) {
@@ -187,8 +189,8 @@ async function sendHeartbeat(isLeaving = false) {
             language: info.language,
             is_active: !isLeaving,
         });
-    } catch {
-        // Silent
+    } catch (err) {
+        console.debug('[Analytics] Heartbeat failed:', err);
     }
 }
 
@@ -196,6 +198,10 @@ export function stopHeartbeat() {
     if (heartbeatInterval) {
         clearInterval(heartbeatInterval);
         heartbeatInterval = null;
+    }
+    if (_unloadHandler) {
+        window.removeEventListener('beforeunload', _unloadHandler);
+        _unloadHandler = null;
     }
 }
 

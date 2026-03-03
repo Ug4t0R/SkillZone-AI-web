@@ -228,5 +228,15 @@ export const TABLES = {
     USER_PROFILES: 'web_user_profiles',
     WHATSAPP_CONVERSATIONS: 'web_whatsapp_conversations',
     WHATSAPP_MESSAGES: 'web_whatsapp_messages',
+    // ─── Previously missing ─────────────────────────────────────────
+    ANALYTICS: 'web_analytics',
+    VISITORS: 'web_visitors',
+    LEADERBOARD: 'web_leaderboard',
+    REACTION_LEADERBOARD: 'web_reaction_leaderboard',
+    CONTENT: 'web_content',
+    TRAVEL_LOGS: 'web_travel_logs',
+    REVIEWS: 'web_reviews',
+    RENTAL_INQUIRIES: 'rental_inquiries',
+    FEED_MESSAGES: 'feed_messages',
 } as const;
 

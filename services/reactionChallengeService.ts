@@ -426,7 +426,7 @@ export async function submitReactionScore(entry: ReactionLeaderboardEntry): Prom
         const sb = getSupabase();
         if (!sb) return false;
         const { error } = await sb.from('web_reaction_leaderboard').insert([{
-            player_name: entry.player_name,
+            player_name: (entry.player_name || 'Anon').trim().slice(0, 20),
             score: entry.score,
             avg_reaction: entry.avg_reaction,
             best_reaction: entry.best_reaction,
@@ -438,7 +438,8 @@ export async function submitReactionScore(entry: ReactionLeaderboardEntry): Prom
             input_type: entry.input_type,
         }]);
         return !error;
-    } catch {
+    } catch (err) {
+        console.debug('[Reaction] submitScore failed:', err);
         return false;
     }
 }
@@ -462,7 +463,8 @@ export async function fetchReactionLeaderboard(
 
         const { data } = await query;
         return (data as ReactionLeaderboardEntry[]) || [];
-    } catch {
+    } catch (err) {
+        console.debug('[Reaction] fetchLeaderboard failed:', err);
         return [];
     }
 }

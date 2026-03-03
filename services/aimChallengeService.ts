@@ -581,7 +581,7 @@ export async function submitScore(entry: LeaderboardEntry): Promise<boolean> {
         const sb = getSupabase();
         if (!sb) return false;
         const { error } = await sb.from('web_leaderboard').insert([{
-            player_name: entry.player_name,
+            player_name: (entry.player_name || 'Anon').trim().slice(0, 20),
             score: entry.score,
             accuracy: entry.accuracy,
             avg_reaction: entry.avg_reaction,
@@ -599,7 +599,8 @@ export async function submitScore(entry: LeaderboardEntry): Promise<boolean> {
             is_suspicious: entry.is_suspicious,
         }]);
         return !error;
-    } catch {
+    } catch (err) {
+        console.debug('[AimChallenge] submitScore failed:', err);
         return false;
     }
 }
@@ -626,7 +627,8 @@ export async function fetchLeaderboard(
 
         const { data } = await query;
         return (data as LeaderboardEntry[]) || [];
-    } catch {
+    } catch (err) {
+        console.debug('[AimChallenge] fetchLeaderboard failed:', err);
         return [];
     }
 }

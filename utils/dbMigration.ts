@@ -1,3 +1,8 @@
+/**
+ * @deprecated This migration module references LEGACY table names (locations, history_milestones,
+ * protocol_rules, calendar_events, ai_settings, owner_profile) that were migrated to web_* tables.
+ * Kept for reference only — do NOT use for new features. See webDataService.ts TABLES constant.
+ */
 
 import { getSupabase } from '../services/supabaseClient';
 import { LOCATIONS_CS } from '../data/locations';
