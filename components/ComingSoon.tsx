@@ -522,19 +522,19 @@ const ComingSoon: React.FC<ComingSoonProps> = ({ targetDate, onUnlock, onPlayAim
 
                     {/* Mini-Games to Kill Time */}
                     {(onPlayAim || onPlayReaction) && (
-                        <div className="mt-12 text-center w-full">
-                            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest font-mono mb-4 text-center">
+                        <div className="mt-8 text-center w-full">
+                            <h3 className="text-[10px] font-bold text-gray-600 uppercase tracking-widest font-mono mb-3 text-center">
                                 {t('coming_games_title' as any)}
                             </h3>
-                            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                            <div className="flex items-center justify-center gap-3">
                                 {onPlayAim && (
-                                    <button onClick={onPlayAim} className="w-full sm:w-auto px-6 py-3 bg-red-600 hover:bg-red-500 text-white font-bold font-mono text-sm rounded-xl transition-all shadow-lg shadow-red-500/20 active:scale-95 flex items-center justify-center gap-2">
-                                        🎯 AIM CHALLENGE
+                                    <button onClick={onPlayAim} className="px-4 py-1.5 bg-white/5 hover:bg-red-600 border border-white/10 hover:border-red-500 text-gray-400 hover:text-white font-mono text-xs rounded-full transition-all active:scale-95 flex items-center gap-1.5">
+                                        🎯 AIM
                                     </button>
                                 )}
                                 {onPlayReaction && (
-                                    <button onClick={onPlayReaction} className="w-full sm:w-auto px-6 py-3 bg-yellow-600 hover:bg-yellow-500 text-white font-bold font-mono text-sm rounded-xl transition-all shadow-lg shadow-yellow-500/20 active:scale-95 flex items-center justify-center gap-2">
-                                        ⚡ REACTION CHALLENGE
+                                    <button onClick={onPlayReaction} className="px-4 py-1.5 bg-white/5 hover:bg-yellow-600 border border-white/10 hover:border-yellow-500 text-gray-400 hover:text-white font-mono text-xs rounded-full transition-all active:scale-95 flex items-center gap-1.5">
+                                        ⚡ REACTION
                                     </button>
                                 )}
                             </div>

@@ -46,6 +46,31 @@ import MaintenanceMode from './components/MaintenanceMode';
 import ComingSoon from './components/ComingSoon';
 import { LOCATIONS_CS } from './data/locations';
 
+// ─── Error Boundary for lazy game modals ─────────────────────────────
+class GameErrorBoundary extends React.Component<
+  { children: React.ReactNode; onClose: () => void },
+  { hasError: boolean }
+> {
+  state = { hasError: false };
+  static getDerivedStateFromError() { return { hasError: true }; }
+  componentDidCatch(err: any) { console.error('[GameErrorBoundary]', err); }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="fixed inset-0 z-[200] bg-black/95 flex flex-col items-center justify-center gap-4 text-center p-6">
+          <p className="text-red-500 font-orbitron text-xl">⚠️ Něco se pokazilo</p>
+          <p className="text-gray-400 font-mono text-sm">Hra se nepodařila načíst.</p>
+          <button
+            onClick={() => { this.setState({ hasError: false }); this.props.onClose(); }}
+            className="mt-4 px-6 py-2 bg-red-600 hover:bg-red-500 text-white font-bold rounded-lg transition-colors"
+          >Zavřít</button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 // Lazy load heavy components for better initial load performance
 const DevMenu = React.lazy(() => import('./components/DevMenu'));
 const VoucherPage = React.lazy(() => import('./components/VoucherPage'));
@@ -460,14 +485,18 @@ const App: React.FC = () => {
           onPlayReaction={() => setIsReactionOpen(true)}
         />
         {isAimOpen && (
-          <Suspense fallback={null}>
-            <AimChallenge onClose={() => setIsAimOpen(false)} />
-          </Suspense>
+          <GameErrorBoundary onClose={() => setIsAimOpen(false)}>
+            <Suspense fallback={null}>
+              <AimChallenge onClose={() => setIsAimOpen(false)} />
+            </Suspense>
+          </GameErrorBoundary>
         )}
         {isReactionOpen && (
-          <Suspense fallback={null}>
-            <ReactionChallenge onClose={() => setIsReactionOpen(false)} />
-          </Suspense>
+          <GameErrorBoundary onClose={() => setIsReactionOpen(false)}>
+            <Suspense fallback={null}>
+              <ReactionChallenge onClose={() => setIsReactionOpen(false)} />
+            </Suspense>
+          </GameErrorBoundary>
         )}
         {/* Hidden admin access — click bottom-right corner */}
         <button
