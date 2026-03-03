@@ -129,7 +129,7 @@ export const en = {
     coming_badge: '🚀 Something big is coming',
     coming_title1: 'LEVEL UP',
     coming_title2: 'LOADING...',
-    coming_desc: 'We survived Covid, recovered, opened new branches, and now we are using modern technologies to push the whole project to the next level. Stay tuned.',
+    coming_desc: '21 years on the scene! We survived Covid, recovered, opened new branches, and now we are using modern technologies to push the whole project to the next level. Stay tuned.',
     coming_progress: 'PROGRESS',
     coming_almost: 'ALMOST THERE',
     coming_location_title: '📍 You can find us here meanwhile',
@@ -137,6 +137,27 @@ export const en = {
     coming_hours: 'Hours',
     coming_mins: 'Mins',
     coming_secs: 'Secs',
+
+    coming_profile_title: 'HAVE AN ACCOUNT?',
+    coming_profile_desc: 'We are still fine-tuning the new website, but your personal profile remains accessible. Check your credits, history, and level on your phone!',
+    coming_profile_btn: 'OPEN MY PROFILE',
+    coming_profile_qr: 'Scan QR code\nto access your profile',
+
+    coming_voucher_badge: 'New player offer',
+    coming_voucher_title: '2 hours FREE!',
+    coming_voucher_desc: 'Want to try our services? Register at our club (registration is FREE) and say the code from Monday to Thursday during registration:',
+    coming_voucher_fine: '* The 2h free voucher can be redeemed during daytime opening hours Monday to Thursday, between 8:00 and 18:00.',
+
+    coming_games_title: 'Kill some time training',
+    coming_boss_title: 'Questions? Praises? Complaints?',
+    coming_boss_desc: 'Our BOSS Ug4t0R listens and ensures quality! He is one of us, no corporate guy. Contact him directly:',
+    coming_boss_call: 'Call Boss directly',
+
+    coming_vip_label: 'Entry for the elite',
+    coming_vip_locked: 'Locked',
+    coming_vip_too_many: 'Too many attempts. Try again in',
+    coming_vip_placeholder: 'Enter code',
+    coming_vip_attempts: '{n} attempt(s) remaining',
 
     coming_prank_branch_badge: '🕵️‍♂️ BRANCH DETECTED',
     coming_prank_branch_title: 'FOCUS ON THE GAME',

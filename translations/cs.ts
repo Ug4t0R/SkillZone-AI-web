@@ -129,7 +129,7 @@ export const cs = {
     coming_badge: '🚀 Něco velkého se blíží',
     coming_title1: 'LEVEL UP',
     coming_title2: 'LOADING...',
-    coming_desc: 'Přežili jsme Covid, otřepali se, otevřeli nové pobočky a teď s pomocí moderních technologií posouváme celý projekt na další level. Máš se fakt na co těšit.',
+    coming_desc: 'Už 21 let na scéně! Přežili jsme Covid, otřepali se, otevřeli nové pobočky a teď s pomocí moderních technologií posouváme celý projekt na další level. Máš se fakt na co těšit.',
     coming_progress: 'PROGRESS',
     coming_almost: 'ALMOST THERE',
     coming_location_title: '📍 ZATÍM NÁS NAJDEŠ TADY',
@@ -137,6 +137,27 @@ export const cs = {
     coming_hours: 'Hodin',
     coming_mins: 'Minut',
     coming_secs: 'Sekund',
+
+    coming_profile_title: 'MÁŠ U NÁS REGISTRACI?',
+    coming_profile_desc: 'Nový web sice ještě ladíme, ale tvůj osobní profil je stále dostupný. Zkontroluj si kredity, historii a úroveň přímo v mobilu!',
+    coming_profile_btn: 'OTEVŘÍT MŮJ PROFIL',
+    coming_profile_qr: 'Naskenuj QR kód\npro přístup k profilu',
+
+    coming_voucher_badge: 'Akce pro nové hráče',
+    coming_voucher_title: '2 hodiny ZDARMA!',
+    coming_voucher_desc: 'Chceš zkusit naše služby? Zaregistruj se u nás v klubu (registrace je ZDARMA) a řekni od pondělí do čtvrtka při registraci kód:',
+    coming_voucher_fine: '* Poukaz na 2h zdarma lze uplatnit v denní otevírací době od pondělí do čtvrtka, mezi 8:00 a 18:00.',
+
+    coming_games_title: 'Zkrať si čekání tréninkem',
+    coming_boss_title: 'Dotazy? Pochvaly? Stížnosti?',
+    coming_boss_desc: 'Náš BOSS Ug4t0R naslouchá a zajišťuje kvalitu! Je to jeden z nás, žádnej korporát. Zastihneš ho rovnou napřímo:',
+    coming_boss_call: 'Zavolat přímo Bossovi',
+
+    coming_vip_label: 'Vstup pro elitu',
+    coming_vip_locked: 'Zamčeno',
+    coming_vip_too_many: 'Příliš mnoho pokusů. Zkus to znovu za',
+    coming_vip_placeholder: 'Zadej kód',
+    coming_vip_attempts: 'Zbývá {n} {unit}',
 
     coming_prank_branch_badge: '🕵️‍♂️ DETEKOVÁNA POBOČKA',
     coming_prank_branch_title: 'SOUSTŘEĎ SE NA HRU',

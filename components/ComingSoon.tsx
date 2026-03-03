@@ -431,12 +431,10 @@ const ComingSoon: React.FC<ComingSoonProps> = ({ targetDate, onUnlock, onPlayAim
                         <div className="text-center md:text-left flex-1">
                             <h3 className="text-2xl font-orbitron font-bold text-white flex items-center justify-center md:justify-start gap-2 mb-2">
                                 <User className="text-red-500" />
-                                {language === 'cs' ? 'MÁŠ U NÁS REGISTRACI?' : 'HAVE AN ACCOUNT?'}
+                                {t('coming_profile_title' as any)}
                             </h3>
                             <p className="text-gray-400 text-sm leading-relaxed max-w-md">
-                                {language === 'cs'
-                                    ? 'Nový web sice ještě ladíme, ale tvůj osobní profil je stále dostupný. Zkontroluj si kredity, historii a úroveň přímo v mobilu!'
-                                    : 'While we are fine-tuning the new website, your personal profile remains accessible. Check your credits, history, and level!'}
+                                {t('coming_profile_desc' as any)}
                             </p>
 
                             {isMobile && (
@@ -447,7 +445,7 @@ const ComingSoon: React.FC<ComingSoonProps> = ({ targetDate, onUnlock, onPlayAim
                                     className="mt-6 inline-flex items-center justify-center w-full gap-2 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-orange-500 text-white font-bold py-4 px-8 rounded-xl transition-all shadow-lg shadow-red-500/30 transform active:scale-95"
                                 >
                                     <Smartphone className="w-5 h-5" />
-                                    {language === 'cs' ? 'OTEVŘÍT MŮJ PROFIL' : 'OPEN MY PROFILE'}
+                                    {t('coming_profile_btn' as any)}
                                 </a>
                             )}
                         </div>
@@ -458,7 +456,7 @@ const ComingSoon: React.FC<ComingSoonProps> = ({ targetDate, onUnlock, onPlayAim
                                     <QRCode value="https://profil.skillzone.cz" size={120} />
                                 </div>
                                 <span className="mt-4 text-[10px] font-mono text-gray-400 uppercase tracking-widest text-center">
-                                    Naskenuj QR kód<br />pro přístup k profilu
+                                    {t('coming_profile_qr' as any)}
                                 </span>
                             </div>
                         )}
@@ -493,7 +491,7 @@ const ComingSoon: React.FC<ComingSoonProps> = ({ targetDate, onUnlock, onPlayAim
                                         💬 WA
                                     </a>
                                 </div>
-                                <div className="text-[9px] text-gray-600 font-mono mt-1.5">🕐 {language === 'cs' ? b.hours_cs : b.hours_en}</div>
+                                <div className="text-[9px] text-gray-600 font-mono mt-1.5">🕐 {language === 'cs' || language === 'sk' ? b.hours_cs : b.hours_en}</div>
                             </div>
                         ))}
                     </div>
@@ -504,24 +502,20 @@ const ComingSoon: React.FC<ComingSoonProps> = ({ targetDate, onUnlock, onPlayAim
                         <div className="relative text-center">
                             <div className="inline-block px-3 py-1 bg-yellow-500/20 border border-yellow-500/30 rounded-full mb-3">
                                 <span className="text-[10px] font-mono text-yellow-400 uppercase tracking-widest font-bold">
-                                    🎁 {language === 'cs' ? 'Akce pro nové hráče' : 'New player offer'}
+                                    🎁 {t('coming_voucher_badge' as any)}
                                 </span>
                             </div>
                             <h3 className="text-xl md:text-2xl font-orbitron font-bold text-white mb-3">
-                                {language === 'cs' ? '2 hodiny ZDARMA!' : '2 hours FREE!'}
+                                {t('coming_voucher_title' as any)}
                             </h3>
                             <p className="text-gray-300 text-sm leading-relaxed max-w-lg mx-auto mb-4">
-                                {language === 'cs'
-                                    ? 'Chceš zkusit naše služby? Zaregistruj se u nás v klubu (registrace je ZDARMA) a řekni od pondělí do čtvrtka při registraci kód:'
-                                    : 'Want to try our services? Register at our club (registration is FREE) and say the code from Monday to Thursday:'}
+                                {t('coming_voucher_desc' as any)}
                             </p>
                             <div className="inline-block px-6 py-3 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-xl transform hover:scale-105 transition-transform shadow-lg shadow-yellow-500/20">
                                 <span className="text-2xl font-orbitron font-black text-black tracking-widest">„POUKAZ"</span>
                             </div>
                             <p className="mt-4 text-[10px] text-gray-500 font-mono max-w-md mx-auto leading-relaxed">
-                                {language === 'cs'
-                                    ? '* Poukaz na 2h zdarma lze uplatnit v denní otevírací době od pondělí do čtvrtka, mezi 8:00 a 18:00.'
-                                    : '* The 2h free voucher can be redeemed during daytime opening hours Monday to Thursday, between 8:00 and 18:00.'}
+                                {t('coming_voucher_fine' as any)}
                             </p>
                         </div>
                     </div>
@@ -530,7 +524,7 @@ const ComingSoon: React.FC<ComingSoonProps> = ({ targetDate, onUnlock, onPlayAim
                     {(onPlayAim || onPlayReaction) && (
                         <div className="mt-12 text-center w-full">
                             <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest font-mono mb-4 text-center">
-                                {language === 'cs' ? 'Zkrať si čekání tréninkem' : 'Kill some time training'}
+                                {t('coming_games_title' as any)}
                             </h3>
                             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                                 {onPlayAim && (
@@ -550,16 +544,14 @@ const ComingSoon: React.FC<ComingSoonProps> = ({ targetDate, onUnlock, onPlayAim
                     {/* Contact BOSS Ug4t0R */}
                     <div className="mt-16 text-center border-t border-white/5 pt-8">
                         <h3 className="text-xl font-bold text-white mb-2 font-orbitron">
-                            {language === 'cs' ? 'Dotazy? Pochvaly? Stížnosti?' : 'Questions? Praises? Complaints?'}
+                            {t('coming_boss_title' as any)}
                         </h3>
                         <p className="text-gray-400 text-xs md:text-sm font-mono leading-relaxed max-w-lg mx-auto mb-6">
-                            {language === 'cs'
-                                ? 'Náš BOSS Ug4t0R naslouchá a zajišťuje kvalitu! Je to jeden z nás, žádnej korporát. Zastihneš ho rovnou napřímo:'
-                                : 'Our BOSS Ug4t0R listens and ensures quality! He is one of us, no corporate guy. Contact him directly:'}
+                            {t('coming_boss_desc' as any)}
                         </p>
                         <div className="flex flex-wrap items-center justify-center gap-4">
                             <a href="tel:+420777766112" className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-green-400 hover:text-green-300 font-mono transition-colors text-sm">
-                                📞 {language === 'cs' ? 'Zavolat přímo Bossovi' : 'Call Boss directly'}
+                                📞 {t('coming_boss_call' as any)}
                             </a>
                             <a href="https://instagram.com/skillzone.cz" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-pink-400 hover:text-pink-300 font-mono transition-colors text-sm">
                                 📸 INSTAGRAM
@@ -593,15 +585,15 @@ const ComingSoon: React.FC<ComingSoonProps> = ({ targetDate, onUnlock, onPlayAim
                         )}
                         <span className="text-[8px] font-mono text-gray-600 tracking-[0.3em] group-hover:text-red-400 transition-colors uppercase">
                             {isVipLocked
-                                ? (language === 'cs' ? `Zamčeno (${lockoutRemaining})` : `Locked (${lockoutRemaining})`)
-                                : (language === 'cs' ? 'Vstup pro elitu' : 'Entry for the elite')}
+                                ? `${t('coming_vip_locked' as any)} (${lockoutRemaining})`
+                                : t('coming_vip_label' as any)}
                         </span>
                     </button>
                 ) : isVipLocked ? (
                     <div className="flex flex-col items-center gap-1 mt-4 opacity-40">
                         <ShieldAlert className="w-5 h-5 text-red-500" />
                         <span className="text-[9px] font-mono text-red-400 tracking-wider">
-                            {language === 'cs' ? `Příliš mnoho pokusů. Zkus to znovu za ${lockoutRemaining}.` : `Too many attempts. Try again in ${lockoutRemaining}.`}
+                            {`${t('coming_vip_too_many' as any)} ${lockoutRemaining}.`}
                         </span>
                     </div>
                 ) : (
@@ -613,7 +605,7 @@ const ComingSoon: React.FC<ComingSoonProps> = ({ targetDate, onUnlock, onPlayAim
                                 type="password"
                                 value={vipCode}
                                 onChange={(e) => setVipCode(e.target.value)}
-                                placeholder={language === 'cs' ? 'Zadej kód' : 'Enter code'}
+                                placeholder={t('coming_vip_placeholder' as any)}
                                 className={`bg-transparent outline-none border-none text-white font-mono w-24 text-center placeholder-gray-600 text-sm
                                     ${vipError ? 'text-red-500 animate-shake' : ''}`}
                                 maxLength={10}
@@ -624,7 +616,7 @@ const ComingSoon: React.FC<ComingSoonProps> = ({ targetDate, onUnlock, onPlayAim
                         </div>
                         {attemptsLeft < MAX_ATTEMPTS && (
                             <span className="text-[9px] font-mono text-gray-600">
-                                {language === 'cs' ? `Zbývá ${attemptsLeft} ${attemptsLeft === 1 ? 'pokus' : attemptsLeft <= 4 ? 'pokusy' : 'pokusů'}` : `${attemptsLeft} attempt${attemptsLeft !== 1 ? 's' : ''} remaining`}
+                                {t('coming_vip_attempts' as any).replace('{n}', String(attemptsLeft)).replace('{unit}', '')}
                             </span>
                         )}
                     </form>
