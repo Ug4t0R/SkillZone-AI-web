@@ -3,8 +3,9 @@
  * Toggleable via Supabase setting. Shows countdown timer, hype messaging,
  * branch contacts with Google Maps + WhatsApp links, and particle effects.
  */
-import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { Globe, Lock, Unlock, User, Smartphone } from 'lucide-react';
+import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react';
+import { Globe, Lock, Unlock, User, Smartphone, ArrowRight, ShieldAlert } from 'lucide-react';
+import { trackEvent } from '../services/ga4';
 import QRCode from 'react-qr-code';
 import { useAppContext } from '../context/AppContext';
 
@@ -204,6 +205,61 @@ const ComingSoon: React.FC<ComingSoonProps> = ({ targetDate, onUnlock, onPlayAim
     const [showVipInput, setShowVipInput] = useState(false);
     const vipInputRef = useRef<HTMLInputElement>(null);
 
+    // Rate limiting: 5 attempts, 1-hour lockout stored in localStorage
+    const VIP_STORAGE_KEY = 'sz_vip_attempts';
+    const MAX_ATTEMPTS = 5;
+    const LOCKOUT_MS = 60 * 60 * 1000; // 1 hour
+
+    const getVipAttempts = useCallback((): { count: number; lockedUntil: number | null } => {
+        try {
+            const raw = localStorage.getItem(VIP_STORAGE_KEY);
+            if (!raw) return { count: 0, lockedUntil: null };
+            return JSON.parse(raw);
+        } catch { return { count: 0, lockedUntil: null }; }
+    }, []);
+
+    const isVipLocked = useMemo(() => {
+        const { lockedUntil } = getVipAttempts();
+        return lockedUntil ? Date.now() < lockedUntil : false;
+    }, [showVipInput, vipError]); // re-evaluate when input opens or error occurs
+
+    const [lockoutRemaining, setLockoutRemaining] = useState('');
+    useEffect(() => {
+        if (!isVipLocked) { setLockoutRemaining(''); return; }
+        const tick = () => {
+            const { lockedUntil } = getVipAttempts();
+            if (!lockedUntil || Date.now() >= lockedUntil) {
+                setLockoutRemaining('');
+                localStorage.removeItem(VIP_STORAGE_KEY);
+                return;
+            }
+            const diff = lockedUntil - Date.now();
+            const m = Math.floor(diff / 60000);
+            const s = Math.floor((diff % 60000) / 1000);
+            setLockoutRemaining(`${m}:${String(s).padStart(2, '0')}`);
+        };
+        tick();
+        const id = setInterval(tick, 1000);
+        return () => clearInterval(id);
+    }, [isVipLocked, getVipAttempts]);
+
+    const recordFailedAttempt = useCallback(() => {
+        const attempts = getVipAttempts();
+        const newCount = attempts.count + 1;
+        if (newCount >= MAX_ATTEMPTS) {
+            localStorage.setItem(VIP_STORAGE_KEY, JSON.stringify({ count: newCount, lockedUntil: Date.now() + LOCKOUT_MS }));
+            trackEvent('vip_lockout', { attempts: newCount });
+        } else {
+            localStorage.setItem(VIP_STORAGE_KEY, JSON.stringify({ count: newCount, lockedUntil: null }));
+        }
+        trackEvent('vip_failed_attempt', { attempt: newCount, maxAttempts: MAX_ATTEMPTS });
+    }, [getVipAttempts]);
+
+    const attemptsLeft = useMemo(() => {
+        const { count } = getVipAttempts();
+        return Math.max(0, MAX_ATTEMPTS - count);
+    }, [vipError, showVipInput, getVipAttempts]);
+
     // Device detection
     const [isMobile, setIsMobile] = useState(false);
     useEffect(() => {
@@ -246,15 +302,18 @@ const ComingSoon: React.FC<ComingSoonProps> = ({ targetDate, onUnlock, onPlayAim
 
     const handleVipSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        if (isVipLocked || !vipCode.trim()) return;
         // The code is '1337', which is 'MTMzNw==' in base64
         if (btoa(vipCode) === 'MTMzNw==') {
             setVipSuccess(true);
             setVipError(false);
-            // Wait for user to explicitly click "Continue" button
+            localStorage.removeItem(VIP_STORAGE_KEY);
+            trackEvent('vip_code_success');
         } else {
             setVipError(true);
             setVipCode('');
-            setTimeout(() => setVipError(false), 1000);
+            recordFailedAttempt();
+            setTimeout(() => setVipError(false), 1500);
         }
     };
 
@@ -438,6 +497,35 @@ const ComingSoon: React.FC<ComingSoonProps> = ({ targetDate, onUnlock, onPlayAim
                             </div>
                         ))}
                     </div>
+
+                    {/* Voucher Promo */}
+                    <div className="mt-8 relative w-full rounded-2xl border border-yellow-500/30 bg-gradient-to-br from-yellow-900/20 via-black/40 to-orange-900/20 backdrop-blur-md p-6 overflow-hidden group hover:border-yellow-500/50 transition-all">
+                        <div className="absolute -inset-20 bg-gradient-to-r from-yellow-500/10 via-orange-500/5 to-transparent blur-3xl rounded-full opacity-40 pointer-events-none group-hover:opacity-60 transition-opacity" />
+                        <div className="relative text-center">
+                            <div className="inline-block px-3 py-1 bg-yellow-500/20 border border-yellow-500/30 rounded-full mb-3">
+                                <span className="text-[10px] font-mono text-yellow-400 uppercase tracking-widest font-bold">
+                                    🎁 {language === 'cs' ? 'Akce pro nové hráče' : 'New player offer'}
+                                </span>
+                            </div>
+                            <h3 className="text-xl md:text-2xl font-orbitron font-bold text-white mb-3">
+                                {language === 'cs' ? '2 hodiny ZDARMA!' : '2 hours FREE!'}
+                            </h3>
+                            <p className="text-gray-300 text-sm leading-relaxed max-w-lg mx-auto mb-4">
+                                {language === 'cs'
+                                    ? 'Chceš zkusit naše služby? Zaregistruj se u nás v klubu (registrace je ZDARMA) a řekni od pondělí do čtvrtka při registraci kód:'
+                                    : 'Want to try our services? Register at our club (registration is FREE) and say the code from Monday to Thursday:'}
+                            </p>
+                            <div className="inline-block px-6 py-3 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-xl transform hover:scale-105 transition-transform shadow-lg shadow-yellow-500/20">
+                                <span className="text-2xl font-orbitron font-black text-black tracking-widest">„POUKAZ"</span>
+                            </div>
+                            <p className="mt-4 text-[10px] text-gray-500 font-mono max-w-md mx-auto leading-relaxed">
+                                {language === 'cs'
+                                    ? '* Poukaz na 2h zdarma lze uplatnit v denní otevírací době od pondělí do čtvrtka, mezi 8:00 a 18:00.'
+                                    : '* The 2h free voucher can be redeemed during daytime opening hours Monday to Thursday, between 8:00 and 18:00.'}
+                            </p>
+                        </div>
+                    </div>
+
                     {/* Mini-Games to Kill Time */}
                     {(onPlayAim || onPlayReaction) && (
                         <div className="mt-12 text-center w-full">
@@ -491,31 +579,54 @@ const ComingSoon: React.FC<ComingSoonProps> = ({ targetDate, onUnlock, onPlayAim
                 {!showVipInput ? (
                     <button
                         onClick={() => {
+                            if (isVipLocked) return;
                             setShowVipInput(true);
                             setTimeout(() => vipInputRef.current?.focus(), 100);
                         }}
-                        className="group flex flex-col items-center gap-1 mt-4 transition-all opacity-30 hover:opacity-100"
+                        className={`group flex flex-col items-center gap-1 mt-4 transition-all ${isVipLocked ? 'opacity-20 cursor-not-allowed' : 'opacity-30 hover:opacity-100'}`}
                         aria-label="Secret Access"
                     >
-                        <Lock className="w-4 h-4 text-gray-500 group-hover:text-red-500 transition-colors" />
+                        {isVipLocked ? (
+                            <ShieldAlert className="w-4 h-4 text-red-500" />
+                        ) : (
+                            <Lock className="w-4 h-4 text-gray-500 group-hover:text-red-500 transition-colors" />
+                        )}
                         <span className="text-[8px] font-mono text-gray-600 tracking-[0.3em] group-hover:text-red-400 transition-colors uppercase">
-                            {language === 'cs' ? 'Vstup pro elitu' : 'Entry for the elite'}
+                            {isVipLocked
+                                ? (language === 'cs' ? `Zamčeno (${lockoutRemaining})` : `Locked (${lockoutRemaining})`)
+                                : (language === 'cs' ? 'Vstup pro elitu' : 'Entry for the elite')}
                         </span>
                     </button>
+                ) : isVipLocked ? (
+                    <div className="flex flex-col items-center gap-1 mt-4 opacity-40">
+                        <ShieldAlert className="w-5 h-5 text-red-500" />
+                        <span className="text-[9px] font-mono text-red-400 tracking-wider">
+                            {language === 'cs' ? `Příliš mnoho pokusů. Zkus to znovu za ${lockoutRemaining}.` : `Too many attempts. Try again in ${lockoutRemaining}.`}
+                        </span>
+                    </div>
                 ) : (
-                    <form onSubmit={handleVipSubmit} className="flex items-center gap-2 mt-2 animate-in slide-in-from-bottom border border-white/10 p-1 rounded-lg bg-black/50">
-                        <Lock className="w-4 h-4 text-gray-500 ml-2" />
-                        <input
-                            ref={vipInputRef}
-                            type="password"
-                            value={vipCode}
-                            onChange={(e) => setVipCode(e.target.value)}
-                            placeholder="_"
-                            className={`bg-transparent outline-none border-none text-white font-mono w-24 text-center placeholder-gray-700
-                                ${vipError ? 'text-red-500 animate-shake' : ''}`}
-                            maxLength={10}
-                        />
-                        <button type="submit" className="hidden">Submit</button>
+                    <form onSubmit={handleVipSubmit} className="flex flex-col items-center gap-2 mt-2 animate-in slide-in-from-bottom">
+                        <div className="flex items-center gap-2 border border-white/10 p-1 rounded-lg bg-black/50">
+                            <Lock className="w-4 h-4 text-gray-500 ml-2" />
+                            <input
+                                ref={vipInputRef}
+                                type="password"
+                                value={vipCode}
+                                onChange={(e) => setVipCode(e.target.value)}
+                                placeholder={language === 'cs' ? 'Zadej kód' : 'Enter code'}
+                                className={`bg-transparent outline-none border-none text-white font-mono w-24 text-center placeholder-gray-600 text-sm
+                                    ${vipError ? 'text-red-500 animate-shake' : ''}`}
+                                maxLength={10}
+                            />
+                            <button type="submit" className="p-1.5 rounded-md bg-red-600 hover:bg-red-500 transition-colors" aria-label="Submit">
+                                <ArrowRight className="w-4 h-4 text-white" />
+                            </button>
+                        </div>
+                        {attemptsLeft < MAX_ATTEMPTS && (
+                            <span className="text-[9px] font-mono text-gray-600">
+                                {language === 'cs' ? `Zbývá ${attemptsLeft} ${attemptsLeft === 1 ? 'pokus' : attemptsLeft <= 4 ? 'pokusy' : 'pokusů'}` : `${attemptsLeft} attempt${attemptsLeft !== 1 ? 's' : ''} remaining`}
+                            </span>
+                        )}
                     </form>
                 )}
             </footer>
