@@ -1,4 +1,6 @@
 // English (en)
+import { getYearsOnMarket } from '../utils/founding';
+const y = getYearsOnMarket();
 export const en = {
     nav_home: 'Home',
     nav_locations: 'Locations & Map',
@@ -146,7 +148,7 @@ export const en = {
     coming_voucher_badge: 'New player offer',
     coming_voucher_title: '2 hours FREE!',
     coming_voucher_desc: 'Want to try our services? Register at our club (registration is FREE) and say the code from Monday to Thursday during registration:',
-    coming_voucher_fine: '* The 2h free voucher can be redeemed during daytime opening hours Monday to Thursday, between 8:00 and 18:00.',
+    coming_voucher_fine: 'The 2h free voucher can be redeemed during daytime opening hours Monday to Thursday, between 8:00 and 18:00.',
 
     coming_games_title: 'Kill some time training',
     coming_boss_title: 'Questions? Praises? Complaints?',

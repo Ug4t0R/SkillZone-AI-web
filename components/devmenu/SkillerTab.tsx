@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Brain, Trash2, RefreshCw, Smartphone, Search, AlertCircle, Save, Eye, Palette, Gamepad2, Zap, TrendingUp, FileText, MessageSquare, ChevronDown, ChevronRight, Cloud, HelpCircle } from 'lucide-react';
+import { getFlagSvgUrl } from '../../utils/flags';
 import { UserProfile, ChatMessage } from '../../types';
 import { getAllUserProfiles, deleteUserProfile, getOrCreateVisitorId, saveRemoteUserProfile } from '../../utils/devTools';
 import { generateSkillerStats } from '../../services/geminiService';
@@ -31,6 +32,7 @@ const SkillerTab: React.FC = () => {
     // ─── Chat Sessions ───
     const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
     const [expandedProfile, setExpandedProfile] = useState<string | null>(null);
+    const [expandedSession, setExpandedSession] = useState<string | null>(null);
     const [topQuestions, setTopQuestions] = useState<string[]>([]);
     const [showTopQ, setShowTopQ] = useState(false);
 
@@ -592,39 +594,58 @@ const SkillerTab: React.FC = () => {
                                                 </button>
                                                 {isExpanded && (
                                                     <div className="divide-y divide-white/5">
-                                                        {userSessions.slice(0, 5).map((session, si) => {
+                                                        {userSessions.slice(0, 10).map((session, si) => {
                                                             const msgs = (session.messages as ChatMessage[]) || [];
                                                             const userMsgs = msgs.filter(m => m.role === 'user');
                                                             const lastUser = userMsgs[userMsgs.length - 1]?.text || '';
+                                                            const isSessionOpen = expandedSession === session.id;
                                                             return (
-                                                                <div key={session.id} className="p-3 bg-black/30 space-y-2">
-                                                                    <div className="flex items-center gap-2 flex-wrap">
-                                                                        <span className="text-[9px] text-gray-600 font-mono">#{si + 1}</span>
-                                                                        <span className="text-[10px] text-gray-400 font-mono">
-                                                                            {new Date(session.started_at).toLocaleString('cs-CZ')}
-                                                                        </span>
-                                                                        <span className="text-[9px] text-gray-600 font-mono">{msgs.length} zpráv</span>
-                                                                        {session.ip_address && session.ip_address !== 'unknown' && (
-                                                                            <span className="text-[9px] font-mono bg-blue-900/30 text-blue-300 px-1.5 py-0.5 rounded border border-blue-500/20">
-                                                                                🌐 {session.ip_address}
+                                                                <div key={session.id} className="bg-black/30">
+                                                                    <button
+                                                                        onClick={() => setExpandedSession(isSessionOpen ? null : session.id)}
+                                                                        className="w-full p-3 space-y-2 text-left hover:bg-white/5 transition-colors cursor-pointer"
+                                                                    >
+                                                                        <div className="flex items-center gap-2 flex-wrap">
+                                                                            {isSessionOpen ? <ChevronDown className="w-3 h-3 text-blue-400" /> : <ChevronRight className="w-3 h-3 text-gray-600" />}
+                                                                            <span className="text-[9px] text-gray-600 font-mono">#{si + 1}</span>
+                                                                            <span className="text-[10px] text-gray-400 font-mono">
+                                                                                {new Date(session.started_at).toLocaleString('cs-CZ')}
                                                                             </span>
-                                                                        )}
-                                                                        {session.timezone && (
-                                                                            <span className="text-[9px] text-gray-600 font-mono">{session.timezone}</span>
-                                                                        )}
-                                                                        {session.screen_resolution && (
-                                                                            <span className="text-[9px] text-gray-600 font-mono">🖥 {session.screen_resolution}</span>
-                                                                        )}
-                                                                    </div>
-                                                                    {session.user_agent && (
-                                                                        <div className="text-[9px] text-gray-600 font-mono truncate" title={session.user_agent}>
-                                                                            {session.user_agent.substring(0, 80)}…
+                                                                            <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded ${isSessionOpen ? 'bg-blue-500/20 text-blue-300' : 'text-gray-600'}`}>{msgs.length} zpráv</span>
+                                                                            {session.ip_address && session.ip_address !== 'unknown' && (
+                                                                                <span className="text-[9px] font-mono bg-blue-900/30 text-blue-300 px-1.5 py-0.5 rounded border border-blue-500/20">
+                                                                                    🌐 {session.ip_address}
+                                                                                </span>
+                                                                            )}
+                                                                            {session.screen_resolution && (
+                                                                                <span className="text-[9px] text-gray-600 font-mono">🖥 {session.screen_resolution}</span>
+                                                                            )}
                                                                         </div>
-                                                                    )}
-                                                                    {lastUser && (
-                                                                        <div className="text-[10px] text-gray-400 bg-white/5 rounded px-2 py-1 border-l-2 border-blue-500/40">
-                                                                            <span className="text-blue-400 font-mono text-[9px]">last: </span>
-                                                                            {lastUser.substring(0, 120)}{lastUser.length > 120 ? '…' : ''}
+                                                                        {!isSessionOpen && lastUser && (
+                                                                            <div className="text-[10px] text-gray-400 bg-white/5 rounded px-2 py-1 border-l-2 border-blue-500/40 ml-5">
+                                                                                <span className="text-blue-400 font-mono text-[9px]">last: </span>
+                                                                                {lastUser.substring(0, 120)}{lastUser.length > 120 ? '…' : ''}
+                                                                            </div>
+                                                                        )}
+                                                                    </button>
+                                                                    {isSessionOpen && (
+                                                                        <div className="px-3 pb-3 space-y-2 border-t border-white/5 pt-2 max-h-[400px] overflow-y-auto custom-scrollbar">
+                                                                            {msgs.length === 0 && (
+                                                                                <div className="text-[10px] text-gray-600 font-mono text-center py-4">Prázdná konverzace</div>
+                                                                            )}
+                                                                            {msgs.map((m, mi) => (
+                                                                                <div key={mi} className={`flex ${m.role === 'user' ? 'justify-start' : 'justify-end'}`}>
+                                                                                    <div className={`max-w-[85%] p-2.5 rounded-lg text-[11px] font-mono leading-relaxed ${m.role === 'user'
+                                                                                        ? 'bg-zinc-800 border border-white/10 text-gray-200'
+                                                                                        : 'bg-sz-red/10 border border-sz-red/20 text-gray-300'
+                                                                                        }`}>
+                                                                                        <div className="text-[8px] mb-1 opacity-40 uppercase tracking-wider font-bold">
+                                                                                            {m.role === 'user' ? '👤 UŽIVATEL' : '🤖 SKILLER'}
+                                                                                        </div>
+                                                                                        <div className="whitespace-pre-wrap break-words">{m.text}</div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            ))}
                                                                         </div>
                                                                     )}
                                                                 </div>

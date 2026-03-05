@@ -580,6 +580,15 @@ export async function submitScore(entry: LeaderboardEntry): Promise<boolean> {
     try {
         const sb = getSupabase();
         if (!sb) return false;
+
+        // SECURITY: validate numeric ranges to prevent spoofed entries
+        if (entry.score < 0 || entry.score > 50000) return false;
+        if (entry.accuracy < 0 || entry.accuracy > 100) return false;
+        if (entry.avg_reaction < 0 || entry.avg_reaction > 10000) return false;
+        if (entry.best_reaction < 10 || entry.best_reaction > 10000) return false; // <10ms is inhuman
+        if (entry.max_combo < 0 || entry.max_combo > 100) return false;
+        if (entry.misclicks < 0 || entry.misclicks > 1000) return false;
+
         const { error } = await sb.from('web_leaderboard').insert([{
             player_name: (entry.player_name || 'Anon').trim().slice(0, 20),
             score: entry.score,

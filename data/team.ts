@@ -1,3 +1,5 @@
+import { getYearsOnMarket } from '../utils/founding';
+
 export interface TeamMember {
     id: string;
     name: string;
@@ -21,7 +23,7 @@ export const TEAM_DATA: TeamMember[] = [
         class: 'Commander',
         rank: 'Boss',
         location: 'HQ',
-        bio: 'Založil SkillZone v 2005. 20 let buduje nejlepší herní komunitu v Praze. Vizionář, stratég, gamer heart.',
+        bio: `Založil SkillZone v 2005. ${getYearsOnMarket()} let buduje nejlepší herní komunitu v Praze. Vizionář, stratég, gamer heart.`,
         skills: ['Leadership', 'Strategy', 'Business', 'Gaming Culture'],
         joinedYear: 2005,
         emoji: '👑',

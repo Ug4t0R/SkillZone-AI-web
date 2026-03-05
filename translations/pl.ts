@@ -128,7 +128,7 @@ export const pl = {
     coming_voucher_badge: 'Oferta dla nowych graczy',
     coming_voucher_title: '2 godziny ZA DARMO!',
     coming_voucher_desc: 'Chcesz wypróbować nasze usługi? Zarejestruj się w naszym klubie (rejestracja jest BEZPŁATNA) i powiedz od poniedziałku do czwartku przy rejestracji kod:',
-    coming_voucher_fine: '* Voucher na 2h za darmo można wykorzystać w godzinach otwarcia od poniedziałku do czwartku, między 8:00 a 18:00.',
+    coming_voucher_fine: 'Voucher na 2h za darmo można wykorzystać w godzinach otwarcia od poniedziałku do czwartku, między 8:00 a 18:00.',
     coming_games_title: 'Skróć sobie oczekiwanie',
     coming_boss_title: 'Pytania? Pochwały? Skargi?',
     coming_boss_desc: 'Nasz BOSS Ug4t0R słucha i dba o jakość! Jest jednym z nas, żaden korporat. Skontaktuj się z nim bezpośrednio:',

@@ -21,19 +21,19 @@ const ROUTES: RouteEntry[] = [
     {
         view: 'home',
         canonical: '/',
-        aliases: [],
+        aliases: ['/bar', '/info', '/skillvestr', '/sms', '/appnews', '/appwelcome', '/xxx', '/ohrada'],
         titleKey: 'nav_home',
     },
     {
         view: 'locations',
         canonical: '/provozovny',
-        aliases: ['/pobocky', '/locations', '/branches'],
+        aliases: ['/pobocky', '/locations', '/branches', '/skillzone-clubs', '/contact'],
         titleKey: 'nav_locations',
     },
     {
         view: 'branch_zizkov',
         canonical: '/provozovny/zizkov',
-        aliases: ['/zizkov'],
+        aliases: ['/zizkov', '/provozovny/nonstop'],
         titleKey: 'nav_locations',
         hidden: true,
     },
@@ -54,14 +54,14 @@ const ROUTES: RouteEntry[] = [
     {
         view: 'branch_bootcamp',
         canonical: '/provozovny/bootcamp',
-        aliases: ['/bootcamp'],
+        aliases: ['/bootcamp', '/provozovny/holesovice'],
         titleKey: 'nav_locations',
         hidden: true,
     },
     {
         view: 'pricing',
         canonical: '/cenik',
-        aliases: ['/pricing', '/price-list'],
+        aliases: ['/pricing', '/price-list', '/freetime'],
         titleKey: 'nav_pricing',
     },
     {
@@ -73,7 +73,7 @@ const ROUTES: RouteEntry[] = [
     {
         view: 'services',
         canonical: '/sluzby',
-        aliases: ['/services', '/b2b'],
+        aliases: ['/services', '/b2b', '/lanparty', '/skillparty', '/skillparty/lol', '/skillparty/cs', '/skillzone-cz-lanparty'],
         titleKey: 'nav_services',
     },
     {
@@ -156,9 +156,11 @@ for (const route of ROUTES) {
 
 // ─── PUBLIC API ──────────────────────────────────────────────────────
 
-/** Resolve a URL path to an AppView. Returns undefined if no match. */
+/** Resolve a URL path to an AppView. Returns undefined if no match.
+ *  Strips trailing slashes for WordPress URL compatibility. */
 export function getViewForPath(path: string): AppView | undefined {
-    return pathToViewMap[path.toLowerCase()];
+    const normalized = path.toLowerCase().replace(/\/+$/, '') || '/';
+    return pathToViewMap[normalized];
 }
 
 /** Get the canonical URL for a given view. Falls back to '/' */

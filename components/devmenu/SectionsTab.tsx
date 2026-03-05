@@ -170,14 +170,19 @@ const SectionsTab: React.FC<SectionsTabProps> = ({ addLog }) => {
                         <span className="text-sm">🚀</span>
                         <h4 className="text-xs font-bold text-orange-400 uppercase tracking-wider">Coming Soon — Countdown</h4>
                     </div>
+                    {countdownDate && (
+                        <div className="text-[10px] font-mono text-orange-300 bg-orange-500/10 border border-orange-500/20 rounded px-3 py-1.5">
+                            📅 Aktuální: <span className="text-white font-bold">{new Date(countdownDate).toLocaleString('cs-CZ')}</span>
+                        </div>
+                    )}
                     <div className="flex items-center gap-3">
                         <label className="text-[10px] text-gray-500 font-mono uppercase shrink-0">Cílové datum:</label>
                         <input
                             type="datetime-local"
-                            value={countdownDate}
+                            value={countdownDate ? countdownDate.slice(0, 16) : ''}
                             onChange={async (e) => {
                                 const val = e.target.value;
-                                setCountdownDate(val);
+                                setCountdownDate(val ? new Date(val).toISOString() : '');
                                 const ok = await setSetting('coming_soon_date', val ? new Date(val).toISOString() : '');
                                 addLog(ok ? `Countdown set to ${val}` : 'Failed to save countdown', ok ? 'success' : 'error');
                             }}

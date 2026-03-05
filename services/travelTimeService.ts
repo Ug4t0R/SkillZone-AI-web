@@ -4,6 +4,7 @@
  */
 
 import { getSupabase } from './supabaseClient';
+import { callPlacesProxy } from './apiProxy';
 
 // ─── Types ──────────────────────────────────────────────────────────
 
@@ -100,16 +101,11 @@ export function generateDeepLinks(origin: LatLng, locationId: string) {
 // ─── Geocoding (Address → Coordinates) ──────────────────────────────
 
 export async function geocodeAddress(address: string): Promise<LatLng | null> {
-    const apiKey = (process.env as any).GOOGLE_PLACES_KEY;
-    if (!apiKey) return null;
-
     try {
-        const response = await fetch(
-            `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address + ', Praha')}&key=${apiKey}&region=cz`
+        const data = await callPlacesProxy(
+            `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address + ', Praha')}&region=cz`,
+            { method: 'GET' }
         );
-        if (!response.ok) return null;
-
-        const data = await response.json();
         const loc = data.results?.[0]?.geometry?.location;
         if (loc) return { lat: loc.lat, lng: loc.lng };
         return null;
@@ -139,9 +135,6 @@ async function fetchRouteEstimate(
     destination: LatLng,
     mode: 'WALK' | 'TRANSIT' | 'DRIVE'
 ): Promise<TravelEstimate | null> {
-    const apiKey = (process.env as any).GOOGLE_PLACES_KEY;
-    if (!apiKey) return null;
-
     const modeMap: Record<string, TravelEstimate['mode']> = {
         WALK: 'walking',
         TRANSIT: 'transit',
@@ -151,36 +144,28 @@ async function fetchRouteEstimate(
     try {
         await waitForRateLimit();
 
-        const response = await fetch('https://routes.googleapis.com/directions/v2:computeRoutes', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Goog-Api-Key': apiKey,
-                'X-Goog-FieldMask': 'routes.duration,routes.distanceMeters,routes.legs.steps.transitDetails',
-            },
-            body: JSON.stringify({
-                origin: { location: { latLng: { latitude: origin.lat, longitude: origin.lng } } },
-                destination: { location: { latLng: { latitude: destination.lat, longitude: destination.lng } } },
-                travelMode: mode,
-                computeAlternativeRoutes: false,
-                languageCode: 'cs',
-                regionCode: 'CZ',
-            }),
-        });
+        const data = await callPlacesProxy(
+            'https://routes.googleapis.com/directions/v2:computeRoutes',
+            {
+                method: 'POST',
+                body: {
+                    origin: { location: { latLng: { latitude: origin.lat, longitude: origin.lng } } },
+                    destination: { location: { latLng: { latitude: destination.lat, longitude: destination.lng } } },
+                    travelMode: mode,
+                    computeAlternativeRoutes: false,
+                    languageCode: 'cs',
+                    regionCode: 'CZ',
+                },
+                fieldMask: 'routes.duration,routes.distanceMeters,routes.legs.steps.transitDetails',
+            }
+        );
 
-        if (!response.ok) {
-            console.error(`[TravelTime] Routes API error (${mode}):`, response.status, await response.text());
-            return null;
-        }
-
-        const data = await response.json();
         const route = data.routes?.[0];
         if (!route) return null;
 
         const durationSeconds = parseInt(route.duration?.replace('s', '') || '0');
         const distanceMeters = route.distanceMeters || 0;
 
-        // Extract transit details
         let transitDetails: string | undefined;
         if (mode === 'TRANSIT' && route.legs) {
             const transitSteps = route.legs

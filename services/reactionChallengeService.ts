@@ -425,6 +425,14 @@ export async function submitReactionScore(entry: ReactionLeaderboardEntry): Prom
     try {
         const sb = getSupabase();
         if (!sb) return false;
+
+        // SECURITY: validate numeric ranges to prevent spoofed entries
+        if (entry.score < 0 || entry.score > 50000) return false;
+        if (entry.avg_reaction < 10 || entry.avg_reaction > 10000) return false; // <10ms is inhuman
+        if (entry.best_reaction < 10 || entry.best_reaction > 10000) return false;
+        if (entry.false_starts < 0 || entry.false_starts > 100) return false;
+        if (entry.rounds_played < 1 || entry.rounds_played > 50) return false;
+
         const { error } = await sb.from('web_reaction_leaderboard').insert([{
             player_name: (entry.player_name || 'Anon').trim().slice(0, 20),
             score: entry.score,

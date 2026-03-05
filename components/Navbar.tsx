@@ -5,17 +5,11 @@ import { AppView } from '../types';
 import { useAppContext } from '../context/AppContext';
 import { Language } from '../context/AppContext';
 import { SectionConfig } from '../services/sectionConfig';
+import { getFlagSvgUrl, LANG_FLAG_CODES } from '../utils/flags';
 
-// Flag emoji + short code for each language
-const LANG_FLAGS: Record<Language, { flag: string; code: string }> = {
-  cs: { flag: '🇨🇿', code: 'CS' },
-  sk: { flag: '🇸🇰', code: 'SK' },
-  en: { flag: '🇬🇧', code: 'EN' },
-  de: { flag: '🇩🇪', code: 'DE' },
-  pl: { flag: '🇵🇱', code: 'PL' },
-  ru: { flag: '🇷🇺', code: 'RU' },
-  ua: { flag: '🇺🇦', code: 'UA' },
-  vi: { flag: '🇻🇳', code: 'VN' },
+// Short code for each language
+const LANG_CODES: Record<Language, string> = {
+  cs: 'CS', sk: 'SK', en: 'EN', de: 'DE', pl: 'PL', ru: 'RU', ua: 'UA', vi: 'VN',
 };
 
 interface NavbarProps {
@@ -133,8 +127,8 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, onChangeView, adminStatus,
                   onClick={() => setLangDropdownOpen(!langDropdownOpen)}
                   className="flex items-center gap-1.5 text-sm font-bold font-mono text-gray-600 dark:text-gray-300 hover:text-sz-red transition-colors px-2 py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5"
                 >
-                  <span className="text-base">{LANG_FLAGS[language].flag}</span>
-                  <span className="text-[10px] tracking-wider">{LANG_FLAGS[language].code}</span>
+                  <img src={getFlagSvgUrl(language)} alt={language} className="w-5 h-4 rounded-sm object-cover" />
+                  <span className="text-[10px] tracking-wider">{LANG_CODES[language]}</span>
                 </button>
 
                 {langDropdownOpen && (
@@ -150,8 +144,8 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, onChangeView, adminStatus,
                             }`}
                           title={lang.toUpperCase()}
                         >
-                          <span className="text-xl">{LANG_FLAGS[lang].flag}</span>
-                          <span className="text-[9px] font-bold uppercase tracking-wider">{LANG_FLAGS[lang].code}</span>
+                          <img src={getFlagSvgUrl(lang)} alt={lang} className="w-7 h-5 rounded-sm object-cover" />
+                          <span className="text-[9px] font-bold uppercase tracking-wider">{LANG_CODES[lang]}</span>
                         </button>
                       ))}
                     </div>
@@ -207,7 +201,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, onChangeView, adminStatus,
               onClick={() => setLangDropdownOpen(!langDropdownOpen)}
               className="text-base p-2 min-w-[44px] min-h-[44px] flex items-center justify-center"
             >
-              {LANG_FLAGS[language].flag}
+              <img src={getFlagSvgUrl(language)} alt={language} className="w-6 h-4 rounded-sm object-cover" />
             </button>
             <button
               onClick={onAdminClick}
@@ -253,8 +247,8 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, onChangeView, adminStatus,
                         : 'hover:bg-gray-100 dark:hover:bg-white/5'
                         }`}
                     >
-                      <span className="text-2xl">{LANG_FLAGS[lang].flag}</span>
-                      <span className="text-[9px] font-bold text-gray-500 dark:text-gray-400">{LANG_FLAGS[lang].code}</span>
+                      <img src={getFlagSvgUrl(lang)} alt={lang} className="w-8 h-6 rounded-sm object-cover" />
+                      <span className="text-[9px] font-bold text-gray-500 dark:text-gray-400">{LANG_CODES[lang]}</span>
                     </button>
                   ))}
                 </div>

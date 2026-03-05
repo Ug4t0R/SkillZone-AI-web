@@ -1,4 +1,6 @@
 // German (de)
+import { getYearsOnMarket } from '../utils/founding';
+const y = getYearsOnMarket();
 export const de = {
     nav_home: 'Startseite',
     nav_locations: 'Standorte & Karte',
@@ -72,8 +74,8 @@ export const de = {
 
     owner_title: 'BOSS LEVEL',
     owner_role: 'Founder / Head Admin',
-    owner_bio: 'Kein Konzern-Manager in Krawatte, der nie eine Maus gehalten hat. Tomáš gründete SkillZone 2005, weil er einen Ort wollte, an dem er selbst spielen würde. Du triffst ihn an der Bar, bei LANs oder im Game. Ein Herzmensch, der das seit 20 Jahren durchzieht und jeden Stammgast beim Namen kennt.',
-    owner_stat_xp: '20 Jahre',
+    owner_bio: `Kein Konzern-Manager in Krawatte, der nie eine Maus gehalten hat. Tomáš gründete SkillZone 2005, weil er einen Ort wollte, an dem er selbst spielen würde. Du triffst ihn an der Bar, bei LANs oder im Game. Ein Herzmensch, der das seit ${y} Jahren durchzieht und jeden Stammgast beim Namen kennt.`,
+    owner_stat_xp: `${y} Jahre`,
     owner_stat_class: 'Warlord',
     owner_stat_skill: 'Banhammer',
 
@@ -145,7 +147,7 @@ export const de = {
     coming_voucher_badge: 'Angebot für neue Spieler',
     coming_voucher_title: '2 Stunden GRATIS!',
     coming_voucher_desc: 'Willst du unsere Dienste testen? Registriere dich bei uns im Club (Registrierung ist KOSTENLOS) und sag Mo–Do bei der Registrierung den Code:',
-    coming_voucher_fine: '* Der 2h-Gutschein gilt Mo–Do, 8:00–18:00 Uhr.',
+    coming_voucher_fine: 'Der 2h-Gutschein gilt Mo–Do, 8:00–18:00 Uhr.',
     coming_games_title: 'Vertreib dir die Wartezeit',
     coming_boss_title: 'Fragen? Lob? Beschwerden?',
     coming_boss_desc: 'Unser BOSS Ug4t0R hört zu und sorgt für Qualität! Er ist einer von uns, kein Konzerntyp. Kontaktiere ihn direkt:',

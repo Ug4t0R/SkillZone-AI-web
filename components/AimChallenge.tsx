@@ -701,13 +701,6 @@ const AimChallenge: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                     </div>
                 </div>
             )}
-            <div
-                className="aim-arena-bg absolute inset-0 rounded-[30px] shadow-[inset_0_0_100px_rgba(0,0,0,0.8)] overflow-hidden pointer-events-auto"
-                style={{
-                    background: 'radial-gradient(circle at 50% 50%, #1a1a24 0%, #0a0a0f 100%)',
-                    cursor: 'crosshair',
-                }}
-            ></div>
         </div>
     );
 };

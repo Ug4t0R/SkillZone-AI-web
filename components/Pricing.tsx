@@ -2,6 +2,7 @@
 import React, { useState, useMemo } from 'react';
 import { Crown, Star, Gem, Zap, Users, Clock, Monitor, Gamepad2, Moon, CalendarDays, Gift, Heart, UserPlus, Calculator, ChevronDown, MapPin } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
+import { getYearsOnMarket } from '../utils/founding';
 import {
     MEMBER_TIERS, TOP_UP_BONUSES, EXTRA_FEES, PACKAGES, LOCATIONS,
     type SeatType,
@@ -113,7 +114,7 @@ const Pricing: React.FC = () => {
                 <div className="mb-12 bg-gradient-to-r from-sz-red/20 via-red-600/10 to-sz-red/20 border border-sz-red/30 rounded-xl p-6 text-center">
                     <div className="text-3xl mb-2">🎉</div>
                     <h2 className="text-xl md:text-2xl font-orbitron font-black text-gray-900 dark:text-white mb-3">
-                        {cs ? 'SLAVÍME 20 LET' : 'CELEBRATING 20 YEARS'} 🎉
+                        {cs ? `SLAVÍME ${getYearsOnMarket()} LET` : `CELEBRATING ${getYearsOnMarket()} YEARS`} 🎉
                     </h2>
                     <p className="text-gray-600 dark:text-gray-300 mb-1">
                         {cs ? 'Odměny pro naše věrné členy!' : 'Rewards for our loyal members!'}

@@ -1,6 +1,9 @@
 import { useEffect } from 'react';
 import { AppView } from '../types';
 import { Language } from '../context/AppContext';
+import { getYearsOnMarket } from '../utils/founding';
+
+const years = getYearsOnMarket();
 
 interface PageMeta {
     title: string;
@@ -13,7 +16,7 @@ const PAGE_META: Partial<Record<Language, PageMetaMap>> = {
     cs: {
         home: {
             title: 'SkillZone | Síť herních klubů v Praze',
-            description: 'SkillZone — síť herních klubů v Praze. RTX 4070 Ti, 240Hz monitory, 10Gbps internet. Žižkov NONSTOP 24/7, Háje, Stodůlky. 20 let na trhu.'
+            description: `SkillZone — síť herních klubů v Praze. RTX 4070 Ti, 240Hz monitory, 10Gbps internet. Žižkov NONSTOP 24/7, Háje, Stodůlky. ${years} let na trhu.`
         },
         locations: {
             title: 'Pobočky | SkillZone Gaming Club',
@@ -25,7 +28,7 @@ const PAGE_META: Partial<Record<Language, PageMetaMap>> = {
         },
         history: {
             title: 'Historie | SkillZone Gaming Club',
-            description: '20 let herní historie. Od 10 PC ve Strakonicích po síť herních klubů v Praze.'
+            description: `${years} let herní historie. Od 10 PC ve Strakonicích po síť herních klubů v Praze.`
         },
         booking: {
             title: 'Rezervace | SkillZone Gaming Club',
@@ -67,7 +70,7 @@ const PAGE_META: Partial<Record<Language, PageMetaMap>> = {
     en: {
         home: {
             title: 'SkillZone | Gaming Club Network in Prague',
-            description: 'SkillZone — gaming club network in Prague. RTX 4070 Ti, 240Hz monitors, 10Gbps internet. 20 years of gaming.'
+            description: `SkillZone — gaming club network in Prague. RTX 4070 Ti, 240Hz monitors, 10Gbps internet. ${years} years of gaming.`
         },
         locations: {
             title: 'Locations | SkillZone Gaming Club',
@@ -79,7 +82,7 @@ const PAGE_META: Partial<Record<Language, PageMetaMap>> = {
         },
         history: {
             title: 'History | SkillZone Gaming Club',
-            description: '20 years of gaming history. From 10 PCs in Strakonice to a gaming club network in Prague.'
+            description: `${years} years of gaming history. From 10 PCs in Strakonice to a gaming club network in Prague.`
         },
         booking: {
             title: 'Booking | SkillZone Gaming Club',
@@ -121,7 +124,7 @@ const PAGE_META: Partial<Record<Language, PageMetaMap>> = {
     ru: {
         home: {
             title: 'SkillZone | Сеть игровых клубов в Праге',
-            description: 'SkillZone — сеть игровых клубов в Праге. RTX 4070 Ti, 240Hz мониторы, 10Gbps интернет. 20 лет на рынке.'
+            description: `SkillZone — сеть игровых клубов в Праге. RTX 4070 Ti, 240Hz мониторы, 10Gbps интернет. ${years} лет на рынке.`
         },
         locations: {
             title: 'Филиалы | SkillZone Gaming Club',
@@ -133,7 +136,7 @@ const PAGE_META: Partial<Record<Language, PageMetaMap>> = {
         },
         history: {
             title: 'История | SkillZone Gaming Club',
-            description: '20 лет игровой истории. От 10 ПК до сети клубов в Праге.'
+            description: `${years} лет игровой истории. От 10 ПК до сети клубов в Праге.`
         },
         booking: {
             title: 'Бронирование | SkillZone Gaming Club',
@@ -175,7 +178,7 @@ const PAGE_META: Partial<Record<Language, PageMetaMap>> = {
     ua: {
         home: {
             title: 'SkillZone | Мережа ігрових клубів у Празі',
-            description: 'SkillZone — мережа ігрових клубів у Празі. RTX 4070 Ti, 240Hz монітори, 10Gbps інтернет. 20 років на ринку.'
+            description: `SkillZone — мережа ігрових клубів у Празі. RTX 4070 Ti, 240Hz монітори, 10Gbps інтернет. ${years} років на ринку.`
         },
         locations: {
             title: 'Філіали | SkillZone Gaming Club',
@@ -187,7 +190,7 @@ const PAGE_META: Partial<Record<Language, PageMetaMap>> = {
         },
         history: {
             title: 'Історія | SkillZone Gaming Club',
-            description: '20 років ігрової історії. Від 10 ПК до мережі клубів у Празі.'
+            description: `${years} років ігрової історії. Від 10 ПК до мережі клубів у Празі.`
         },
         booking: {
             title: 'Бронювання | SkillZone Gaming Club',

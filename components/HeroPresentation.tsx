@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Wifi, Users, Calendar, ChevronRight, ChevronLeft, Zap, Monitor, Beer, Utensils } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
+import { getYearsOnMarket } from '../utils/founding';
 
 const SLIDE_DURATION = 6000; // 6 seconds per slide
 const TOTAL_SLIDES = 5;
@@ -99,7 +100,7 @@ const HeroPresentation: React.FC = () => {
                     <div className="bg-gradient-to-b from-gray-100 to-white dark:from-zinc-900 dark:to-black border border-gray-200 dark:border-sz-red/20 p-6 rounded-sm flex flex-col items-center justify-center group hover:border-sz-red/60 transition-all shadow-lg">
                         <Calendar className="w-8 h-8 text-sz-red mb-3 group-hover:scale-110 transition-transform" />
                         <span className="text-4xl md:text-5xl font-black font-orbitron text-gray-900 dark:text-white mb-1">
-                            {currentSlide === 1 ? <AnimatedCounter end={20} /> : '0'}
+                            {currentSlide === 1 ? <AnimatedCounter end={getYearsOnMarket()} /> : '0'}
                         </span>
                         <span className="text-gray-500 text-xs uppercase tracking-widest font-bold">{t('slide_years')}</span>
                     </div>

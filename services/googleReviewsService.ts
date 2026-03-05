@@ -3,6 +3,7 @@
  * and uses Gemini AI to curate them with transparency commentary.
  */
 import { GoogleGenAI, Type } from '@google/genai';
+import { callPlacesProxy, callSerpApiProxy } from './apiProxy';
 
 // ─── Place IDs for each SkillZone location ──────────────────────────
 // These are Google Place IDs — find them at:
@@ -76,43 +77,26 @@ const GOOGLE_MAPS_URLS: Record<string, string> = {
  * Uses Places API (New) Text Search endpoint.
  */
 export async function searchPlaceId(query: string): Promise<string | null> {
-    const apiKey = (process.env as any).GOOGLE_PLACES_KEY;
-    if (!apiKey) {
-        console.error('[GoogleReviews] No GOOGLE_PLACES_KEY configured');
-        return null;
-    }
-
     try {
-        const response = await fetch('https://places.googleapis.com/v1/places:searchText', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Goog-Api-Key': apiKey,
-                'X-Goog-FieldMask': 'places.id,places.displayName',
-            },
-            body: JSON.stringify({
-                textQuery: query,
-                locationBias: {
-                    circle: {
-                        center: { latitude: 50.0755, longitude: 14.4378 }, // Prague
-                        radius: 30000,
+        const data = await callPlacesProxy(
+            'https://places.googleapis.com/v1/places:searchText',
+            {
+                method: 'POST',
+                body: {
+                    textQuery: query,
+                    locationBias: {
+                        circle: {
+                            center: { latitude: 50.0755, longitude: 14.4378 },
+                            radius: 30000,
+                        },
                     },
+                    maxResultCount: 1,
                 },
-                maxResultCount: 1,
-            }),
-        });
-
-        if (!response.ok) {
-            const err = await response.text();
-            console.error('[GoogleReviews] Text Search failed:', response.status, err);
-            return null;
-        }
-
-        const data = await response.json();
+                fieldMask: 'places.id,places.displayName',
+            }
+        );
         const place = data.places?.[0];
-        if (place?.id) {
-            return place.id; // This is the Place ID like "places/ChIJ..."
-        }
+        if (place?.id) return place.id;
         return null;
     } catch (err) {
         console.error('[GoogleReviews] Text Search error:', err);
@@ -147,12 +131,6 @@ export async function fetchPlaceReviews(location: string): Promise<{
     reviews: GoogleReview[];
     rating: PlaceRating;
 } | null> {
-    const apiKey = (process.env as any).GOOGLE_PLACES_KEY;
-    if (!apiKey) {
-        console.error('[GoogleReviews] No GOOGLE_PLACES_KEY configured');
-        return null;
-    }
-
     const placeId = await resolvePlaceId(location);
     if (!placeId) {
         console.error(`[GoogleReviews] No Place ID for ${location}`);
@@ -160,23 +138,14 @@ export async function fetchPlaceReviews(location: string): Promise<{
     }
 
     try {
-        const response = await fetch(
+        const data = await callPlacesProxy(
             `https://places.googleapis.com/v1/places/${placeId}`,
             {
-                headers: {
-                    'X-Goog-Api-Key': apiKey,
-                    'X-Goog-FieldMask': 'reviews,rating,userRatingCount,googleMapsUri',
-                },
+                method: 'GET',
+                fieldMask: 'reviews,rating,userRatingCount,googleMapsUri',
             }
         );
 
-        if (!response.ok) {
-            const err = await response.text();
-            console.error(`[GoogleReviews] Place Details failed for ${location}:`, response.status, err);
-            return null;
-        }
-
-        const data = await response.json();
         const googleUrl = data.googleMapsUri || GOOGLE_MAPS_URLS[location] || '';
 
         const reviews: GoogleReview[] = (data.reviews || []).map((r: any, i: number) => ({
@@ -241,12 +210,6 @@ export async function fetchAllLocationReviewsDeep(
     reviews: GoogleReview[];
     ratings: Record<string, PlaceRating>;
 }> {
-    const apiKey = (process.env as any).GOOGLE_PLACES_KEY;
-    if (!apiKey) {
-        addLog('❌ No GOOGLE_PLACES_KEY configured!', 'error');
-        return { reviews: [], ratings: {} };
-    }
-
     const allReviews: GoogleReview[] = [];
     const ratings: Record<string, PlaceRating> = {};
     const seenAuthors = new Set<string>();
@@ -259,35 +222,23 @@ export async function fetchAllLocationReviewsDeep(
             continue;
         }
 
-        // Fetch with two different sort orders to maximize unique reviews
-        const sortOrders = ['', '&reviews_sort=newest'];
         const sortLabels = ['MOST_RELEVANT', 'NEWEST'];
 
-        for (let sortIdx = 0; sortIdx < sortOrders.length; sortIdx++) {
+        for (let sortIdx = 0; sortIdx < sortLabels.length; sortIdx++) {
             const sortLabel = sortLabels[sortIdx];
             addLog(`📍 ${PLACE_IDS[location].label} — fetching ${sortLabel}...`, 'info');
 
             try {
-                const response = await fetch(
+                const data = await callPlacesProxy(
                     `https://places.googleapis.com/v1/places/${placeId}`,
                     {
-                        headers: {
-                            'X-Goog-Api-Key': apiKey,
-                            'X-Goog-FieldMask': 'reviews,rating,userRatingCount,googleMapsUri',
-                        },
+                        method: 'GET',
+                        fieldMask: 'reviews,rating,userRatingCount,googleMapsUri',
                     }
                 );
 
-                if (!response.ok) {
-                    const err = await response.text();
-                    addLog(`⚠️ API error for ${location} (${sortLabel}): ${response.status}`, 'error');
-                    continue;
-                }
-
-                const data = await response.json();
                 const googleUrl = data.googleMapsUri || GOOGLE_MAPS_URLS[location] || '';
 
-                // Save rating from first fetch
                 if (sortIdx === 0) {
                     ratings[location] = {
                         rating: data.rating || 0,
@@ -303,7 +254,6 @@ export async function fetchAllLocationReviewsDeep(
                     const author = r.authorAttribution?.displayName || 'Anonym';
                     const authorKey = `${location}_${author}`;
 
-                    // Deduplicate by location+author
                     if (seenAuthors.has(authorKey)) continue;
                     seenAuthors.add(authorKey);
 
@@ -327,8 +277,6 @@ export async function fetchAllLocationReviewsDeep(
                 }
 
                 addLog(`   ✓ Got ${fetchedReviews.length} reviews, ${newCount} new unique`, 'info');
-
-                // Small delay between API calls to be kind to Google
                 await new Promise(r => setTimeout(r, 500));
 
             } catch (err) {
@@ -354,12 +302,6 @@ export async function fetchAllReviewsSerpApi(
     reviews: GoogleReview[];
     ratings: Record<string, PlaceRating>;
 }> {
-    const apiKey = (process.env as any).SERPAPI_KEY;
-    if (!apiKey) {
-        addLog('⚠️ No SERPAPI_KEY configured. Falling back to Google Places API...', 'info');
-        return fetchAllLocationReviewsDeep(addLog);
-    }
-
     const allReviews: GoogleReview[] = [];
     const ratings: Record<string, PlaceRating> = {};
     const seenIds = new Set<string>();
@@ -379,33 +321,20 @@ export async function fetchAllReviewsSerpApi(
         let page = 1;
         let locationReviewCount = 0;
 
-        // Loop through all pages
         while (true) {
-            const params = new URLSearchParams({
+            const params: Record<string, string> = {
                 engine: 'google_maps_reviews',
                 place_id: placeId,
-                api_key: apiKey,
-                hl: 'cs',          // Czech reviews first
+                hl: 'cs',
                 sort_by: 'newestFirst',
-            });
-            if (nextPageToken) {
-                params.set('next_page_token', nextPageToken);
-            }
+            };
+            if (nextPageToken) params.next_page_token = nextPageToken;
 
             addLog(`   📄 Page ${page}...`, 'info');
 
             try {
-                const response = await fetch(`/api/serpapi/search.json?${params.toString()}`);
+                const data = await callSerpApiProxy(params);
 
-                if (!response.ok) {
-                    const errText = await response.text();
-                    addLog(`   ❌ SerpApi error (${response.status}): ${errText.substring(0, 200)}`, 'error');
-                    break;
-                }
-
-                const data = await response.json();
-
-                // Extract place info (first page only)
                 if (page === 1 && data.place_info) {
                     ratings[location] = {
                         rating: data.place_info.rating || 0,
@@ -414,7 +343,6 @@ export async function fetchAllReviewsSerpApi(
                     addLog(`   ⭐ ${data.place_info.rating}/5 (${data.place_info.reviews} total reviews)`, 'info');
                 }
 
-                // Process reviews
                 const reviews = data.reviews || [];
                 if (reviews.length === 0) {
                     addLog(`   ℹ️ No more reviews on page ${page}`, 'info');
@@ -449,12 +377,10 @@ export async function fetchAllReviewsSerpApi(
 
                 addLog(`   ✓ Got ${reviews.length} reviews (${locationReviewCount} unique for this location)`, 'info');
 
-                // Check for next page
                 const serpPagination = data.serpapi_pagination;
                 if (serpPagination?.next_page_token) {
                     nextPageToken = serpPagination.next_page_token;
                     page++;
-                    // Small delay between pages to be kind
                     await new Promise(r => setTimeout(r, 300));
                 } else {
                     addLog(`   ✅ All ${locationReviewCount} reviews fetched for ${config.label}`, 'success');

@@ -1,4 +1,6 @@
 // Czech (cs) — Primary language
+import { getYearsOnMarket } from '../utils/founding';
+const y = getYearsOnMarket();
 export const cs = {
     nav_home: 'Domů',
     nav_locations: 'Pobočky & Mapa',
@@ -129,7 +131,7 @@ export const cs = {
     coming_badge: '🚀 Něco velkého se blíží',
     coming_title1: 'LEVEL UP',
     coming_title2: 'LOADING...',
-    coming_desc: 'Už 21 let na scéně! Přežili jsme Covid, otřepali se, otevřeli nové pobočky a teď s pomocí moderních technologií posouváme celý projekt na další level. Máš se fakt na co těšit.',
+    coming_desc: `Už ${y} let na scéně! Přežili jsme Covid, otřepali se, otevřeli nové pobočky a teď s pomocí moderních technologií posouváme celý projekt na další level. Máš se fakt na co těšit.`,
     coming_progress: 'PROGRESS',
     coming_almost: 'ALMOST THERE',
     coming_location_title: '📍 ZATÍM NÁS NAJDEŠ TADY',
@@ -146,7 +148,7 @@ export const cs = {
     coming_voucher_badge: 'Akce pro nové hráče',
     coming_voucher_title: '2 hodiny ZDARMA!',
     coming_voucher_desc: 'Chceš zkusit naše služby? Zaregistruj se u nás v klubu (registrace je ZDARMA) a řekni od pondělí do čtvrtka při registraci kód:',
-    coming_voucher_fine: '* Poukaz na 2h zdarma lze uplatnit v denní otevírací době od pondělí do čtvrtka, mezi 8:00 a 18:00.',
+    coming_voucher_fine: 'Poukaz na 2h zdarma lze uplatnit v denní otevírací době od pondělí do čtvrtka, mezi 8:00 a 18:00.',
 
     coming_games_title: 'Zkrať si čekání tréninkem',
     coming_boss_title: 'Dotazy? Pochvaly? Stížnosti?',

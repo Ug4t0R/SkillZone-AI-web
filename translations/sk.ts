@@ -1,4 +1,6 @@
 // Slovak (sk)
+import { getYearsOnMarket } from '../utils/founding';
+const y = getYearsOnMarket();
 export const sk = {
     nav_home: 'Domov',
     nav_locations: 'Pobočky & Mapa',
@@ -72,8 +74,8 @@ export const sk = {
 
     owner_title: 'BOSS LEVEL',
     owner_role: 'Founder / Head Admin',
-    owner_bio: 'Žiadny korporátny manažér v kravate, čo nikdy nedržal myš. Tomáš založil SkillZone v roku 2005, pretože chcel miesto, kde by sám chcel hrať. Stretneš ho na bare, na lankách alebo v hre. Srdciar, čo to ťahá 20 rokov a pozná každého štamgasta menom.',
-    owner_stat_xp: '20 Rokov',
+    owner_bio: `Žiadny korporátny manažér v kravate, čo nikdy nedržal myš. Tomáš založil SkillZone v roku 2005, pretože chcel miesto, kde by sám chcel hrať. Stretneš ho na bare, na lankách alebo v hre. Srdciar, čo to ťahá ${y} rokov a pozná každého štamgasta menom.`,
+    owner_stat_xp: `${y} Rokov`,
     owner_stat_class: 'Warlord',
     owner_stat_skill: 'Banhammer',
 
@@ -145,7 +147,7 @@ export const sk = {
     coming_voucher_badge: 'Akcia pre nových hráčov',
     coming_voucher_title: '2 hodiny ZADARMO!',
     coming_voucher_desc: 'Chceš vyskúšať naše služby? Zaregistruj sa u nás v klube (registrácia je ZADARMO) a povedz od pondelka do štvrtka pri registrácii kód:',
-    coming_voucher_fine: '* Poukaz na 2h zadarmo možno uplatniť v dennej otváracej dobe od pondelka do štvrtka, medzi 8:00 a 18:00.',
+    coming_voucher_fine: 'Poukaz na 2h zadarmo možno uplatniť v dennej otváracej dobe od pondelka do štvrtka, medzi 8:00 a 18:00.',
     coming_games_title: 'Skráť si čakanie tréningom',
     coming_boss_title: 'Otázky? Pochvaly? Sťažnosti?',
     coming_boss_desc: 'Náš BOSS Ug4t0R počúva a zabezpečuje kvalitu! Je to jeden z nás, žiaden korporát. Zastihnúť ho môžeš priamo:',

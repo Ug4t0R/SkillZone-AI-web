@@ -20,17 +20,36 @@ const DEFAULT_PROD_ENV: SupabaseEnv = {
     key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNucW11eWllaWJhaGxsdXFhZmJvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU0MDQ1NTgsImV4cCI6MjA4MDk4MDU1OH0.058WiFkALb3phaqpz6ls9pD0AUQ8QoiBBAelRMj35JY'
 };
 
+// SECURITY: Only allow Supabase URLs from trusted domains
+const ALLOWED_URL_PATTERNS = [/^https:\/\/[a-z0-9]+\.supabase\.co$/, /^http:\/\/localhost/];
+function isAllowedSupabaseUrl(url: string): boolean {
+    return ALLOWED_URL_PATTERNS.some(p => p.test(url));
+}
+
 let supabaseInstance: SupabaseClient | null = null;
 
 export const getSupabase = (): SupabaseClient => {
     if (supabaseInstance) return supabaseInstance;
     let url = localStorage.getItem(SUPABASE_URL_KEY) || DEFAULT_PROD_ENV.url;
     let key = localStorage.getItem(SUPABASE_KEY_KEY) || DEFAULT_PROD_ENV.key;
+    // SECURITY: reject tampered URLs
+    if (!isAllowedSupabaseUrl(url)) {
+        console.warn('[Security] Blocked non-whitelisted Supabase URL:', url);
+        url = DEFAULT_PROD_ENV.url;
+        key = DEFAULT_PROD_ENV.key;
+        localStorage.removeItem(SUPABASE_URL_KEY);
+        localStorage.removeItem(SUPABASE_KEY_KEY);
+    }
     supabaseInstance = createClient(url, key);
     return supabaseInstance;
 };
 
 export const saveSupabaseConfig = (url: string, key: string) => {
+    // SECURITY: only allow whitelisted Supabase URLs
+    if (!isAllowedSupabaseUrl(url)) {
+        console.warn('[Security] Rejected non-whitelisted Supabase URL:', url);
+        return;
+    }
     localStorage.setItem(SUPABASE_URL_KEY, url);
     localStorage.setItem(SUPABASE_KEY_KEY, key);
     supabaseInstance = null;

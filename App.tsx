@@ -40,6 +40,7 @@ import { getViewForPath, pushRoute } from './services/routeConfig';
 import { usePageMeta } from './hooks/usePageMeta';
 import { getCurrentUser, signOut, getSupabase } from './services/supabaseClient';
 import { initGA4, trackPageView } from './services/ga4';
+import { initGTM } from './services/gtm';
 import { initAnalytics, trackView } from './services/analytics';
 import { getSetting, checkSupabaseHealth, onHealthChange } from './services/webDataService';
 import MaintenanceMode from './components/MaintenanceMode';
@@ -85,14 +86,14 @@ const ArenaPromo = React.lazy(() => import('./components/seo/ArenaPromo'));
 const MvpPromo = React.lazy(() => import('./components/seo/MvpPromo'));
 const CybersportPromo = React.lazy(() => import('./components/seo/CybersportPromo'));
 
-const AUTHORIZED_EMAIL = 'tomas@skillzone.cz';
+import { AUTHORIZED_ADMIN_EMAIL as AUTHORIZED_EMAIL } from './utils/auth';
 
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<AppView>('home');
   const [isAiChatOpen, setIsAiChatOpen] = useState(false);
   const [isDevMenuOpen, setIsDevMenuOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
-  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(() => localStorage.getItem('skillzone_admin') === 'true');
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false); // SECURITY: never trust localStorage — always verify session
   const [isQuizOpen, setIsQuizOpen] = useState(false);
   const [isAimOpen, setIsAimOpen] = useState(false);
   const [isReactionOpen, setIsReactionOpen] = useState(false);
@@ -150,11 +151,19 @@ const App: React.FC = () => {
     trackPageView(`/${currentView === 'home' ? '' : currentView}`, document.title);
   }, [currentView]);
 
-  // Initialize analytics + GA4
+  // Initialize analytics + GA4 + GTM
   useEffect(() => {
     initAnalytics();
     getSetting<string>('ga4_measurement_id', '').then(id => {
       if (id) initGA4(id);
+    });
+    // Google Tag Manager
+    getSetting<string>('gtm_container_id', '').then(id => {
+      if (id) {
+        getSetting<boolean>('gtm_enabled', false).then(enabled => {
+          if (enabled) initGTM(id);
+        });
+      }
     });
   }, []);
 
@@ -190,7 +199,7 @@ const App: React.FC = () => {
         const params = new URLSearchParams(hash.substring(1));
         const providerToken = params.get('provider_token');
         if (providerToken) {
-          localStorage.setItem('sz_gmb_provider_token', providerToken);
+          sessionStorage.setItem('sz_gmb_provider_token', providerToken); // SECURITY: sessionStorage clears on tab close
           console.log('[GMB] Provider token captured from URL hash');
         }
       }

@@ -8,7 +8,7 @@ interface TerminalLoginProps {
     onCancel: () => void;
 }
 
-const AUTHORIZED_EMAIL = 'tomas@skillzone.cz';
+
 
 const TerminalLogin: React.FC<TerminalLoginProps> = ({ onSuccess, onCancel }) => {
     const [step, setStep] = useState(0);
@@ -47,10 +47,10 @@ const TerminalLogin: React.FC<TerminalLoginProps> = ({ onSuccess, onCancel }) =>
         <div className="fixed inset-0 z-[300] bg-black flex items-center justify-center p-4 font-mono">
             {/* Scanline Effect Overlay */}
             <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%),linear-gradient(90deg,rgba(255,0,0,0.03),rgba(0,255,0,0.01),rgba(0,0,255,0.03))] z-10 bg-[length:100%_2px,3px_100%] opacity-50"></div>
-            
+
             <div className="max-w-md w-full bg-zinc-900 border-2 border-green-500/30 p-8 shadow-[0_0_50px_rgba(34,197,94,0.1)] relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-full h-1 bg-green-500/20"></div>
-                
+
                 <div className="flex items-center justify-between mb-8 text-green-500">
                     <div className="flex items-center gap-3">
                         <Terminal className="w-6 h-6 animate-pulse" />
@@ -72,7 +72,7 @@ const TerminalLogin: React.FC<TerminalLoginProps> = ({ onSuccess, onCancel }) =>
                 {step === logs.length - 1 && (
                     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
                         <div className="space-y-4">
-                            <button 
+                            <button
                                 onClick={handleGoogleLogin}
                                 disabled={isLoggingIn}
                                 className="w-full bg-white text-black hover:bg-green-500 hover:text-black font-black py-4 transition-all flex items-center justify-center gap-3 group relative overflow-hidden"
@@ -81,7 +81,7 @@ const TerminalLogin: React.FC<TerminalLoginProps> = ({ onSuccess, onCancel }) =>
                                 {isLoggingIn ? <Cpu className="w-5 h-5 animate-spin" /> : <Globe className="w-5 h-5" />}
                                 CONNECT_VIA_NEURAL_LINK
                             </button>
-                            
+
                             <div className="text-center">
                                 <p className="text-[10px] text-zinc-500 uppercase tracking-widest animate-pulse">
                                     [ Authorized_Personnel_Only ]
@@ -96,7 +96,7 @@ const TerminalLogin: React.FC<TerminalLoginProps> = ({ onSuccess, onCancel }) =>
                             </div>
                         )}
 
-                        <button 
+                        <button
                             type="button"
                             onClick={onCancel}
                             className="w-full py-2 text-[10px] text-zinc-700 hover:text-zinc-400 font-bold uppercase tracking-widest transition-colors"

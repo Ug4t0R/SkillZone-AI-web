@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { getFlagSvgUrl } from '../utils/flags';
 import {
     X, Terminal, Brain, MessageSquare, History, Activity,
     Shield, MapPin, Calendar, MessageCircle, LogOut, Image as ImageIcon, Globe, Newspaper,
     User, Star, Wrench, Swords, Gamepad2, Camera, Type, PanelLeftClose, PanelLeftOpen,
-    BarChart3, Settings, Search, ChevronDown, ChevronRight
+    BarChart3, Settings, Search, ChevronDown, ChevronRight, Trophy
 } from 'lucide-react';
 import {
-    getChatHistory, getAdminMessages, getDailyAiFeed, getMergedHistory,
+    getAdminMessages, getDailyAiFeed, getMergedHistory,
     getMergedProtocol, getMergedLocations, getMergedEvents, getAiSettings,
     getSkillerState, getUserProfile, DEFAULT_AI_SETTINGS
 } from '../utils/devTools';
@@ -17,7 +18,7 @@ import { PROTOCOL_DATA_CS } from '../data/protocol';
 import { LOCATIONS_CS } from '../data/locations';
 import { EVENTS_DATA_CS } from '../data/events';
 import { useAppContext } from '../context/AppContext';
-import { BrainTab, VisualsTab, FeedTab, ChatsTab, HistoryTab, ProtocolTab, LocationsTab, EventsTab, SkillerTab, RentalsTab, LogEntry, ChatSession } from './devmenu/index';
+import { BrainTab, VisualsTab, FeedTab, HistoryTab, ProtocolTab, LocationsTab, EventsTab, SkillerTab, RentalsTab, LogEntry } from './devmenu/index';
 import SeoTab from './devmenu/SeoTab';
 import OwnerProfileTab from './devmenu/OwnerProfileTab';
 import ReviewsTab from './devmenu/ReviewsTab';
@@ -30,13 +31,14 @@ import ContentTab from './devmenu/ContentTab';
 import SectionsTab from './devmenu/SectionsTab';
 import PressTab from './devmenu/PressTab';
 import WhatsAppTab from './devmenu/WhatsAppTab';
+import CompetitorTab from './devmenu/CompetitorTab';
 
 interface DevMenuProps {
     isOpen: boolean;
     onClose: () => void;
 }
 
-type TabId = 'chats' | 'feed' | 'story' | 'protocol' | 'locations' | 'rentals' | 'events' | 'brain' | 'skiller' | 'visuals' | 'seo' | 'owner' | 'reviews' | 'services' | 'whyus' | 'skillcheck' | 'gallery' | 'analytics' | 'content' | 'sections' | 'press' | 'whatsapp';
+type TabId = 'feed' | 'story' | 'protocol' | 'locations' | 'rentals' | 'events' | 'brain' | 'skiller' | 'visuals' | 'seo' | 'owner' | 'reviews' | 'services' | 'whyus' | 'skillcheck' | 'gallery' | 'analytics' | 'content' | 'sections' | 'press' | 'whatsapp' | 'competitors';
 
 // ─── GROUPED SIDEBAR CONFIG ──────────────────────────────────────────
 
@@ -61,9 +63,10 @@ const TAB_GROUPS: TabGroup[] = [
             { id: 'sections', label: 'Sections', icon: Settings, description: 'Toggle website sections' },
             { id: 'brain', label: 'Neural', icon: Brain, description: 'AI personality & settings' },
             { id: 'skiller', label: 'Skiller', icon: MessageCircle, description: 'Local Chatbot Memory' },
-            { id: 'chats', label: 'Sessions', icon: MessageCircle, description: 'Chat conversation history' },
+
             { id: 'analytics', label: 'Analytics', icon: BarChart3, description: 'Live stats & visitors' },
             { id: 'whatsapp', label: 'WhatsApp', icon: MessageSquare, description: 'WhatsApp inbox & messages' },
+            { id: 'competitors', label: 'Rivals', icon: Trophy, description: 'Competitor intelligence & SEO' },
         ],
     },
     {
@@ -120,7 +123,7 @@ const DevMenu: React.FC<DevMenuProps> = ({ isOpen, onClose }) => {
     const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
 
     // Shared state
-    const [chatHistory, setChatHistory] = useState<ChatSession[]>([]);
+
     const [adminMessages, setAdminMessages] = useState<string[]>([]);
     const [dailyFeed, setDailyFeed] = useState<{ user: string, msg: string }[]>([]);
     const [aiSettings, setAiSettings] = useState<AiSettings>(DEFAULT_AI_SETTINGS);
@@ -172,25 +175,11 @@ const DevMenu: React.FC<DevMenuProps> = ({ isOpen, onClose }) => {
     }, [isOpen, onClose]);
 
     const refreshData = async () => {
-        const [history, admin, feed, ai] = await Promise.all([
-            getChatHistory(),
+        const [admin, feed, ai] = await Promise.all([
             getAdminMessages(),
             getDailyAiFeed(),
             getAiSettings()
         ]);
-        const safeSessions = history.reverse().map((s: any) => {
-            let msgs = s.messages || [];
-            if (typeof msgs === 'string') { try { msgs = JSON.parse(msgs); } catch { msgs = []; } }
-            if (!Array.isArray(msgs)) msgs = [];
-            return {
-                id: s.id,
-                date: s.updated_at || s.started_at || s.date || new Date().toISOString(),
-                messages: msgs,
-                user_nickname: s.user_nickname,
-                session_fingerprint: s.session_fingerprint,
-            };
-        });
-        setChatHistory(safeSessions);
         setAdminMessages(admin);
         setDailyFeed(feed);
         setAiSettings(ai);
@@ -252,8 +241,7 @@ const DevMenu: React.FC<DevMenuProps> = ({ isOpen, onClose }) => {
                 return <VisualsTab addLog={addLog} generatedImages={generatedImages} setGeneratedImages={setGeneratedImages} />;
             case 'feed':
                 return <FeedTab addLog={addLog} adminMessages={adminMessages} setAdminMessages={setAdminMessages} dailyFeed={dailyFeed} setDailyFeed={setDailyFeed} />;
-            case 'chats':
-                return <ChatsTab addLog={addLog} chatHistory={chatHistory} setChatHistory={setChatHistory} />;
+
             case 'seo':
                 return <SeoTab addLog={addLog} />;
             case 'story':
@@ -288,6 +276,8 @@ const DevMenu: React.FC<DevMenuProps> = ({ isOpen, onClose }) => {
                 return <PressTab addLog={addLog} />;
             case 'whatsapp':
                 return <WhatsAppTab addLog={addLog} />;
+            case 'competitors':
+                return <CompetitorTab addLog={addLog} />;
             default:
                 return null;
         }
@@ -417,17 +407,34 @@ const DevMenu: React.FC<DevMenuProps> = ({ isOpen, onClose }) => {
                     <div className="border-t border-white/5 p-3 space-y-2">
                         <span className="text-[9px] text-gray-600 font-mono uppercase tracking-wider">Quick Settings</span>
                         {/* Language */}
-                        <div className="flex items-center gap-2">
-                            <Globe className="w-3 h-3 text-gray-500 shrink-0" />
-                            <select
-                                value={language}
-                                onChange={e => setLanguage(e.target.value as any)}
-                                className="flex-1 bg-black/50 border border-white/10 rounded px-2 py-1 text-[10px] text-gray-300 font-mono focus:border-sz-red outline-none"
+                        <div className="relative group/lang mb-1">
+                            <button
+                                className="w-full flex items-center justify-between bg-black/50 border border-white/10 hover:border-white/20 rounded px-2 py-1.5 text-[10px] text-gray-300 font-mono transition-colors"
                             >
-                                {allLanguages.map(lang => (
-                                    <option key={lang} value={lang}>{lang.toUpperCase()}</option>
-                                ))}
-                            </select>
+                                <span className="flex items-center gap-2">
+                                    <img src={getFlagSvgUrl(language as string)} alt={language as string} className="w-5 h-3.5 rounded-sm object-cover" />
+                                    <span className="uppercase font-bold tracking-widest">{language}</span>
+                                </span>
+                                <ChevronDown className="w-3 h-3 text-gray-500" />
+                            </button>
+                            <div className="absolute bottom-full mb-1 left-0 w-full bg-zinc-900 border border-white/10 rounded shadow-xl opacity-0 invisible group-hover/lang:opacity-100 group-hover/lang:visible transition-all z-50">
+                                <div className="p-1 grid grid-cols-4 sm:grid-cols-2 gap-1">
+                                    {allLanguages.map(lang => {
+                                        const flags: Record<string, string> = { cs: '🇨🇿', sk: '🇸🇰', en: '🇬🇧', de: '🇩🇪', pl: '🇵🇱', ru: '🇷🇺', ua: '🇺🇦', vi: '🇻🇳' };
+                                        return (
+                                            <button
+                                                key={lang}
+                                                onClick={() => setLanguage(lang as any)}
+                                                className={`flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded transition-colors ${language === lang ? 'bg-sz-red/20 text-sz-red ring-1 ring-sz-red/40' : 'hover:bg-white/10 text-gray-400'}`}
+                                                title={lang.toUpperCase()}
+                                            >
+                                                <img src={getFlagSvgUrl(lang)} alt={lang} className="w-6 h-4 rounded-sm object-cover" />
+                                                <span className="text-[9px] uppercase font-bold">{lang}</span>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
                         </div>
                         {/* Brainrot */}
                         <label className="flex items-center gap-2 cursor-pointer group" onClick={() => setBrainrot(!isBrainrot)}>

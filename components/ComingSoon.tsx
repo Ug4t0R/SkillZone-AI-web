@@ -6,6 +6,7 @@
 import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import { Globe, Lock, Unlock, User, Smartphone, ArrowRight, ShieldAlert } from 'lucide-react';
 import { trackEvent } from '../services/ga4';
+import { getFlagSvgUrl } from '../utils/flags';
 import QRCode from 'react-qr-code';
 import { useAppContext } from '../context/AppContext';
 
@@ -328,18 +329,22 @@ const ComingSoon: React.FC<ComingSoonProps> = ({ targetDate, onUnlock, onPlayAim
                 </div>
 
                 {/* Language Switcher */}
-                <div className="flex items-center gap-2 bg-black/40 border border-white/10 rounded-full px-2 py-1">
+                <div className="flex items-center gap-1.5 bg-black/40 border border-white/10 rounded-full px-2 py-1">
                     <Globe className="w-4 h-4 text-white/50" />
-                    {allLanguages.map((lang) => (
-                        <button
-                            key={lang}
-                            onClick={() => setLanguage(lang)}
-                            className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold font-mono transition-all uppercase
-                                ${language === lang ? 'bg-red-600 text-white border border-red-500 shadow-lg shadow-red-500/20 scale-110' : 'text-gray-500 hover:text-white border border-transparent hover:bg-white/5'}`}
-                        >
-                            {lang}
-                        </button>
-                    ))}
+                    {allLanguages.map((lang) => {
+                        const flags: Record<string, string> = { cs: '🇨🇿', sk: '🇸🇰', en: '🇬🇧', de: '🇩🇪', pl: '🇵🇱', ru: '🇷🇺', ua: '🇺🇦', vi: '🇻🇳' };
+                        return (
+                            <button
+                                key={lang}
+                                onClick={() => setLanguage(lang)}
+                                className={`w-8 h-8 rounded-full flex flex-col items-center justify-center text-xs font-bold font-mono transition-all
+                                    ${language === lang ? 'bg-red-600 text-white border border-red-500 shadow-lg shadow-red-500/20 scale-110' : 'text-gray-500 hover:text-white border border-transparent hover:bg-white/5'}`}
+                                title={lang.toUpperCase()}
+                            >
+                                <img src={getFlagSvgUrl(lang)} alt={lang} className="w-5 h-4 rounded-sm object-cover" />
+                            </button>
+                        );
+                    })}
                 </div>
 
                 <div className="hidden md:flex items-center gap-2">

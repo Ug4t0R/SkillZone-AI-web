@@ -1,6 +1,8 @@
 import { cs } from './cs';
+import { getYearsOnMarket } from '../utils/founding';
 
-// Gen Z Brainrot — overrides for specific keys when brainrot mode is active
+// Brainrot mode overrides (gen-Z / meme speak)
+const y = getYearsOnMarket();
 export const brainrotOverrides: Partial<typeof cs> = {
     nav_home: 'Home Base 🏠',
     nav_locations: 'Ohio Locations 💀',
@@ -107,11 +109,11 @@ export const corporateOverrides: Partial<typeof cs> = {
     owner_title: 'JEDNATEL SPOLEČNOSTI',
     owner_role: 'CEO / Managing Director',
     owner_bio: 'Ing. Tomáš Švec, jednatel společnosti SkillZone s.r.o., stojí v čele organizace od jejího založení v roce 2005.',
-    owner_stat_xp: '20 let praxe',
+    owner_stat_xp: `${y} let praxe`,
     owner_stat_class: 'Jednatel',
     owner_stat_skill: 'Krizový mgmt.',
     footer_quick: 'Navigace',
-    footer_rights: '© 2005–2025 SkillZone s.r.o. Všechna práva vyhrazena. IČO: 27561321',
+    footer_rights: `© 2005–${new Date().getFullYear()} SkillZone s.r.o. Všechna práva vyhrazena. IČO: 27561321`,
     footer_desc: 'Společnost SkillZone s.r.o. je registrovaným subjektem v obchodním rejstříku vedeném Městským soudem v Praze.',
     footer_boss_label: 'Jednatel: Tomáš Švec',
     footer_boss_text: 'V případě stížností kontaktujte prosím vedení společnosti prostřednictvím oficiálních komunikačních kanálů.',

@@ -79,10 +79,11 @@ export default defineConfig(({ mode }) => {
       })
     ],
     define: {
+      // SECURITY: Only Gemini key remains client-side (SDK requirement).
+      // Restrict it to your domain in Google Cloud Console → API & Services → Credentials.
+      // Google Places + SerpAPI keys are now server-side in Supabase Edge Functions.
       'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
       'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
-      'process.env.GOOGLE_PLACES_KEY': JSON.stringify(env.GOOGLE_PLACES_KEY || env.GEMINI_API_KEY),
-      'process.env.SERPAPI_KEY': JSON.stringify(env.SERPAPI_KEY || ''),
     },
     resolve: {
       alias: {

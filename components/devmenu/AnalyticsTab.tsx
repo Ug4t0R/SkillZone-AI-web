@@ -1,6 +1,6 @@
 // DevMenu Analytics Tab — live stats, visitor tracking, behavior analysis
 import React, { useState, useEffect } from 'react';
-import { Activity, Users, Globe, Monitor, Clock, TrendingUp, Zap, BarChart3, RefreshCw, Settings2, Save, Wifi, Trash2 } from 'lucide-react';
+import { Activity, Users, Globe, Monitor, Clock, TrendingUp, Zap, BarChart3, RefreshCw, Settings2, Save, Wifi, Trash2, Power } from 'lucide-react';
 import { getSupabase } from '../../services/supabaseClient';
 import { getSetting, setSetting } from '../../services/webDataService';
 
@@ -26,6 +26,8 @@ const AnalyticsTab: React.FC<AnalyticsTabProps> = ({ addLog }) => {
     const [stats, setStats] = useState<LiveStats | null>(null);
     const [loading, setLoading] = useState(false);
     const [gaId, setGaId] = useState('');
+    const [gtmId, setGtmId] = useState('');
+    const [gtmEnabled, setGtmEnabled] = useState(false);
     const [showSettings, setShowSettings] = useState(false);
 
     useEffect(() => {
@@ -36,6 +38,10 @@ const AnalyticsTab: React.FC<AnalyticsTabProps> = ({ addLog }) => {
     const loadSettings = async () => {
         const saved = await getSetting<string>('ga4_measurement_id', '');
         setGaId(saved);
+        const savedGtm = await getSetting<string>('gtm_container_id', '');
+        setGtmId(savedGtm);
+        const savedGtmEnabled = await getSetting<boolean>('gtm_enabled', false);
+        setGtmEnabled(savedGtmEnabled);
     };
 
     const saveGaId = async () => {
@@ -44,6 +50,25 @@ const AnalyticsTab: React.FC<AnalyticsTabProps> = ({ addLog }) => {
             addLog('GA4 Measurement ID saved. Reload page to apply.', 'success');
         } else {
             addLog('Failed to save GA4 ID.', 'error');
+        }
+    };
+
+    const saveGtmSettings = async () => {
+        const ok1 = await setSetting('gtm_container_id', gtmId);
+        const ok2 = await setSetting('gtm_enabled', gtmEnabled);
+        if (ok1 && ok2) {
+            addLog(`GTM ${gtmEnabled ? 'enabled' : 'disabled'} (${gtmId || 'no ID'}). Reload page to apply.`, 'success');
+        } else {
+            addLog('Failed to save GTM settings.', 'error');
+        }
+    };
+
+    const toggleGtmEnabled = async () => {
+        const next = !gtmEnabled;
+        setGtmEnabled(next);
+        const ok = await setSetting('gtm_enabled', next);
+        if (ok) {
+            addLog(`GTM ${next ? 'enabled' : 'disabled'}. Reload page to apply.`, 'success');
         }
     };
 
@@ -237,6 +262,39 @@ const AnalyticsTab: React.FC<AnalyticsTabProps> = ({ addLog }) => {
                     <p className="text-[10px] text-gray-500 mt-2 font-mono">
                         Get your Measurement ID from Google Analytics → Admin → Data Streams → Web
                     </p>
+
+                    {/* GTM Settings */}
+                    <div className="mt-6 pt-6 border-t border-white/10">
+                        <h4 className="text-xs font-bold text-white uppercase mb-3 font-mono flex items-center gap-2">
+                            <Globe className="w-3 h-3 text-orange-400" /> Google Tag Manager
+                        </h4>
+                        <div className="flex gap-2 items-center">
+                            <button
+                                onClick={toggleGtmEnabled}
+                                className={`flex items-center gap-1.5 px-3 py-2 rounded text-xs font-bold uppercase border transition-all ${gtmEnabled
+                                        ? 'bg-green-600/20 border-green-500/30 text-green-400 hover:bg-green-600/30'
+                                        : 'bg-red-600/10 border-red-500/20 text-red-400/60 hover:bg-red-600/20'
+                                    }`}
+                                title={gtmEnabled ? 'GTM je aktivní' : 'GTM je vypnutý'}
+                            >
+                                <Power className="w-3 h-3" />
+                                {gtmEnabled ? 'ON' : 'OFF'}
+                            </button>
+                            <input
+                                type="text"
+                                value={gtmId}
+                                onChange={e => setGtmId(e.target.value)}
+                                placeholder="GTM-XXXXXXXX"
+                                className="flex-1 bg-black/40 text-white px-3 py-2 rounded text-sm font-mono border border-white/10 focus:border-orange-400/50 outline-none"
+                            />
+                            <button onClick={saveGtmSettings} className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 text-xs font-bold uppercase rounded flex items-center gap-2">
+                                <Save className="w-3 h-3" /> Save
+                            </button>
+                        </div>
+                        <p className="text-[10px] text-gray-500 mt-2 font-mono">
+                            Container ID ze starého webu: <span className="text-orange-400">GTM-MRKVF3FX</span> · Zapni toggle a ulož pro aktivaci.
+                        </p>
+                    </div>
                 </div>
             )}
 
