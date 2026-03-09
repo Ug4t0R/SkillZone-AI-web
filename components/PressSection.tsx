@@ -14,9 +14,11 @@ const PressSection: React.FC = () => {
     const revealRef = useScrollReveal<HTMLElement>();
 
     const sortedItems = useMemo(() => {
+        // Only show published items on public site (default: published)
+        const publishedItems = PRESS_ITEMS.filter(item => item.published !== false);
         const filtered = filter === 'all'
-            ? PRESS_ITEMS
-            : PRESS_ITEMS.filter(item => item.category === filter);
+            ? publishedItems
+            : publishedItems.filter(item => item.category === filter);
 
         // Highlighted first, then by year descending
         return [...filtered].sort((a, b) => {

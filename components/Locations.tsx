@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { MapPin, Clock, Phone, Lock, Navigation, Map, Car, Search, Grid, Globe, Zap, AlertCircle } from 'lucide-react';
+import { MapPin, Clock, Phone, Lock, Navigation, Map, Car, Search, Grid, Globe, Zap, AlertCircle, Train } from 'lucide-react';
 import { LOCATIONS_CS, LOCATIONS_EN } from '../data/locations';
 import { LocationType, GamingLocation } from '../types';
 import AllLocationsMap from './AllLocationsMap';
@@ -121,6 +121,14 @@ const Locations: React.FC<LocationsProps> = ({ onChangeView }) => {
                                             <MapPin className="w-4 h-4 text-sz-red" />
                                             <span className="font-mono">{loc.address}</span>
                                         </div>
+                                        {loc.metro && (
+                                            <div className="flex items-center gap-2 mt-1.5">
+                                                <span className="inline-flex items-center gap-1.5 bg-green-500/20 border border-green-500/40 text-green-400 text-xs font-mono font-bold px-2 py-0.5 rounded-sm">
+                                                    <Train className="w-3 h-3" />
+                                                    Metro {loc.metro}
+                                                </span>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                                 <div className="p-6 flex-1 flex flex-col">

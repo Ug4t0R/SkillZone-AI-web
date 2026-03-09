@@ -67,7 +67,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, onChangeView, adminStatus,
   const logoSrc = theme === 'dark' ? '/SkillZone_logo_white.png' : '/SkillZone_logo_red.png';
 
   return (
-    <nav className="fixed w-full z-50 bg-light-bg/95 dark:bg-dark-bg/95 backdrop-blur-md border-b border-gray-200 dark:border-sz-red/20 transition-colors duration-300">
+    <nav className="fixed w-full z-50 glass-nav transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo Area */}
@@ -155,34 +155,45 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, onChangeView, adminStatus,
 
               <button
                 onClick={toggleTheme}
-                className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-white/10 text-gray-500 dark:text-gray-400 transition-colors"
+                className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-white/10 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors"
+                title={theme === 'dark' ? 'Světelný režim' : 'Tmavý režim'}
               >
                 {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
               </button>
 
-              {/* 🧠 Gen Z toggle — always visible */}
-              <button
-                onClick={() => setBrainrot(!isBrainrot)}
-                className={`p-2 rounded-full transition-all duration-300 ${isBrainrot
-                  ? 'text-yellow-400 bg-yellow-500/10 shadow-[0_0_10px_rgba(234,179,8,0.3)] ring-1 ring-yellow-500/30'
-                  : 'text-gray-500 dark:text-gray-400 hover:text-yellow-400'
+              {/* 3-way Mode Toggle: Normal / Gen Z / Corporate */}
+              <div className="flex items-center bg-gray-100 dark:bg-zinc-800 rounded-full p-0.5 border border-gray-200 dark:border-white/10">
+                <button
+                  onClick={() => { setBrainrot(false); setCorporate(false); }}
+                  className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all ${!isBrainrot && !isCorporate
+                    ? 'bg-white dark:bg-zinc-700 text-gray-900 dark:text-white shadow-sm'
+                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
                   }`}
-                title={isBrainrot ? 'Disable Gen Z Mode' : 'Enable Gen Z Mode'}
-              >
-                <span className="text-base">🧠</span>
-              </button>
-
-              {/* 🏢 Corporate toggle — always visible */}
-              <button
-                onClick={() => setCorporate(!isCorporate)}
-                className={`p-2 rounded-full transition-all duration-300 ${isCorporate
-                  ? 'text-blue-400 bg-blue-500/10 shadow-[0_0_10px_rgba(59,130,246,0.3)] ring-1 ring-blue-500/30'
-                  : 'text-gray-500 dark:text-gray-400 hover:text-blue-400'
+                  title="Normal mode"
+                >
+                  Normal
+                </button>
+                <button
+                  onClick={() => setBrainrot(!isBrainrot)}
+                  className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all ${isBrainrot
+                    ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-sm shadow-purple-500/30'
+                    : 'text-gray-500 dark:text-gray-400 hover:text-yellow-400'
                   }`}
-                title={isCorporate ? 'Deaktivovat korporátní režim' : 'Aktivovat korporátní režim'}
-              >
-                <span className="text-base">🏢</span>
-              </button>
+                  title="Gen Z Brainrot Mode"
+                >
+                  🧠 GenZ
+                </button>
+                <button
+                  onClick={() => setCorporate(!isCorporate)}
+                  className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all ${isCorporate
+                    ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-sm shadow-blue-500/30'
+                    : 'text-gray-500 dark:text-gray-400 hover:text-blue-400'
+                  }`}
+                  title="Corporate Mode"
+                >
+                  🏢 Corp
+                </button>
+              </div>
             </div>
 
             {(!sections || sections.booking) && (
@@ -263,29 +274,41 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, onChangeView, adminStatus,
                 {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
                 {theme === 'dark' ? 'Light' : 'Dark'}
               </button>
-              {/* Gen Z toggle in mobile — always visible */}
-              <button
-                onClick={() => { setBrainrot(!isBrainrot); setIsOpen(false); }}
-                className={`flex items-center gap-2 text-sm ${isBrainrot ? 'text-yellow-400' : 'text-gray-600 dark:text-gray-400'
+              {/* 3-way Mobile Mode Toggle */}
+              <div className="flex items-center bg-gray-100 dark:bg-zinc-800 rounded-full p-0.5">
+                <button
+                  onClick={() => { setBrainrot(false); setCorporate(false); setIsOpen(false); }}
+                  className={`px-2 py-1 rounded-full text-[10px] font-bold transition-all ${!isBrainrot && !isCorporate
+                    ? 'bg-white dark:bg-zinc-700 text-gray-900 dark:text-white shadow-sm'
+                    : 'text-gray-500 dark:text-gray-400'
                   }`}
-              >
-                <span>🧠</span>
-                {isBrainrot ? 'Normal' : 'Gen Z'}
-              </button>
-              {/* Corporate toggle in mobile */}
-              <button
-                onClick={() => { setCorporate(!isCorporate); setIsOpen(false); }}
-                className={`flex items-center gap-2 text-sm ${isCorporate ? 'text-blue-400' : 'text-gray-600 dark:text-gray-400'
+                >
+                  Normal
+                </button>
+                <button
+                  onClick={() => { setBrainrot(!isBrainrot); setIsOpen(false); }}
+                  className={`px-2 py-1 rounded-full text-[10px] font-bold transition-all ${isBrainrot
+                    ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white'
+                    : 'text-gray-500 dark:text-gray-400'
                   }`}
-              >
-                <span>🏢</span>
-                {isCorporate ? 'Normal' : 'Korporát'}
-              </button>
+                >
+                  🧠 GenZ
+                </button>
+                <button
+                  onClick={() => { setCorporate(!isCorporate); setIsOpen(false); }}
+                  className={`px-2 py-1 rounded-full text-[10px] font-bold transition-all ${isCorporate
+                    ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white'
+                    : 'text-gray-500 dark:text-gray-400'
+                  }`}
+                >
+                  🏢 Corp
+                </button>
+              </div>
             </div>
             {/* Gen Z mode status bar in mobile */}
             {isBrainrot && (
-              <div className="px-3 py-2 text-[10px] font-bold text-center text-yellow-400/70 uppercase tracking-widest" style={{ fontFamily: "'Comic Sans MS', cursive" }}>
-                💀 brainrot mode active 💀
+              <div className="px-3 py-2 text-[10px] font-bold text-center text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400 uppercase tracking-widest" style={{ fontFamily: "'Comic Sans MS', cursive" }}>
+                💀 brainrot mode active • aura: immaculate 💀
               </div>
             )}
             {/* Corporate mode status bar in mobile */}

@@ -18,6 +18,7 @@ export interface PressItem {
     category: PressCategory;
     logo?: string;           // favicon/logo URL (optional)
     highlight?: boolean;     // featured item
+    published?: boolean;     // show on public site (default: true)
 }
 
 // ─── Category metadata ──────────────────────────────────────────────

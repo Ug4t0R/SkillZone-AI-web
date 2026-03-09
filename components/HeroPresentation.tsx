@@ -1,11 +1,13 @@
 
 import React, { useState, useEffect } from 'react';
-import { Wifi, Users, Calendar, ChevronRight, ChevronLeft, Zap, Monitor, Beer, Utensils } from 'lucide-react';
+import { Wifi, Users, Calendar, ChevronRight, ChevronLeft, Zap, Monitor, Lock, Wallet, MessageCircle, Pause, Play, ArrowRight } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 import { getYearsOnMarket } from '../utils/founding';
+import { pushRoute } from '../services/routeConfig';
+import { AppView } from '../types';
 
-const SLIDE_DURATION = 6000; // 6 seconds per slide
-const TOTAL_SLIDES = 5;
+const SLIDE_DURATION = 10000; // 10 seconds per slide — enough to read
+const TOTAL_SLIDES = 7;
 
 // Simple animated counter component
 const AnimatedCounter: React.FC<{ end: number; duration?: number; suffix?: string }> = ({ end, duration = 2000, suffix = '' }) => {
@@ -35,7 +37,11 @@ const HeroPresentation: React.FC = () => {
     const [currentSlide, setCurrentSlide] = useState(0);
     const [strikeAnimated, setStrikeAnimated] = useState(false);
     const [glitchTrigger, setGlitchTrigger] = useState(false);
+    const [isPaused, setIsPaused] = useState(false);
+    const [isHovered, setIsHovered] = useState(false);
     const { t } = useAppContext();
+
+    const effectivelyPaused = isPaused || isHovered;
 
     // Reset animation state when slide changes
     useEffect(() => {
@@ -51,11 +57,12 @@ const HeroPresentation: React.FC = () => {
 
     // Auto-play logic with progress reset
     useEffect(() => {
+        if (effectivelyPaused) return;
         const interval = setInterval(() => {
             setCurrentSlide((prev) => (prev + 1) % TOTAL_SLIDES);
         }, SLIDE_DURATION);
         return () => clearInterval(interval);
-    }, [currentSlide]); // Reset timer on manual change
+    }, [currentSlide, effectivelyPaused]); // Reset timer on manual change, pause toggle, or hover
 
     const nextSlide = () => {
         setCurrentSlide((prev) => (prev + 1) % TOTAL_SLIDES);
@@ -65,133 +72,192 @@ const HeroPresentation: React.FC = () => {
         setCurrentSlide((prev) => (prev === 0 ? TOTAL_SLIDES - 1 : prev - 1));
     };
 
+    const navigateTo = (view: AppView) => {
+        pushRoute(view);
+        window.dispatchEvent(new Event('popstate'));
+        window.scrollTo(0, 0);
+    };
+
+    // CTA link component for slides
+    const SlideCTA: React.FC<{ label: string; view: AppView }> = ({ label, view }) => (
+        <button
+            onClick={() => navigateTo(view)}
+            className="mt-4 inline-flex items-center gap-2 px-5 py-2 bg-sz-red/10 hover:bg-sz-red text-sz-red hover:text-white border border-sz-red/30 hover:border-sz-red rounded-sm font-orbitron text-xs font-bold uppercase tracking-wider transition-all duration-300 group/cta"
+        >
+            {label}
+            <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover/cta:translate-x-1" />
+        </button>
+    );
+
     return (
-        <div className="relative w-full h-[360px] sm:h-[400px] md:h-[320px] flex flex-col justify-center items-center select-none group/slider overflow-hidden">
+        <div
+            className="group/slider select-none"
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+        >
+            {/* Slides container */}
+            <div className="relative w-full h-[320px] sm:h-[360px] md:h-[300px] flex flex-col justify-center items-center overflow-hidden">
 
-            {/* SLIDE 1: Identity / Correction */}
-            <div className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-500 ${currentSlide === 0 ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}`}>
-                <div className="relative mb-6">
-                    <span className="text-2xl sm:text-4xl md:text-6xl font-orbitron font-black text-gray-400 dark:text-gray-500 opacity-50 tracking-widest">
-                        {t('slide_we_are')}
-                    </span>
-                    {/* The red strike line - Enhanced */}
-                    <div className={`strike-line transition-all duration-500 ease-out ${strikeAnimated ? 'w-[120%]' : 'w-0'}`}></div>
-                </div>
+                {/* Pause indicator - shown when hovering */}
+                {isHovered && !isPaused && (
+                    <div className="absolute top-3 right-3 z-10 flex items-center gap-1.5 text-xs font-mono text-gray-400 dark:text-gray-500 bg-white/60 dark:bg-black/40 backdrop-blur-sm px-2 py-1 rounded opacity-0 group-hover/slider:opacity-70 transition-opacity">
+                        <Pause className="w-3 h-3" /> PAUSED
+                    </div>
+                )}
 
-                <div className={`transition-all duration-500 delay-300 transform ${strikeAnimated ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-                    <h2 className={`text-3xl sm:text-5xl md:text-7xl font-orbitron font-black text-gray-900 dark:text-white uppercase tracking-tighter text-center leading-none ${glitchTrigger ? 'animate-glitch-text' : ''}`}>
-                        {t('slide_network').split(' ').slice(0, 1).join(' ')} <span className="text-sz-red text-glow">{t('slide_network').split(' ').slice(1).join(' ')}</span>
-                    </h2>
-                    <div className="flex flex-wrap gap-4 justify-center mt-6 text-gray-500 dark:text-gray-300 font-mono text-sm md:text-base">
-                        <span className="px-3 py-1 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-white/10 rounded">ŽIŽKOV</span>
-                        <span className="text-sz-red flex items-center"><Zap className="w-4 h-4 animate-pulse" /></span>
-                        <span className="px-3 py-1 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-white/10 rounded">HÁJE</span>
-                        <span className="text-sz-red flex items-center"><Zap className="w-4 h-4 animate-pulse" /></span>
-                        <span className="px-3 py-1 bg-white dark:bg-zinc-900 border border-sz-red/50 text-sz-red rounded animate-pulse">STODŮLKY (NEW)</span>
+                {/* SLIDE 1: Identity / Correction */}
+                <div className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-500 px-4 ${currentSlide === 0 ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}`}>
+                    <div className="relative mb-4">
+                        <span className="text-2xl sm:text-4xl md:text-5xl font-orbitron font-black text-gray-400 dark:text-gray-500 opacity-50 tracking-widest">
+                            {t('slide_we_are')}
+                        </span>
+                        <div className={`strike-line transition-all duration-500 ease-out ${strikeAnimated ? 'w-[120%]' : 'w-0'}`}></div>
+                    </div>
+                    <div className={`transition-all duration-500 delay-300 transform text-center ${strikeAnimated ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+                        <h2 className={`text-2xl sm:text-4xl md:text-6xl font-orbitron font-black text-gray-900 dark:text-white uppercase tracking-tighter text-center leading-none ${glitchTrigger ? 'animate-glitch-text' : ''}`}>
+                            {t('slide_network').split(' ').slice(0, 1).join(' ')} <span className="text-sz-red text-glow">{t('slide_network').split(' ').slice(1).join(' ')}</span>
+                        </h2>
+                        <div className="flex flex-wrap gap-3 justify-center mt-4 text-gray-500 dark:text-gray-300 font-mono text-xs md:text-sm">
+                            <span className="px-2 py-0.5 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-white/10 rounded">ŽIŽKOV</span>
+                            <span className="text-sz-red flex items-center"><Zap className="w-3 h-3 animate-pulse" /></span>
+                            <span className="px-2 py-0.5 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-white/10 rounded">HÁJE</span>
+                            <span className="text-sz-red flex items-center"><Zap className="w-3 h-3 animate-pulse" /></span>
+                            <span className="px-2 py-0.5 bg-white dark:bg-zinc-900 border border-sz-red/50 text-sz-red rounded animate-pulse">STODŮLKY (NEW)</span>
+                        </div>
+                        <SlideCTA label={t('slide_cta_locations')} view="locations" />
                     </div>
                 </div>
-            </div>
 
-            {/* SLIDE 2: Stats (PDF inspired) with Counters */}
-            <div className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-500 ${currentSlide === 1 ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}`}>
-                <div className="grid grid-cols-3 gap-3 md:gap-6 w-full max-w-5xl px-4">
-
-                    {/* Stat 1 */}
-                    <div className="bg-gradient-to-b from-gray-100 to-white dark:from-zinc-900 dark:to-black border border-gray-200 dark:border-sz-red/20 p-6 rounded-sm flex flex-col items-center justify-center group hover:border-sz-red/60 transition-all shadow-lg">
-                        <Calendar className="w-8 h-8 text-sz-red mb-3 group-hover:scale-110 transition-transform" />
-                        <span className="text-4xl md:text-5xl font-black font-orbitron text-gray-900 dark:text-white mb-1">
-                            {currentSlide === 1 ? <AnimatedCounter end={getYearsOnMarket()} /> : '0'}
-                        </span>
-                        <span className="text-gray-500 text-xs uppercase tracking-widest font-bold">{t('slide_years')}</span>
-                    </div>
-
-                    {/* Stat 2 */}
-                    <div className="bg-gradient-to-b from-gray-100 to-white dark:from-zinc-900 dark:to-black border border-gray-200 dark:border-sz-red/20 p-6 rounded-sm flex flex-col items-center justify-center group hover:border-sz-red/60 transition-all shadow-lg relative overflow-hidden">
-                        <div className="absolute inset-0 bg-sz-red/5 animate-pulse"></div>
-                        <Users className="w-8 h-8 text-sz-red mb-3 group-hover:scale-110 transition-transform relative z-10" />
-                        <span className="text-4xl md:text-5xl font-black font-orbitron text-gray-900 dark:text-white mb-1 relative z-10">
-                            {currentSlide === 1 ? <AnimatedCounter end={18179} /> : '0'}
-                        </span>
-                        <span className="text-gray-500 text-xs uppercase tracking-widest font-bold relative z-10">{t('slide_db')}</span>
-                        {/* New Text Insertion */}
-                        <div className="absolute bottom-0 left-0 w-full p-2 bg-black/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-center">
-                            <p className="text-[10px] text-gray-300 leading-tight">
-                                {t('slide_db_note')}
-                            </p>
+                {/* SLIDE 2: Stats */}
+                <div className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-500 px-4 ${currentSlide === 1 ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}`}>
+                    <div className="grid grid-cols-3 gap-3 md:gap-6 w-full max-w-4xl">
+                        <div className="bg-gradient-to-b from-gray-100 to-white dark:from-zinc-900 dark:to-black border border-gray-200 dark:border-sz-red/20 p-4 md:p-5 rounded-sm flex flex-col items-center justify-center group hover:border-sz-red/60 transition-all shadow-lg">
+                            <Calendar className="w-6 h-6 text-sz-red mb-2 group-hover:scale-110 transition-transform" />
+                            <span className="text-3xl md:text-4xl font-black font-orbitron text-gray-900 dark:text-white mb-1">
+                                {currentSlide === 1 ? <AnimatedCounter end={getYearsOnMarket()} /> : '0'}
+                            </span>
+                            <span className="text-gray-500 text-[10px] uppercase tracking-widest font-bold">{t('slide_years')}</span>
+                        </div>
+                        <div className="bg-gradient-to-b from-gray-100 to-white dark:from-zinc-900 dark:to-black border border-gray-200 dark:border-sz-red/20 p-4 md:p-5 rounded-sm flex flex-col items-center justify-center group hover:border-sz-red/60 transition-all shadow-lg relative overflow-hidden">
+                            <div className="absolute inset-0 bg-sz-red/5 animate-pulse"></div>
+                            <Users className="w-6 h-6 text-sz-red mb-2 group-hover:scale-110 transition-transform relative z-10" />
+                            <span className="text-3xl md:text-4xl font-black font-orbitron text-gray-900 dark:text-white mb-1 relative z-10">
+                                {currentSlide === 1 ? <AnimatedCounter end={18179} /> : '0'}
+                            </span>
+                            <span className="text-gray-500 text-[10px] uppercase tracking-widest font-bold relative z-10">{t('slide_db')}</span>
+                            <div className="absolute bottom-0 left-0 w-full p-2 bg-black/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-center">
+                                <p className="text-[10px] text-gray-300 leading-tight">{t('slide_db_note')}</p>
+                            </div>
+                        </div>
+                        <div className="bg-gradient-to-b from-gray-100 to-white dark:from-zinc-900 dark:to-black border border-gray-200 dark:border-sz-red/20 p-4 md:p-5 rounded-sm flex flex-col items-center justify-center group hover:border-sz-red/60 transition-all shadow-lg">
+                            <Wifi className="w-6 h-6 text-sz-red mb-2 group-hover:scale-110 transition-transform" />
+                            <span className="text-3xl md:text-4xl font-black font-orbitron text-gray-900 dark:text-white mb-1">
+                                {currentSlide === 1 ? <AnimatedCounter end={10000} /> : '0'}
+                            </span>
+                            <span className="text-gray-500 text-[10px] uppercase tracking-widest font-bold">Mbps (Žižkov)</span>
                         </div>
                     </div>
+                    <SlideCTA label={t('slide_cta_story')} view="history" />
+                </div>
 
-                    {/* Stat 3 */}
-                    <div className="bg-gradient-to-b from-gray-100 to-white dark:from-zinc-900 dark:to-black border border-gray-200 dark:border-sz-red/20 p-6 rounded-sm flex flex-col items-center justify-center group hover:border-sz-red/60 transition-all shadow-lg">
-                        <Wifi className="w-8 h-8 text-sz-red mb-3 group-hover:scale-110 transition-transform" />
-                        <span className="text-4xl md:text-5xl font-black font-orbitron text-gray-900 dark:text-white mb-1">
-                            {currentSlide === 1 ? <AnimatedCounter end={10000} /> : '0'}
-                        </span>
-                        <span className="text-gray-500 text-xs uppercase tracking-widest font-bold">Mbps (Žižkov)</span>
+                {/* SLIDE 3: Hardware (380Hz) */}
+                <div className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-500 px-4 ${currentSlide === 2 ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}`}>
+                    <div className="relative">
+                        <Monitor className="w-16 h-16 text-sz-red mx-auto mb-4 opacity-20 absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 scale-150" />
+                        <h2 className={`text-3xl sm:text-5xl md:text-7xl font-orbitron font-black text-gray-900 dark:text-white uppercase tracking-tighter text-center leading-none mb-3 ${glitchTrigger ? 'animate-glitch-text' : ''}`}>
+                            380Hz <span className="text-sz-red">{t('slide_monitors')}</span>
+                        </h2>
                     </div>
+                    <div className="bg-white/80 dark:bg-black/60 backdrop-blur-sm border border-gray-200 dark:border-white/10 px-5 py-2 rounded-sm max-w-2xl text-center">
+                        <p className="text-gray-600 dark:text-gray-300 font-mono text-base">
+                            {t('slide_mon_desc')}
+                        </p>
+                    </div>
+                    <SlideCTA label={t('slide_cta_locations')} view="locations" />
                 </div>
-            </div>
 
-            {/* SLIDE 3: Hardware (380Hz) */}
-            <div className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-500 ${currentSlide === 2 ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}`}>
-                <div className="relative">
-                    <Monitor className="w-20 h-20 text-sz-red mx-auto mb-6 opacity-20 absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 scale-150" />
-                    <h2 className={`text-3xl sm:text-5xl md:text-8xl font-orbitron font-black text-gray-900 dark:text-white uppercase tracking-tighter text-center leading-none mb-4 md:mb-6 ${glitchTrigger ? 'animate-glitch-text' : ''}`}>
-                        380Hz <span className="text-sz-red">{t('slide_monitors')}</span>
+                {/* SLIDE 4: Bootcamp Private Space */}
+                <div className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-500 px-4 ${currentSlide === 3 ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}`}>
+                    <Lock className="w-8 h-8 text-sz-red mb-3 opacity-50" />
+                    <h2 className={`text-2xl sm:text-3xl md:text-6xl font-orbitron font-black text-gray-900 dark:text-white uppercase tracking-tighter text-center leading-tight mb-3 ${glitchTrigger ? 'animate-glitch-text' : ''}`}>
+                        {t('slide_boot_q').split(' ').slice(0, 1).join(' ')} <span className="text-sz-red">{t('slide_boot_q').split(' ').slice(1).join(' ')}</span>
                     </h2>
+                    <div className="bg-white/80 dark:bg-black/60 backdrop-blur-sm border border-sz-red/30 px-6 py-3 rounded-sm max-w-2xl text-center relative overflow-hidden">
+                        <div className="absolute top-0 left-0 w-1 h-full bg-sz-red"></div>
+                        <p className="text-lg text-gray-900 dark:text-white font-bold font-sans uppercase tracking-wide">
+                            {t('slide_boot_a')}
+                        </p>
+                        <p className="text-gray-600 dark:text-gray-400 font-mono text-xs mt-1">
+                            {t('slide_boot_desc')}
+                        </p>
+                    </div>
+                    <SlideCTA label={t('slide_cta_bootcamp')} view="branch_bootcamp" />
                 </div>
-                <div className="bg-white/80 dark:bg-black/60 backdrop-blur-sm border border-gray-200 dark:border-white/10 px-6 py-3 rounded-sm max-w-2xl text-center">
-                    <p className="text-gray-600 dark:text-gray-300 font-mono text-lg">
-                        {t('slide_mon_desc')}
-                    </p>
+
+                {/* SLIDE 5: Flexible Pricing */}
+                <div className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-500 px-4 ${currentSlide === 4 ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}`}>
+                    <Wallet className="w-8 h-8 text-sz-red mb-3 opacity-50" />
+                    <h2 className={`text-2xl sm:text-3xl md:text-6xl font-orbitron font-black text-gray-900 dark:text-white uppercase tracking-tighter text-center leading-tight mb-3 ${glitchTrigger ? 'animate-glitch-text' : ''}`}>
+                        {t('slide_price_q').split(' ').slice(0, 1).join(' ')} <span className="text-sz-red">{t('slide_price_q').split(' ').slice(1).join(' ')}</span>
+                    </h2>
+                    <div className="bg-white/80 dark:bg-black/60 backdrop-blur-sm border border-sz-red/30 px-6 py-3 rounded-sm max-w-2xl text-center relative overflow-hidden">
+                        <div className="absolute top-0 left-0 w-1 h-full bg-sz-red"></div>
+                        <p className="text-lg text-gray-900 dark:text-white font-bold font-sans uppercase tracking-wide">
+                            {t('slide_price_a')}
+                        </p>
+                        <p className="text-gray-600 dark:text-gray-400 font-mono text-xs mt-1">
+                            {t('slide_price_desc')}
+                        </p>
+                    </div>
+                    <SlideCTA label={t('slide_cta_pricing')} view="pricing" />
+                </div>
+
+                {/* SLIDE 6: Tykáme si */}
+                <div className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-500 px-4 ${currentSlide === 5 ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}`}>
+                    <MessageCircle className="w-8 h-8 text-sz-red mb-3 opacity-50" />
+                    <h2 className={`text-2xl sm:text-3xl md:text-6xl font-orbitron font-black text-gray-900 dark:text-white uppercase tracking-tighter text-center leading-tight mb-3 ${glitchTrigger ? 'animate-glitch-text' : ''}`}>
+                        {t('slide_vibe_q').split(' ').slice(0, 1).join(' ')} <span className="text-sz-red">{t('slide_vibe_q').split(' ').slice(1).join(' ')}</span>
+                    </h2>
+                    <div className="bg-white/80 dark:bg-black/60 backdrop-blur-sm border border-sz-red/30 px-6 py-3 rounded-sm max-w-2xl text-center relative overflow-hidden">
+                        <div className="absolute top-0 left-0 w-1 h-full bg-sz-red"></div>
+                        <p className="text-lg text-gray-900 dark:text-white font-bold font-sans uppercase tracking-wide">
+                            {t('slide_vibe_a')}
+                        </p>
+                        <p className="text-gray-600 dark:text-gray-400 font-mono text-xs mt-1">
+                            {t('slide_vibe_desc')}
+                        </p>
+                    </div>
+                    <SlideCTA label={t('slide_cta_gallery')} view="gallery" />
+                </div>
+
+                {/* SLIDE 7: Atmosphere (Original Slogan) */}
+                <div className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-500 px-4 ${currentSlide === 6 ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}`}>
+                    <h1 className="font-orbitron text-2xl sm:text-4xl md:text-6xl font-black mb-2 leading-tight tracking-tight text-center drop-shadow-2xl">
+                        <span className="text-gray-900 dark:text-white block mb-2 opacity-90">{t('intro_s1')}</span>
+                        <span className="text-gray-500 text-lg md:text-2xl block font-sans font-bold mb-4 tracking-widest bg-white/50 dark:bg-black/50 px-4 py-1.5 inline-block rounded">
+                            {t('intro_s2')}
+                        </span>
+                        <span className={`text-sz-red text-glow block transform -skew-x-6 mt-1 text-3xl sm:text-5xl md:text-7xl ${glitchTrigger ? 'animate-glitch-text' : ''}`}>
+                            {t('intro_s3')}
+                        </span>
+                    </h1>
+                    <SlideCTA label={t('slide_cta_locations')} view="locations" />
                 </div>
             </div>
 
-            {/* SLIDE 4: Bootcamp (BYOB) */}
-            <div className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-500 ${currentSlide === 3 ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}`}>
-                <div className="flex items-center gap-6 mb-4 opacity-50">
-                    <Utensils className="w-12 h-12 text-gray-700 dark:text-white" />
-                    <Beer className="w-12 h-12 text-sz-red" />
-                </div>
-                <h2 className={`text-2xl sm:text-4xl md:text-7xl font-orbitron font-black text-gray-900 dark:text-white uppercase tracking-tighter text-center leading-tight mb-4 md:mb-6 ${glitchTrigger ? 'animate-glitch-text' : ''}`}>
-                    {t('slide_food_q').split(' ').slice(0, 1).join(' ')} <span className="text-sz-red">{t('slide_food_q').split(' ').slice(1).join(' ')}</span>
-                </h2>
-                <div className="bg-white/80 dark:bg-black/60 backdrop-blur-sm border border-sz-red/30 px-8 py-4 rounded-sm max-w-3xl text-center relative overflow-hidden">
-                    <div className="absolute top-0 left-0 w-1 h-full bg-sz-red"></div>
-                    <p className="text-xl text-gray-900 dark:text-white font-bold font-sans uppercase tracking-wide">
-                        {t('slide_food_a')}
-                    </p>
-                    <p className="text-gray-600 dark:text-gray-400 font-mono text-sm mt-2">
-                        {t('slide_food_desc')}
-                    </p>
-                </div>
-            </div>
-
-            {/* SLIDE 5: Atmosphere (Original Slogan) */}
-            <div className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-500 ${currentSlide === 4 ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}`}>
-                <h1 className="font-orbitron text-2xl sm:text-4xl md:text-7xl font-black mb-4 leading-tight tracking-tight text-center drop-shadow-2xl">
-                    <span className="text-gray-900 dark:text-white block mb-4 opacity-90">{t('intro_s1')}</span>
-                    <span className="text-gray-500 text-xl md:text-3xl block font-sans font-bold mb-6 tracking-widest bg-white/50 dark:bg-black/50 px-4 py-2 inline-block rounded">
-                        {t('intro_s2')}
-                    </span>
-                    <span className={`text-sz-red text-glow block transform -skew-x-6 mt-2 text-3xl sm:text-5xl md:text-8xl ${glitchTrigger ? 'animate-glitch-text' : ''}`}>
-                        {t('intro_s3')}
-                    </span>
-                </h1>
-            </div>
-
-            {/* Progress Bar & Controls */}
-            <div className="absolute -bottom-16 w-full max-w-md mx-auto flex flex-col gap-4 px-4">
+            {/* Controls — OUTSIDE the slider, no overlap */}
+            <div className="w-full max-w-lg mx-auto flex flex-col gap-1.5 px-4 pt-2 opacity-0 group-hover/slider:opacity-100 transition-opacity duration-300">
                 {/* Progress Line */}
-                <div className="w-full h-1 bg-gray-300 dark:bg-zinc-800 rounded-full overflow-hidden">
+                <div className="w-full h-1 bg-gray-300/50 dark:bg-zinc-800/50 rounded-full overflow-hidden">
                     <div
-                        key={currentSlide} // Re-renders on slide change to restart animation
-                        className="h-full bg-sz-red origin-left animate-linear-progress"
+                        key={`${currentSlide}-${effectivelyPaused}`}
+                        className="h-full bg-sz-red origin-left"
                         style={{
                             animationDuration: `${SLIDE_DURATION}ms`,
-                            animationName: 'progress',
+                            animationName: effectivelyPaused ? 'none' : 'progress',
                             animationTimingFunction: 'linear',
-                            animationFillMode: 'forwards'
+                            animationFillMode: 'forwards',
+                            width: effectivelyPaused ? '100%' : undefined
                         }}
                     >
                         <style>{`
@@ -203,22 +269,31 @@ const HeroPresentation: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="flex justify-between items-center text-xs font-mono text-gray-500 dark:text-gray-600">
-                    <button onClick={prevSlide} className="hover:text-black dark:hover:text-white transition-colors flex items-center gap-1">
+                <div className="flex justify-between items-center text-xs font-mono text-gray-500 dark:text-gray-400">
+                    <button onClick={prevSlide} className="hover:text-black dark:hover:text-white transition-colors flex items-center gap-1 px-2 py-1 rounded hover:bg-white/20 dark:hover:bg-white/10">
                         <ChevronLeft className="w-4 h-4" /> PREV
                     </button>
 
-                    <div className="flex gap-2">
-                        {Array.from({ length: TOTAL_SLIDES }).map((_, idx) => (
-                            <button
-                                key={idx}
-                                onClick={() => setCurrentSlide(idx)}
-                                className={`w-2 h-2 rounded-full transition-all duration-300 ${currentSlide === idx ? 'bg-sz-red shadow-[0_0_8px_#E31E24] scale-125' : 'bg-gray-400 dark:bg-zinc-700 hover:bg-gray-500'}`}
-                            />
-                        ))}
+                    <div className="flex items-center gap-3">
+                        <div className="flex gap-2">
+                            {Array.from({ length: TOTAL_SLIDES }).map((_, idx) => (
+                                <button
+                                    key={idx}
+                                    onClick={() => setCurrentSlide(idx)}
+                                    className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${currentSlide === idx ? 'bg-sz-red shadow-[0_0_8px_#E31E24] scale-125' : 'bg-gray-400 dark:bg-zinc-600 hover:bg-gray-500 dark:hover:bg-zinc-400'}`}
+                                />
+                            ))}
+                        </div>
+                        <button
+                            onClick={() => setIsPaused(p => !p)}
+                            className="p-1.5 hover:text-black dark:hover:text-white transition-colors rounded hover:bg-white/20 dark:hover:bg-white/10"
+                            title={isPaused ? 'Play' : 'Pause'}
+                        >
+                            {isPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
+                        </button>
                     </div>
 
-                    <button onClick={nextSlide} className="hover:text-black dark:hover:text-white transition-colors flex items-center gap-1">
+                    <button onClick={nextSlide} className="hover:text-black dark:hover:text-white transition-colors flex items-center gap-1 px-2 py-1 rounded hover:bg-white/20 dark:hover:bg-white/10">
                         NEXT <ChevronRight className="w-4 h-4" />
                     </button>
                 </div>

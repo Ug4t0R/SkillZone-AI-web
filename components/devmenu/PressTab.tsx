@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Trash2, Edit3, X, Save, Star, ExternalLink, Filter, RotateCcw } from 'lucide-react';
+import { Plus, Trash2, Edit3, X, Save, Star, ExternalLink, Filter, RotateCcw, Eye, EyeOff } from 'lucide-react';
 import { PRESS_ITEMS, PRESS_CATEGORIES, PressCategory, PressItem } from '../../data/pressArticles';
 import { getMergedPress, addCustomPressItem, removeCustomPressItem, getCustomPress, overrideCustomPress } from '../../utils/devTools';
 
@@ -11,7 +11,7 @@ const CATEGORIES: PressCategory[] = ['tv', 'press', 'gaming', 'esport', 'video',
 
 const EMPTY: PressItem = {
     id: '', source: '', title: '', titleEn: '', description: '', descriptionEn: '',
-    url: '', date: '', year: new Date().getFullYear(), category: 'press', logo: '', highlight: false
+    url: '', date: '', year: new Date().getFullYear(), category: 'press', logo: '', highlight: false, published: true
 };
 
 const PressTab: React.FC<PressTabProps> = ({ addLog }) => {
@@ -71,6 +71,13 @@ const PressTab: React.FC<PressTabProps> = ({ addLog }) => {
         refresh();
     };
 
+    const togglePublished = async (item: PressItem) => {
+        const newVal = item.published === false ? true : false;
+        await addCustomPressItem({ ...item, published: newVal });
+        addLog(`${newVal ? 'Published' : 'Unpublished'}: ${item.source} — ${item.title}`, 'success');
+        refresh();
+    };
+
     const resetAll = async () => {
         await overrideCustomPress([]);
         addLog('All custom press data cleared', 'success');
@@ -121,6 +128,11 @@ const PressTab: React.FC<PressTabProps> = ({ addLog }) => {
                     className="w-3.5 h-3.5 rounded accent-yellow-500" />
                 <span className="text-xs text-gray-400 font-mono">⭐ Highlight / Featured</span>
             </label>
+            <label className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" checked={form.published !== false} onChange={e => setForm({ ...form, published: e.target.checked })}
+                    className="w-3.5 h-3.5 rounded accent-green-500" />
+                <span className="text-xs text-gray-400 font-mono">👁 Zveřejněno na webu</span>
+            </label>
             <div className="flex gap-2">
                 <button onClick={save} className="flex items-center gap-1 px-3 py-1.5 bg-sz-red text-white text-xs font-bold uppercase rounded hover:bg-sz-red-dark transition-colors"><Save className="w-3 h-3" /> Save</button>
                 <button onClick={cancel} className="flex items-center gap-1 px-3 py-1.5 bg-white/5 text-gray-400 text-xs font-bold uppercase rounded hover:text-white transition-colors"><X className="w-3 h-3" /> Cancel</button>
@@ -131,7 +143,7 @@ const PressTab: React.FC<PressTabProps> = ({ addLog }) => {
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between mb-2">
-                <span className="font-mono text-xs text-gray-400 uppercase tracking-wider">Press & Media ({items.length} items)</span>
+                <span className="font-mono text-xs text-gray-400 uppercase tracking-wider">Press & Media ({items.filter(i => i.published !== false).length}/{items.length} zveřejněno)</span>
                 <div className="flex gap-2">
                     <button onClick={resetAll} className="flex items-center gap-1 px-2 py-1 text-[10px] font-bold uppercase text-gray-500 hover:text-white border border-white/5 rounded transition-colors"><RotateCcw className="w-3 h-3" /> Reset</button>
                     <button onClick={exportJson} className="flex items-center gap-1 px-2 py-1 text-[10px] font-bold uppercase text-gray-500 hover:text-white border border-white/5 rounded transition-colors">📦 Export</button>
@@ -161,7 +173,9 @@ const PressTab: React.FC<PressTabProps> = ({ addLog }) => {
                         <React.Fragment key={item.id}>
                             <div className={`flex items-center justify-between p-2.5 rounded border transition-colors cursor-pointer ${editingId === item.id
                                     ? 'bg-sz-red/10 border-sz-red/30'
-                                    : 'bg-black/30 border-white/5 hover:border-white/10'
+                                    : item.published === false
+                                        ? 'bg-black/20 border-white/5 hover:border-white/10 opacity-50'
+                                        : 'bg-black/30 border-white/5 hover:border-white/10'
                                 }`} onClick={() => editingId !== item.id && startEdit(item)}>
                                 <div className="flex items-center gap-3 min-w-0 flex-1">
                                     <span className={`text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-sm border shrink-0 ${cat.color}`}>
@@ -171,6 +185,7 @@ const PressTab: React.FC<PressTabProps> = ({ addLog }) => {
                                     <span className="text-gray-500 text-[11px] truncate hidden md:inline">{item.title}</span>
                                     <span className="text-gray-600 font-mono text-[10px] shrink-0">{item.date || item.year}</span>
                                     {item.highlight && <Star className="w-3 h-3 text-yellow-500 shrink-0 fill-yellow-500" />}
+                                    {item.published === false && <span className="text-[9px] bg-red-500/20 text-red-400 px-1.5 py-0.5 rounded font-bold uppercase">Skrytý</span>}
                                     {customIds.has(item.id) && <span className="text-[9px] bg-green-500/20 text-green-400 px-1.5 py-0.5 rounded font-bold uppercase">db</span>}
                                 </div>
                                 <div className="flex items-center gap-1 shrink-0 ml-2">
@@ -180,6 +195,11 @@ const PressTab: React.FC<PressTabProps> = ({ addLog }) => {
                                             <ExternalLink className="w-3 h-3" />
                                         </a>
                                     )}
+                                    <button onClick={e => { e.stopPropagation(); togglePublished(item); }}
+                                        className={`p-1 transition-colors ${item.published !== false ? 'text-green-500' : 'text-gray-600 hover:text-green-500'}`}
+                                        title={item.published !== false ? 'Skrýt z webu' : 'Zveřejnit na webu'}>
+                                        {item.published !== false ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+                                    </button>
                                     <button onClick={e => { e.stopPropagation(); toggleHighlight(item); }}
                                         className={`p-1 transition-colors ${item.highlight ? 'text-yellow-500' : 'text-gray-600 hover:text-yellow-500'}`}>
                                         <Star className="w-3 h-3" />

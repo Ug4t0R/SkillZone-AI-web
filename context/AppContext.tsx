@@ -30,7 +30,7 @@ function detectBrowserLanguage(): Language {
     const code = locale.split('-')[0].toLowerCase();
     if (code in BROWSER_LOCALE_MAP) return BROWSER_LOCALE_MAP[code];
   }
-  return 'cs'; // Default to Czech
+  return 'en'; // Default to English for international visitors
 }
 
 interface AppContextType {

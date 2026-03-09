@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Server, Video, Trophy, ArrowRight } from 'lucide-react';
+import { Server, Video, Trophy, Heart, ArrowRight } from 'lucide-react';
 import { SERVICES_DATA_CS, SERVICES_DATA_EN } from '../data/services';
 import { useAppContext } from '../context/AppContext';
 import { useScrollReveal, useStaggerReveal } from '../hooks/useScrollReveal';
@@ -15,6 +15,7 @@ const Services: React.FC = () => {
             case 'server': return <Server className="w-10 h-10 text-sz-red" />;
             case 'video': return <Video className="w-10 h-10 text-sz-red" />;
             case 'trophy': return <Trophy className="w-10 h-10 text-sz-red" />;
+            case 'heart': return <Heart className="w-10 h-10 text-sz-red" />;
             default: return <Server className="w-10 h-10 text-sz-red" />;
         }
     };
@@ -42,7 +43,7 @@ const Services: React.FC = () => {
                     </div>
                 </div>
 
-                <div ref={cardsRef} className="sr-stagger scroll-reveal grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div ref={cardsRef} className="sr-stagger scroll-reveal grid grid-cols-1 md:grid-cols-2 gap-8">
                     {servicesData.map((service, index) => (
                         <div key={index} className="bg-gray-50 dark:bg-dark-bg border border-gray-200 dark:border-white/5 p-8 hover:border-sz-red/50 transition-all group flex flex-col shadow-lg dark:shadow-none">
                             <div className="mb-6 p-4 bg-white dark:bg-zinc-900 rounded-full w-fit border border-gray-200 dark:border-white/5 group-hover:scale-110 transition-transform">

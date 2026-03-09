@@ -1,12 +1,12 @@
-
-import React, { useState, useMemo } from 'react';
-import { Crown, Star, Gem, Zap, Users, Clock, Monitor, Gamepad2, Moon, CalendarDays, Gift, Heart, UserPlus, Calculator, ChevronDown, MapPin } from 'lucide-react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { Crown, Star, Gem, Zap, Users, Clock, Monitor, Gamepad2, Moon, CalendarDays, Gift, Heart, UserPlus, Calculator, ChevronDown, ChevronUp, MapPin, Lightbulb, CheckCircle2, Info, AlertTriangle, Phone } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 import { getYearsOnMarket } from '../utils/founding';
 import {
     MEMBER_TIERS, TOP_UP_BONUSES, EXTRA_FEES, PACKAGES, LOCATIONS,
     type SeatType,
 } from '../data/pricing';
+
 
 // ─── Component ───────────────────────────────────────────────────────
 
@@ -22,17 +22,45 @@ const Pricing: React.FC = () => {
     const [calcSaturday, setCalcSaturday] = useState(false);
     const [calcDayLAN, setCalcDayLAN] = useState(false);
 
-    // Bonus calculator state
+    // UX state
+    const [showFullCalc, setShowFullCalc] = useState(false);
     const [bonusSlider, setBonusSlider] = useState(500);
-    const [expandedSection, setExpandedSection] = useState<string | null>(null);
+    const [timeAutoApplied, setTimeAutoApplied] = useState<string[]>([]);
+    const [showTierDetails, setShowTierDetails] = useState(false);
 
-    const toggleSection = (id: string) => {
-        setExpandedSection(expandedSection === id ? null : id);
-    };
+    // Auto-detect surcharges based on current time
+    useEffect(() => {
+        const now = new Date();
+        const day = now.getDay(); // 0=Sun, 6=Sat
+        const hour = now.getHours();
+        const applied: string[] = [];
+
+        // Saturday from 12:00 onward
+        if (day === 6 && hour >= 12) {
+            setCalcSaturday(true);
+            applied.push('saturday');
+        }
+
+        // Night: midnight (0:00) to 6:00
+        if (hour >= 0 && hour < 6) {
+            setCalcNight(true);
+            applied.push('night');
+        }
+
+        setTimeAutoApplied(applied);
+    }, []);
 
     // Price calculator
     const calcResult = useMemo(() => {
         const results: Record<string, { hourly: number; total: number; totalSat: number }> = {};
+
+        // Surcharges (One-time per visit)
+        let seatSurcharge = 0;
+        if (calcSeat === 'vip' && calcLocation === 'haje') seatSurcharge = 30;
+        if (calcSeat === 'esport' && calcLocation === 'stodulky') seatSurcharge = 90;
+
+        let nightSurcharge = 0;
+        if (calcNight) nightSurcharge = 50;
 
         for (const tier of MEMBER_TIERS) {
             const hourly = tier.price;
@@ -44,42 +72,34 @@ const Pricing: React.FC = () => {
                 total = hourly * calcHours;
             }
 
-            // Seat surcharge
-            if (calcSeat === 'vip' && calcLocation === 'haje') total += 30;
-            if (calcSeat === 'esport') {
-                if (calcLocation === 'stodulky') {
-                    total += (tier.id === 'premium' || tier.id === 'ultras') ? 60 : 90;
-                }
+            // Apply one-time surcharges
+            let tierSeatSurcharge = seatSurcharge;
+            if (calcSeat === 'esport' && calcLocation === 'stodulky' && (tier.id === 'premium' || tier.id === 'ultras')) {
+                tierSeatSurcharge = 60; // Discounted upgrade for heavy users
             }
 
-            // Night surcharge
-            if (calcNight && tier.id !== 'ultras') total += 50;
+            total += tierSeatSurcharge;
+            if (tier.id !== 'ultras' && tier.id !== 'premium') total += nightSurcharge; // Premium & Ultras exempt from night fee
 
-            // Saturday surcharge
             const totalSat = total + (calcSaturday ? 30 : 0);
-
             results[tier.id] = { hourly, total, totalSat };
         }
 
-        // Guest
+        // Guest logic
         const guestBase = 120 + Math.max(0, calcHours - 1) * 60;
-        let guestTotal = guestBase;
-        if (calcSeat === 'esport' && calcLocation === 'stodulky') guestTotal += 90;
-        if (calcNight) guestTotal += 50;
+        let guestTotal = calcDayLAN ? 595 : guestBase;
+        
+        guestTotal += seatSurcharge;
+        guestTotal += nightSurcharge;
+        
         const guestTotalSat = guestTotal + (calcSaturday ? 30 : 0);
-        results['guest'] = { hourly: 120, total: guestDayLAN(), totalSat: guestTotalSat };
-
-        function guestDayLAN() {
-            if (calcDayLAN) return 595;
-            return guestTotal;
-        }
+        results['guest'] = { hourly: 120, total: guestTotal, totalSat: guestTotalSat };
 
         return results;
     }, [calcLocation, calcHours, calcSeat, calcNight, calcSaturday, calcDayLAN]);
 
-    // Bonus effective pricing — bonus values are cumulative
+    // Bonus effective pricing
     const bonusInfo = useMemo(() => {
-        // Find the highest matching tier (<= slider value)
         const matchedTiers = TOP_UP_BONUSES.filter(b => bonusSlider >= b.amount);
         const bestTier = matchedTiers[matchedTiers.length - 1];
         const bonusMinutes = bestTier?.bonus ?? 0;
@@ -92,6 +112,10 @@ const Pricing: React.FC = () => {
         });
         return { bonus: bonusMinutes, perk: hasPerk ? 'premium30' : null, rates: effectiveRates };
     }, [bonusSlider]);
+
+    // Helper specific texts for Guest vs Member
+    const textGuestTitle = cs ? 'Neregistrovaný Guest' : 'Unregistered Guest';
+    const textMemberTitle = cs ? 'Registrovaný Člen' : 'Registered Member';
 
     return (
         <section className="py-20 px-4 relative overflow-hidden bg-light-bg dark:bg-dark-bg transition-colors duration-300">
@@ -106,571 +130,636 @@ const Pricing: React.FC = () => {
                         {cs ? 'CENÍK' : 'PRICE LIST'} <span className="text-sz-red">SKILLZONE</span>
                     </h1>
                     <p className="text-lg text-gray-500 dark:text-gray-400 font-mono">
-                        {cs ? 'Aktualizovaný 28. 7. 2025' : 'Updated July 28, 2025'}
+                        {cs ? 'Rychleji. Férověji. Bez závazků.' : 'Faster. Fairer. No commitments.'}
                     </p>
                 </div>
 
-                {/* ─── Promo banner ───────────────────────── */}
-                <div className="mb-12 bg-gradient-to-r from-sz-red/20 via-red-600/10 to-sz-red/20 border border-sz-red/30 rounded-xl p-6 text-center">
-                    <div className="text-3xl mb-2">🎉</div>
-                    <h2 className="text-xl md:text-2xl font-orbitron font-black text-gray-900 dark:text-white mb-3">
-                        {cs ? `SLAVÍME ${getYearsOnMarket()} LET` : `CELEBRATING ${getYearsOnMarket()} YEARS`} 🎉
-                    </h2>
-                    <p className="text-gray-600 dark:text-gray-300 mb-1">
-                        {cs ? 'Odměny pro naše věrné členy!' : 'Rewards for our loyal members!'}
-                    </p>
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center mt-4 text-sm">
-                        <div className="bg-black/10 dark:bg-white/5 rounded-lg px-4 py-2">
-                            <strong className="text-gray-900 dark:text-white">{cs ? 'Týdenní výzva (PO-PÁ):' : 'Weekly challenge (MON-FRI):'}</strong>
-                            <span className="text-sz-red ml-1">{cs ? 'Odehraj 6 hodin → +60 min zpět' : 'Play 6h → +60 min back'}</span>
+                {/* ─── Guide / Wizard Banner ──────────────── */}
+                <div className="mb-12 bg-white dark:bg-zinc-900 border border-black/10 dark:border-white/10 rounded-2xl p-6 shadow-xl relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-2 h-full bg-sz-red" />
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                        <div className="flex-1">
+                            <h2 className="text-xl md:text-2xl font-orbitron font-bold flex items-center gap-2 mb-2 text-gray-900 dark:text-white">
+                                <Lightbulb className="text-yellow-400" />
+                                {cs ? 'Nevíš si rady?' : 'Not sure what to pick?'}
+                            </h2>
+                            <p className="text-gray-600 dark:text-gray-400 text-sm">
+                                {cs 
+                                    ? 'Jako jediní v Praze nabízíme hraní úplně bez registrace. A pro pravidelné hráče máme členství zdarma s cenou, která se automaticky snižuje podle toho, jak často chodíš.' 
+                                    : 'We\'re the only gaming center in Prague where you can play without any registration. And for regulars, we offer free membership with prices that automatically drop based on how often you visit.'}
+                            </p>
                         </div>
-                        <div className="bg-black/10 dark:bg-white/5 rounded-lg px-4 py-2">
-                            <strong className="text-gray-900 dark:text-white">{cs ? 'Denní odměna:' : 'Daily reward:'}</strong>
-                            <span className="text-sz-red ml-1">{cs ? 'Každý den v 8:00 vracíme čas' : 'Daily refund at 8:00'}</span>
+                        <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                            <button 
+                                onClick={() => {
+                                    document.getElementById('guest-card')?.scrollIntoView({behavior: 'smooth', block: 'center'});
+                                }}
+                                className="px-5 py-3 rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-900/50 font-bold font-mono hover:scale-105 transition-transform text-sm md:text-base text-center"
+                            >
+                                {cs ? 'Jdu poprvé na zkoušku' : 'First time trying out'}
+                            </button>
+                            <button 
+                                onClick={() => {
+                                    document.getElementById('member-card')?.scrollIntoView({behavior: 'smooth', block: 'center'});
+                                }}
+                                className="px-5 py-3 rounded-xl bg-sz-red text-white font-bold font-mono shadow-lg shadow-sz-red/30 hover:scale-105 transition-transform text-sm md:text-base text-center"
+                            >
+                                {cs ? 'Chci chodit pravidelně' : 'Plan to visit regularly'}
+                            </button>
                         </div>
                     </div>
                 </div>
 
-                {/* ─── Main Grid: Members | Guest | Extra ───────── */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-16">
-
-                    {/* ── MEMBERS ──────────────────────────── */}
-                    <div className="glass-panel rounded-xl p-6 border border-black/5 dark:border-white/10">
-                        <div className="flex items-center gap-2 mb-6">
-                            <Users className="w-5 h-5 text-sz-red" />
-                            <h3 className="font-orbitron font-bold text-lg uppercase text-sz-red">{cs ? 'Členové' : 'Members'}</h3>
+                {/* ─── Main Comparison: Guest vs Member ───────── */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+                    
+                    {/* GUEST MODE - Prioritized! */}
+                    <div id="guest-card" className="glass-panel rounded-2xl p-6 border-2 border-blue-400/30 flex flex-col h-full relative overflow-hidden group hover:border-blue-400/60 transition-colors">
+                        <div className="absolute top-0 right-0 bg-blue-500 text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider">
+                            {cs ? 'Bezstarostný start' : 'Hassle-free start'}
+                        </div>
+                        
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center">
+                                <Users className="w-6 h-6 text-blue-500" />
+                            </div>
+                            <div>
+                                <h3 className="font-orbitron font-black text-2xl text-gray-900 dark:text-white uppercase">Guest</h3>
+                                <p className="text-blue-500 font-mono text-sm">{cs ? 'Neregistrovaný hráč' : 'Unregistered player'}</p>
+                            </div>
                         </div>
 
-                        <div className="bg-gray-100 dark:bg-zinc-900/50 rounded-lg p-3 mb-6 text-sm text-gray-600 dark:text-gray-400">
-                            <strong className="text-gray-900 dark:text-white block mb-1">{cs ? 'Staň se členem zdarma!' : 'Become a member for free!'}</strong>
-                            {cs
-                                ? 'Registrace na baru zabere pár minut a je k ní třeba tel. číslo a doklad.'
-                                : 'Registration at the bar takes a few minutes. You need a phone number and ID.'
-                            }
+                        <div className="flex-1 space-y-4 mb-8">
+                            <div className="flex items-start gap-3">
+                                <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0 mt-0.5" />
+                                <p className="text-gray-700 dark:text-gray-300">
+                                    <strong className="text-gray-900 dark:text-white">{cs ? '0 minut byrokracie.' : '0 minutes bureaucracy.'}</strong><br/>
+                                    {cs ? 'Žádné občanky, žádné formuláře.' : 'No IDs, no forms.'}
+                                </p>
+                            </div>
+                            <div className="flex items-start gap-3">
+                                <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0 mt-0.5" />
+                                <p className="text-gray-700 dark:text-gray-300">
+                                    <strong className="text-gray-900 dark:text-white">{cs ? 'Zaplať a hraj.' : 'Pay and play.'}</strong><br/>
+                                    {cs ? 'Řekni kolik hodin chceš a jdeme na to.' : 'Tell us how many hours you want and let\'s go.'}
+                                </p>
+                            </div>
+                            <div className="flex items-start gap-3">
+                                <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0 mt-0.5" />
+                                <p className="text-gray-700 dark:text-gray-300">
+                                    <strong className="text-gray-900 dark:text-white">{cs ? 'Přístup ke všem PC.' : 'Access to all PCs.'}</strong><br/>
+                                    {cs ? 'Chceš lepší monitor? Stačí jednorázový příplatek.' : 'Want a better monitor? Just a one-time upgrade fee.'}
+                                </p>
+                            </div>
                         </div>
 
-                        <p className="text-xs text-gray-500 dark:text-gray-500 mb-6">
-                            {cs
-                                ? 'Tvůj level a cena se automaticky aktualizují podle tvé aktivity za posledních 90 dní.'
-                                : 'Your level and price auto-update based on your activity in the last 90 days.'
-                            }
-                        </p>
-
-                        {/* Tier cards */}
-                        <div className="grid grid-cols-2 gap-3">
-                            {MEMBER_TIERS.map(tier => (
-                                <div key={tier.id}
-                                    className={`relative rounded-lg p-4 text-center border transition-all hover:scale-105
-                                         ${tier.featured
-                                            ? 'border-sz-red/50 bg-sz-red/5 shadow-lg shadow-sz-red/10'
-                                            : 'border-black/5 dark:border-white/10 bg-gray-50 dark:bg-zinc-800/50'
-                                        }`}
-                                >
-                                    <div className="text-2xl mb-1">{tier.icon}</div>
-                                    <div className={`font-orbitron font-bold text-xs uppercase mb-2 ${tier.featured ? 'text-sz-red' : 'text-gray-700 dark:text-gray-300'}`}>{tier.name}</div>
-                                    <div className="flex items-baseline justify-center gap-0.5">
-                                        <span className={`text-3xl font-black ${tier.featured ? 'text-sz-red' : 'text-gray-900 dark:text-white'}`}>{tier.price},-</span>
-                                    </div>
-                                    <div className="text-gray-400 text-xs font-mono mt-0.5">Kč/h</div>
-                                    <div className="text-gray-500 dark:text-gray-500 text-[10px] mt-2 font-mono">
-                                        {tier.visits} {cs ? 'návštěv' : 'visits'}
-                                    </div>
-                                    {tier.featured && (
-                                        <div className="absolute -top-2 -right-2 bg-sz-red text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full uppercase">Best</div>
-                                    )}
-                                </div>
-                            ))}
+                        <div className="bg-blue-50 dark:bg-blue-900/10 rounded-xl p-5 border border-blue-100 dark:border-blue-900/30">
+                            <div className="flex justify-between items-center mb-2">
+                                <div className="text-xs text-blue-600 dark:text-blue-400 font-mono font-bold uppercase">{cs ? '1. hodina' : '1st hour'}</div>
+                                <div className="text-xl font-black text-gray-900 dark:text-white">120<span className="text-xs text-gray-500 font-normal">,- Kč</span></div>
+                            </div>
+                            <div className="flex justify-between items-center">
+                                <div className="text-xs text-blue-600 dark:text-blue-400 font-mono font-bold uppercase">{cs ? 'Každá další' : 'Each extra'}</div>
+                                <div className="text-xl font-black text-gray-900 dark:text-white">60<span className="text-xs text-gray-500 font-normal">,- Kč</span></div>
+                            </div>
                         </div>
-
-                        <p className="text-[10px] text-gray-400 mt-4 italic">
-                            * {cs
-                                ? 'Nově registrovaný hráč začíná jako Sleeper, protože u nás 90 dní nebyl.'
-                                : 'Newly registered players start as Sleeper (no visits in last 90 days).'
-                            }
-                        </p>
                     </div>
 
-                    {/* ── GUEST ────────────────────────────── */}
-                    <div className="glass-panel rounded-xl p-6 border border-black/5 dark:border-white/10">
-                        <div className="flex items-center gap-2 mb-6">
-                            <Users className="w-5 h-5 text-blue-400" />
-                            <h3 className="font-orbitron font-bold text-lg uppercase text-blue-400">Guest</h3>
+                    {/* MEMBER MODE */}
+                    <div id="member-card" className="glass-panel rounded-2xl p-6 border-2 border-sz-red/30 flex flex-col h-full relative overflow-hidden group hover:border-sz-red/60 transition-colors">
+                        <div className="absolute top-0 right-0 bg-sz-red text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider">
+                            {cs ? 'Pro fajnšmekry' : 'For enthusiasts'}
                         </div>
 
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-                            {cs
-                                ? 'Pro jednorázové návštěvy bez registrace.'
-                                : 'For one-time visits without registration.'
-                            }
-                        </p>
-
-                        {/* Guest pricing */}
-                        <div className="flex items-center gap-4 mb-8">
-                            <div className="flex-1 bg-gray-100 dark:bg-zinc-900/50 rounded-lg p-4 text-center border border-black/5 dark:border-white/5">
-                                <div className="text-[10px] text-gray-500 uppercase font-mono mb-1">{cs ? 'PRVNÍ HODINA' : 'FIRST HOUR'}</div>
-                                <div className="text-2xl font-black text-sz-red">120,-</div>
-                                <div className="text-gray-400 text-xs">Kč</div>
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="w-12 h-12 rounded-xl bg-sz-red/10 flex items-center justify-center">
+                                <Crown className="w-6 h-6 text-sz-red" />
                             </div>
-                            <div className="text-gray-400 text-xl">+</div>
-                            <div className="flex-1 bg-gray-100 dark:bg-zinc-900/50 rounded-lg p-4 text-center border border-black/5 dark:border-white/5">
-                                <div className="text-[10px] text-gray-500 uppercase font-mono mb-1">{cs ? 'KAŽDÁ DALŠÍ' : 'EACH EXTRA'}</div>
-                                <div className="text-2xl font-black text-sz-red">+60,-</div>
-                                <div className="text-gray-400 text-xs">Kč</div>
+                            <div>
+                                <h3 className="font-orbitron font-black text-2xl text-gray-900 dark:text-white uppercase">Member</h3>
+                                <p className="text-sz-red font-mono text-sm">{cs ? 'Registrovaný člen' : 'Registered member'}</p>
                             </div>
                         </div>
 
-                        {/* Inter-active calculator */}
-                        <div className="border-t border-black/5 dark:border-white/5 pt-6">
-                            <h4 className="font-orbitron font-bold text-sm mb-4 text-gray-800 dark:text-gray-200 uppercase">
-                                {cs ? 'Spočítejte si cenu!' : 'Calculate your price!'}
-                            </h4>
-
-                            {/* Location tabs */}
-                            <div className="flex gap-1 mb-4">
-                                {LOCATIONS.map(loc => (
-                                    <button key={loc.id}
-                                        onClick={() => setCalcLocation(loc.id)}
-                                        className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-mono transition-all
-                                                ${calcLocation === loc.id
-                                                ? 'bg-sz-red text-white'
-                                                : 'bg-gray-100 dark:bg-zinc-800 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
-                                            }`}>
-                                        <MapPin className="w-3 h-3" />
-                                        {cs ? loc.nameCs : loc.nameEn}
-                                    </button>
-                                ))}
+                        <div className="flex-1 space-y-4 mb-8">
+                            <div className="flex items-start gap-3">
+                                <CheckCircle2 className="w-5 h-5 text-sz-red shrink-0 mt-0.5" />
+                                <p className="text-gray-700 dark:text-gray-300">
+                                    <strong className="text-gray-900 dark:text-white">{cs ? 'Registrace je zdarma.' : 'Registration is free.'}</strong><br/>
+                                    {cs ? 'Zabere 2 minuty na baru (stačí OP a telefon).' : 'Takes 2 mins at the bar (ID and phone needed).'}
+                                </p>
                             </div>
-
-                            {/* Hour buttons */}
-                            <div className="grid grid-cols-5 gap-1 mb-4">
-                                {[1, 2, 3, 4, 5].map(h => (
-                                    <button key={h}
-                                        onClick={() => { setCalcHours(h); setCalcDayLAN(false); }}
-                                        className={`py-2 rounded-lg text-sm font-mono font-bold transition-all
-                                                ${calcHours === h && !calcDayLAN
-                                                ? 'bg-gray-900 dark:bg-white text-white dark:text-black'
-                                                : 'bg-gray-100 dark:bg-zinc-800 text-gray-500 hover:bg-gray-200 dark:hover:bg-zinc-700'
-                                            }`}>
-                                        {h}h
-                                    </button>
-                                ))}
+                            <div className="flex items-start gap-3">
+                                <CheckCircle2 className="w-5 h-5 text-sz-red shrink-0 mt-0.5" />
+                                <p className="text-gray-700 dark:text-gray-300">
+                                    <strong className="text-gray-900 dark:text-white">{cs ? 'Levněji za věrnost.' : 'Cheaper for loyalty.'}</strong><br/>
+                                    {cs ? 'Čím víc chodíš (za 90 dní), tím levnější.' : 'The more you visit (in 90 days), the cheaper.'}
+                                </p>
                             </div>
-                            <div className="grid grid-cols-5 gap-1 mb-4">
-                                {[6, 7, 8, 9, 10].map(h => (
-                                    <button key={h}
-                                        onClick={() => { setCalcHours(h); setCalcDayLAN(false); }}
-                                        className={`py-2 rounded-lg text-sm font-mono font-bold transition-all
-                                                ${calcHours === h && !calcDayLAN
-                                                ? 'bg-gray-900 dark:bg-white text-white dark:text-black'
-                                                : 'bg-gray-100 dark:bg-zinc-800 text-gray-500 hover:bg-gray-200 dark:hover:bg-zinc-700'
-                                            }`}>
-                                        {h}h
-                                    </button>
-                                ))}
+                            <div className="flex items-start gap-3">
+                                <CheckCircle2 className="w-5 h-5 text-sz-red shrink-0 mt-0.5" />
+                                <p className="text-gray-700 dark:text-gray-300">
+                                    <strong className="text-gray-900 dark:text-white">{cs ? 'Bonusy za dobití.' : 'Top-up bonuses.'}</strong><br/>
+                                    {cs ? 'Dobij si kredit a získej hodiny navíc.' : 'Top up credit and get extra hours free.'}
+                                </p>
                             </div>
+                        </div>
 
-                            {/* DayLAN toggle */}
-                            <button onClick={() => setCalcDayLAN(!calcDayLAN)}
-                                className={`w-full flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-mono border transition-all mb-3
-                                        ${calcDayLAN
-                                        ? 'bg-gray-900 dark:bg-white text-white dark:text-black border-transparent'
-                                        : 'border-black/10 dark:border-white/10 text-gray-500 hover:border-gray-300'
-                                    }`}>
-                                <Clock className="w-3 h-3" />
-                                DayLAN {calcLocation === 'zizkov' ? '12:00 → 24:00' : '12:00 → 24:00'}
+                        <div className="bg-red-50 dark:bg-sz-red/5 rounded-xl p-5 border border-red-100 dark:border-sz-red/20">
+                            {/* Summary row */}
+                            <div className="flex justify-between items-center">
+                                <div className="text-xs text-sz-red font-mono font-bold uppercase">{cs ? 'Hodinová sazba' : 'Hourly rate'}</div>
+                                <div className="text-xl font-black text-gray-900 dark:text-white">79–49<span className="text-xs text-gray-500 font-normal">,- Kč/h</span></div>
+                            </div>
+                            <p className="text-[11px] text-gray-500 mt-1 mb-3">
+                                {cs ? 'Čím víc chodíš (za 90 dní), tím levnější. Cena klesá automaticky.' : 'The more you visit (in 90 days), the cheaper. Price drops automatically.'}
+                            </p>
+
+                            {/* Expand/collapse */}
+                            <button
+                                onClick={() => setShowTierDetails(!showTierDetails)}
+                                className="w-full flex items-center justify-center gap-1 text-[11px] font-mono font-bold text-sz-red hover:text-red-400 transition-colors py-1"
+                            >
+                                {showTierDetails
+                                    ? <>{cs ? 'Skrýt úrovně' : 'Hide tiers'} <ChevronUp className="w-3 h-3" /></>
+                                    : <>{cs ? 'Zobrazit úrovně a počty návštěv' : 'Show tiers & visit counts'} <ChevronDown className="w-3 h-3" /></>
+                                }
                             </button>
 
-                            {/* Seat type */}
-                            <div className="flex gap-1 mb-3">
-                                {([
-                                    { id: 'standard' as SeatType, label: 'STANDARD', desc: '240Hz' },
-                                    { id: 'vip' as SeatType, label: 'VIP', desc: '2.5K' },
-                                    { id: 'esport' as SeatType, label: 'ESPORT', desc: '380Hz' },
-                                ]).map(s => (
-                                    <button key={s.id}
-                                        onClick={() => setCalcSeat(s.id)}
-                                        className={`flex-1 py-2 rounded-lg text-xs font-mono font-bold transition-all
-                                                ${calcSeat === s.id
-                                                ? 'bg-sz-red text-white'
-                                                : 'bg-gray-100 dark:bg-zinc-800 text-gray-500 hover:bg-gray-200 dark:hover:bg-zinc-700'
-                                            }`}>
-                                        {s.label}
-                                    </button>
-                                ))}
-                            </div>
-
-                            {/* Toggles: night, saturday */}
-                            <div className="flex gap-2 mb-4">
-                                <button onClick={() => setCalcNight(!calcNight)}
-                                    className={`flex-1 flex items-center justify-center gap-1 py-2 rounded-lg text-xs font-mono border transition-all
-                                            ${calcNight
-                                            ? 'bg-indigo-600/20 border-indigo-500/40 text-indigo-400'
-                                            : 'border-black/10 dark:border-white/10 text-gray-400'
-                                        }`}>
-                                    <Moon className="w-3 h-3" />
-                                    {cs ? 'Noční' : 'Night'} (+50 Kč)
-                                </button>
-                                <button onClick={() => setCalcSaturday(!calcSaturday)}
-                                    className={`flex-1 flex items-center justify-center gap-1 py-2 rounded-lg text-xs font-mono border transition-all
-                                            ${calcSaturday
-                                            ? 'bg-orange-600/20 border-orange-500/40 text-orange-400'
-                                            : 'border-black/10 dark:border-white/10 text-gray-400'
-                                        }`}>
-                                    <CalendarDays className="w-3 h-3" />
-                                    {cs ? 'Sobota' : 'Saturday'} (+30 Kč)
-                                </button>
-                            </div>
-
-                            {/* Results table */}
-                            <div className="bg-gray-50 dark:bg-zinc-900/50 rounded-lg border border-black/5 dark:border-white/5 overflow-hidden">
-                                <div className="grid grid-cols-3 gap-0 text-[10px] font-mono uppercase text-gray-400 px-3 py-2 border-b border-black/5 dark:border-white/5">
-                                    <span>{cs ? 'Level' : 'Level'}</span>
-                                    <span className="text-right">{cs ? 'Celkem' : 'Total'}</span>
-                                    {calcSaturday && <span className="text-right">{cs ? 'So.' : 'Sat.'}</span>}
-                                </div>
-                                {MEMBER_TIERS.map(tier => {
-                                    const r = calcResult[tier.id];
-                                    return r ? (
-                                        <div key={tier.id} className="grid grid-cols-3 gap-0 px-3 py-2 border-b border-black/5 dark:border-white/5 last:border-0">
-                                            <span className="text-xs font-mono text-gray-700 dark:text-gray-300 flex items-center gap-1">
-                                                <span className="text-sm">{tier.icon}</span> {tier.name}
-                                            </span>
-                                            <span className="text-right text-sm font-bold text-sz-red font-mono">{r.total},- Kč</span>
-                                            {calcSaturday && <span className="text-right text-sm font-bold text-orange-400 font-mono">{r.totalSat},- Kč</span>}
+                            {/* Detailed tiers */}
+                            {showTierDetails && (
+                                <div className="mt-3 pt-3 border-t border-red-100 dark:border-sz-red/20 space-y-2 animate-in fade-in slide-in-from-top-2">
+                                    <div className="flex justify-between items-center">
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-xs text-sz-red font-mono font-bold uppercase">🚀 Sleeper</span>
+                                            <span className="text-[10px] text-gray-400 font-mono">{cs ? '(nový člen)' : '(new member)'}</span>
                                         </div>
-                                    ) : null;
-                                })}
-                                {calcResult['guest'] && (
-                                    <div className="grid grid-cols-3 gap-0 px-3 py-2 bg-gray-100 dark:bg-zinc-800/50">
-                                        <span className="text-xs font-mono text-gray-500 flex items-center gap-1">
-                                            👋 Guest
-                                        </span>
-                                        <span className="text-right text-sm font-bold text-gray-500 font-mono">{calcResult['guest'].total},- Kč</span>
-                                        {calcSaturday && <span className="text-right text-sm font-bold text-orange-300 font-mono">{calcResult['guest'].totalSat},- Kč</span>}
+                                        <div className="text-sm font-black text-gray-900 dark:text-white">79<span className="text-[10px] text-gray-500 font-normal">,- Kč/h</span></div>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-xs text-sz-red font-mono font-bold uppercase">⭐ Basic</span>
+                                            <span className="text-[10px] text-gray-400 font-mono">1–8 {cs ? 'návštěv' : 'visits'}</span>
+                                        </div>
+                                        <div className="text-sm font-black text-gray-900 dark:text-white">69<span className="text-[10px] text-gray-500 font-normal">,- Kč/h</span></div>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-xs text-sz-red font-mono font-bold uppercase">💎 Premium</span>
+                                            <span className="text-[10px] text-gray-400 font-mono">9–23 {cs ? 'návštěv' : 'visits'}</span>
+                                        </div>
+                                        <div className="text-sm font-black text-gray-900 dark:text-white">59<span className="text-[10px] text-gray-500 font-normal">,- Kč/h</span></div>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-xs text-sz-red font-mono font-bold uppercase">🏆 ULTRAS</span>
+                                            <span className="text-[10px] text-gray-400 font-mono">24+ {cs ? 'návštěv' : 'visits'}</span>
+                                        </div>
+                                        <div className="text-sm font-black text-sz-red">49<span className="text-[10px] font-normal">,- Kč/h</span></div>
+                                    </div>
+
+                                    {/* Premium trial tip */}
+                                    <div className="mt-3 pt-3 border-t border-red-100/50 dark:border-sz-red/10">
+                                        <p className="text-[11px] text-gray-500 flex items-start gap-1.5">
+                                            <Lightbulb className="w-3.5 h-3.5 text-yellow-500 shrink-0 mt-0.5" />
+                                            {cs
+                                                ? <span><strong className="text-gray-900 dark:text-white">Tip:</strong> Při dobití od 1 000 Kč získáš Premium na 30 dní — i bez 9 návštěv. Ideální na vyzkoušení.</span>
+                                                : <span><strong className="text-gray-900 dark:text-white">Tip:</strong> Top up 1 000 CZK or more and get Premium for 30 days — even without 9 visits. Great for trying it out.</span>
+                                            }
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                </div>
+
+                {/* ─── Interactive Calculator & Fees ───────────────── */}
+                <div className="mb-16">
+                    <div className="text-center mb-8">
+                        <h2 className="text-2xl md:text-4xl font-orbitron font-black text-gray-900 dark:text-white uppercase">
+                            {cs ? 'Jednoduchá kalkulačka' : 'Simple Calculator'}
+                        </h2>
+                        <p className="text-gray-500 font-mono mt-2">
+                            {cs ? 'Nastav si parametry a hned uvidíš, kolik zaplatíš.' : 'Set your parameters and immediately see your price.'}
+                        </p>
+                    </div>
+
+                    <div className="glass-panel rounded-2xl p-6 lg:p-8 border border-black/5 dark:border-white/10 max-w-4xl mx-auto shadow-2xl">
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            {/* Controls */}
+                            <div className="space-y-6 border-b md:border-b-0 md:border-r border-black/5 dark:border-white/5 pb-6 md:pb-0 md:pr-8">
+                                
+                                {/* Pobočka */}
+                                <div>
+                                    <label className="text-xs font-mono font-bold text-gray-500 uppercase flex items-center gap-1 mb-2">
+                                        <MapPin className="w-3 h-3" /> {cs ? 'Kde budeš hrát?' : 'Where will you play?'}
+                                    </label>
+                                    <div className="flex gap-2 bg-gray-100 dark:bg-zinc-800 p-1 rounded-xl">
+                                        {LOCATIONS.map(loc => (
+                                            <button key={loc.id}
+                                                onClick={() => setCalcLocation(loc.id)}
+                                                className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all
+                                                        ${calcLocation === loc.id
+                                                        ? 'bg-white dark:bg-zinc-700 text-gray-900 dark:text-white shadow-sm'
+                                                        : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
+                                                    }`}>
+                                                {cs ? loc.nameCs : loc.nameEn}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Čas */}
+                                <div>
+                                    <label className="text-xs font-mono font-bold text-gray-500 uppercase flex items-center gap-1 mb-2">
+                                        <Clock className="w-3 h-3" /> {cs ? 'Jak dlouho?' : 'How long?'}
+                                    </label>
+                                    <div className="grid grid-cols-5 gap-1 mb-1">
+                                        {[1, 2, 3, 4, 5].map(h => (
+                                            <button key={h} onClick={() => { setCalcHours(h); setCalcDayLAN(false); }}
+                                                className={`py-2 rounded-lg text-sm font-mono font-bold transition-all
+                                                        ${calcHours === h && !calcDayLAN
+                                                        ? 'bg-sz-red text-white' : 'bg-gray-100 dark:bg-zinc-800 text-gray-500 hover:bg-gray-200 dark:hover:bg-zinc-700'
+                                                    }`}>
+                                                {h}h
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <div className="grid grid-cols-5 gap-1 mb-2">
+                                        {[6, 7, 8, 9, 10].map(h => (
+                                            <button key={h} onClick={() => { setCalcHours(h); setCalcDayLAN(false); }}
+                                                className={`py-2 rounded-lg text-sm font-mono font-bold transition-all
+                                                        ${calcHours === h && !calcDayLAN
+                                                        ? 'bg-sz-red text-white' : 'bg-gray-100 dark:bg-zinc-800 text-gray-500 hover:bg-gray-200 dark:hover:bg-zinc-700'
+                                                    }`}>
+                                                {h}h
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <button onClick={() => setCalcDayLAN(!calcDayLAN)}
+                                        className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-mono font-bold transition-all border
+                                                ${calcDayLAN
+                                                ? 'bg-sz-red border-sz-red text-white' : 'border-gray-200 dark:border-zinc-700 text-gray-600 dark:text-gray-400 hover:border-gray-300'
+                                            }`}>
+                                        🌞 DayLAN (12:00 → 24:00)
+                                    </button>
+                                </div>
+
+                                {/* Upgrady PC (Jednorázové) */}
+                                <div>
+                                    <label className="text-xs font-mono font-bold text-gray-500 uppercase flex items-center gap-1 mb-2">
+                                        <Monitor className="w-3 h-3" /> {cs ? 'Jaký PC? (Příplatek jen 1x za návštěvu)' : 'Which PC? (One-time fee per visit)'}
+                                    </label>
+                                    <div className="flex gap-2 bg-gray-100 dark:bg-zinc-800 p-1 rounded-xl">
+                                        {([
+                                            { id: 'standard' as SeatType, label: 'STANDARD' },
+                                            { id: 'vip' as SeatType, label: 'VIP' },
+                                            { id: 'esport' as SeatType, label: 'ESPORT' },
+                                        ]).map(s => (
+                                            <button key={s.id} onClick={() => setCalcSeat(s.id)}
+                                                className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all
+                                                        ${calcSeat === s.id
+                                                        ? 'bg-white dark:bg-zinc-700 text-gray-900 dark:text-white shadow-sm'
+                                                        : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
+                                                    }`}>
+                                                {s.label}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    {/* Clarification alert for PC extra fees */}
+                                    <div className="mt-2 bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/30 rounded-lg p-3 flex gap-2 items-start text-left">
+                                        <Info className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
+                                        <div className="text-xs text-blue-800 dark:text-blue-300">
+                                            {cs 
+                                            ? 'Na lepších PC se neplatí vyšší hodinová sazba. Platí se jen fixní jednorázový poplatek. Na drahých PC tak můžeš pálit i hodiny, co jsi dostal úplně ZDARMA v rámci odměn.' 
+                                            : 'Better PCs don’t have a higher hourly rate. It’s just a fixed one-time upgrade fee. You can even burn your FREE reward hours on expensive PCs.'}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Noční & Víkend (Jednorázové) */}
+                                <div>
+                                    <label className="text-xs font-mono font-bold text-gray-500 uppercase flex items-center gap-1 mb-2">
+                                        <CalendarDays className="w-3 h-3" /> {cs ? 'Kdy budeš hrát?' : 'When will you play?'}
+                                    </label>
+                                    <div className="flex gap-2">
+                                        <button onClick={() => setCalcNight(!calcNight)}
+                                            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-mono font-bold transition-all border
+                                                    ${calcNight
+                                                    ? 'bg-indigo-600 border-indigo-600 text-white' : 'border-gray-200 dark:border-zinc-700 text-gray-600 dark:text-gray-400'
+                                                }`}>
+                                            <Moon className="w-4 h-4" /> {cs ? 'Noc' : 'Night'}
+                                        </button>
+                                        <button onClick={() => setCalcSaturday(!calcSaturday)}
+                                            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-mono font-bold transition-all border
+                                                    ${calcSaturday
+                                                    ? 'bg-orange-500 border-orange-500 text-white' : 'border-gray-200 dark:border-zinc-700 text-gray-600 dark:text-gray-400'
+                                                }`}>
+                                            <CalendarDays className="w-4 h-4" /> {cs ? 'Sobota' : 'Saturday'}
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Auto-detected time info */}
+                                {timeAutoApplied.length > 0 && (
+                                    <div className="mt-3 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-700/30 rounded-lg p-3 flex gap-2 items-start text-left animate-in fade-in">
+                                        <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                                        <div className="text-xs text-amber-800 dark:text-amber-300">
+                                            {cs
+                                                ? <>Automaticky jsme zaškrtli {timeAutoApplied.includes('night') && <strong>noční příplatek</strong>}{timeAutoApplied.includes('night') && timeAutoApplied.includes('saturday') && ' a '}{timeAutoApplied.includes('saturday') && <strong>sobotní příplatek</strong>}, protože právě teď {timeAutoApplied.includes('night') ? 'je noc (00:00–06:00)' : 'je sobota'}. Můžeš to kdykoliv odškrtnout.</>
+                                                : <>We auto-checked {timeAutoApplied.includes('night') && <strong>night surcharge</strong>}{timeAutoApplied.includes('night') && timeAutoApplied.includes('saturday') && ' and '}{timeAutoApplied.includes('saturday') && <strong>Saturday surcharge</strong>} based on current time. You can uncheck anytime.</>
+                                            }
+                                        </div>
                                     </div>
                                 )}
                             </div>
-                        </div>
-                    </div>
 
-                    {/* ── EXTRA ────────────────────────────── */}
-                    <div className="glass-panel rounded-xl p-6 border border-black/5 dark:border-white/10">
-                        <div className="flex items-center gap-2 mb-6">
-                            <Zap className="w-5 h-5 text-yellow-400" />
-                            <h3 className="font-orbitron font-bold text-lg uppercase text-yellow-400">Extra</h3>
-                        </div>
-
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-                            {cs
-                                ? 'Jednorázový příplatek za celou návštěvu.'
-                                : 'One-time surcharge per visit.'
-                            }
-                        </p>
-
-                        {/* Extra fees */}
-                        <div className="space-y-3">
-                            {EXTRA_FEES.map(fee => (
-                                <div key={fee.id} className="flex items-center justify-between bg-gray-50 dark:bg-zinc-900/50 rounded-lg px-4 py-3 border border-black/5 dark:border-white/5">
-                                    <div>
-                                        <div className="font-bold text-sm text-gray-800 dark:text-white">
-                                            {cs ? fee.nameCs : fee.nameEn}
-                                        </div>
-                                        <div className="text-[10px] text-gray-400 font-mono">
-                                            {cs ? fee.descCs : fee.descEn}
-                                        </div>
+                            {/* Results */}
+                            <div className="flex flex-col justify-center">
+                                {/* Guest prominently displayed */}
+                                <div className="bg-blue-500/10 border-2 border-blue-500/30 rounded-2xl p-6 text-center mb-6 relative hover:border-blue-500/60 transition-colors">
+                                    <div className="text-sm font-mono font-bold text-blue-600 dark:text-blue-400 uppercase mb-2">
+                                        {calcDayLAN ? 'DayLAN' : `${calcHours}h`} • GUEST
                                     </div>
-                                    <div className="text-right">
-                                        <span className="text-sz-red font-bold font-mono text-sm">
-                                            {fee.price},- Kč
-                                        </span>
-                                        {fee.altPrice && (
-                                            <div className="text-[10px] text-gray-400 font-mono">
-                                                ({fee.altPrice},- {fee.altNote})
+                                    <div className="text-5xl font-black text-gray-900 dark:text-white flex items-center justify-center gap-2">
+                                        {calcSaturday ? calcResult['guest'].totalSat : calcResult['guest'].total}
+                                        <span className="text-xl text-gray-500 font-normal">,- Kč</span>
+                                    </div>
+
+                                    {/* Price breakdown */}
+                                    <div className="mt-4 pt-3 border-t border-blue-500/20 space-y-1 text-left max-w-[240px] mx-auto">
+                                        <div className="flex justify-between text-xs font-mono text-gray-600 dark:text-gray-400">
+                                            <span>{calcDayLAN ? 'DayLAN' : (cs ? `Hraní (${calcHours}h)` : `Play time (${calcHours}h)`)}</span>
+                                            <span>{calcDayLAN ? '595' : (120 + Math.max(0, calcHours - 1) * 60)},- Kč</span>
+                                        </div>
+                                        {calcSeat === 'vip' && calcLocation === 'haje' && (
+                                            <div className="flex justify-between text-xs font-mono text-yellow-600 dark:text-yellow-400">
+                                                <span>+ VIP PC</span>
+                                                <span>30,- Kč</span>
+                                            </div>
+                                        )}
+                                        {calcSeat === 'esport' && calcLocation === 'stodulky' && (
+                                            <div className="flex justify-between text-xs font-mono text-yellow-600 dark:text-yellow-400">
+                                                <span>+ Esport PC</span>
+                                                <span>90,- Kč</span>
+                                            </div>
+                                        )}
+                                        {calcNight && (
+                                            <div className="flex justify-between text-xs font-mono text-indigo-500">
+                                                <span>+ {cs ? 'Noční' : 'Night'}</span>
+                                                <span>50,- Kč</span>
+                                            </div>
+                                        )}
+                                        {calcSaturday && (
+                                            <div className="flex justify-between text-xs font-mono text-orange-500">
+                                                <span>+ {cs ? 'Sobota' : 'Saturday'}</span>
+                                                <span>30,- Kč</span>
                                             </div>
                                         )}
                                     </div>
+
+                                    <div className="text-xs text-gray-500 mt-3 font-mono">
+                                        {cs ? 'Zaplatíš na začátku. Jednoduché.' : 'Pay upfront. Simple.'}
+                                    </div>
                                 </div>
-                            ))}
+
+                                {/* Mobile expandable members */}
+                                <div className="border border-black/10 dark:border-white/10 rounded-xl overflow-hidden bg-gray-50 dark:bg-zinc-900/50">
+                                    <button 
+                                        onClick={() => setShowFullCalc(!showFullCalc)}
+                                        className="w-full flex items-center justify-between p-4 font-bold text-sm bg-white dark:bg-zinc-800 hover:bg-gray-50 dark:hover:bg-zinc-700 transition-colors"
+                                    >
+                                        <span className="flex items-center gap-2">
+                                            <Crown className="w-4 h-4 text-sz-red" />
+                                            {cs ? 'Ceny pro Registrované' : 'Prices for Members'}
+                                        </span>
+                                        {showFullCalc ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                                    </button>
+
+                                    {/* Price range preview — visible only when collapsed */}
+                                    {!showFullCalc && (() => {
+                                        const sleeper = calcResult['sleeper'];
+                                        const ultras = calcResult['ultras'];
+                                        if (!sleeper || !ultras) return null;
+                                        const high = calcSaturday ? sleeper.totalSat : sleeper.total;
+                                        const low = calcSaturday ? ultras.totalSat : ultras.total;
+                                        return (
+                                            <div className="px-4 py-3 border-t border-black/5 dark:border-white/5 flex justify-between items-center">
+                                                <span className="text-xs font-mono text-gray-500">{cs ? 'Člen platí' : 'Member pays'}</span>
+                                                <span className="text-lg font-black text-gray-900 dark:text-white">
+                                                    {high} – <span className="text-sz-red">{low}</span>
+                                                    <span className="text-xs text-gray-500 font-normal">,- Kč</span>
+                                                </span>
+                                            </div>
+                                        );
+                                    })()}
+                                    
+                                    {showFullCalc && (
+                                        <div className="p-4 space-y-3">
+                                            {MEMBER_TIERS.map(tier => {
+                                                const r = calcResult[tier.id];
+                                                return r ? (
+                                                    <div key={tier.id} className="flex items-center justify-between border-b border-black/5 dark:border-white/5 pb-2 last:border-0 last:pb-0">
+                                                        <span className="text-sm font-bold text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                                                            <span>{tier.icon}</span> {tier.name}
+                                                        </span>
+                                                        <span className={`text-lg font-black ${tier.featured ? 'text-sz-red' : 'text-gray-900 dark:text-white'}`}>
+                                                            {calcSaturday ? r.totalSat : r.total},-
+                                                        </span>
+                                                    </div>
+                                                ) : null;
+                                            })}
+                                            <div className="text-[10px] text-gray-400 text-center pt-2 font-mono italic">
+                                                {cs ? 'Příplatky za PC/Noc jsou již započítány v ceně výše jako jednorázová částka.' : 'PC/Night surcharges are already factored into the prices above as a one-time fee.'}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
                         </div>
 
-                        {/* Packages */}
-                        <div className="mt-8 border-t border-black/5 dark:border-white/5 pt-6">
-                            <div className="flex items-center gap-2 mb-4">
-                                <Clock className="w-5 h-5 text-purple-400" />
-                                <h4 className="font-orbitron font-bold text-sm uppercase text-purple-400">{cs ? 'Balíčky' : 'Packages'}</h4>
-                            </div>
-                            <p className="text-xs text-gray-400 mb-4 font-mono">DayLAN &amp; NightLAN</p>
+                    </div>
+                </div>
 
-                            <div className="space-y-2 mb-4">
-                                {PACKAGES.map(pkg => (
-                                    <div key={pkg.id} className="flex items-center gap-3 bg-gray-50 dark:bg-zinc-900/50 rounded-lg px-4 py-2 border border-black/5 dark:border-white/5">
-                                        <span className="text-lg">{pkg.icon}</span>
-                                        <div>
-                                            <div className="font-bold text-xs text-gray-800 dark:text-white">{cs ? pkg.nameCs : pkg.nameEn}</div>
-                                            <div className="text-[10px] text-gray-400 font-mono">{pkg.time}</div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
+                {/* ─── PC Types & Extra Fees ───────────────────── */}
+                <div className="mb-16">
+                    <div className="text-center mb-8">
+                        <h2 className="text-2xl md:text-4xl font-orbitron font-black text-gray-900 dark:text-white uppercase">
+                            {cs ? 'Typy PC & Příplatky' : 'PC Types & Surcharges'}
+                        </h2>
+                        <p className="text-gray-500 font-mono mt-2">
+                            {cs ? 'Všechny příplatky jsou jednorázové za celou návštěvu, ne za hodinu.' : 'All surcharges are one-time per visit, not per hour.'}
+                        </p>
+                    </div>
 
-                            {/* Package pricing */}
-                            <div className="bg-gray-50 dark:bg-zinc-900/50 rounded-lg border border-black/5 dark:border-white/5 p-4 space-y-2">
-                                <div className="flex items-center justify-between">
-                                    <span className="text-xs text-gray-500 flex items-center gap-1">
-                                        <Gem className="w-3 h-3 text-blue-400" /> Premium / <span className="text-sz-red font-bold">ULTRAS</span>
-                                    </span>
-                                    <span className="font-bold text-sm font-mono text-gray-900 dark:text-white">495,-</span>
+                    {/* PC Types */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto mb-8">
+                        <div className="glass-panel rounded-xl p-5 border border-black/5 dark:border-white/10 text-center">
+                            <div className="text-3xl mb-2">🖥️</div>
+                            <h4 className="font-orbitron font-bold text-sm uppercase text-gray-900 dark:text-white mb-1">Standard</h4>
+                            <p className="text-xs text-gray-500 font-mono mb-3">240Hz Monitor</p>
+                            <div className="bg-green-500/10 text-green-600 dark:text-green-400 text-sm font-bold rounded-lg px-3 py-1.5 inline-block">
+                                {cs ? 'V ceně' : 'Included'}
+                            </div>
+                            <p className="text-xs text-gray-400 mt-3">
+                                {cs ? 'Výchozí PC pro všechny hráče. Plynulý zážitek na vysoké úrovni.' : 'Default PC for all players. Smooth high-level experience.'}
+                            </p>
+                        </div>
+
+                        <div className="glass-panel rounded-xl p-5 border border-yellow-400/30 text-center relative overflow-hidden">
+                            <div className="absolute top-0 right-0 bg-yellow-500 text-black text-[9px] font-bold px-2 py-0.5 rounded-bl-lg">VIP</div>
+                            <div className="text-3xl mb-2">✨</div>
+                            <h4 className="font-orbitron font-bold text-sm uppercase text-yellow-500 mb-1">VIP PC</h4>
+                            <p className="text-xs text-gray-500 font-mono mb-3">27" 2.5K Monitor</p>
+                            <div className="bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 text-sm font-bold rounded-lg px-3 py-1.5 inline-block">
+                                +30,- Kč <span className="font-normal text-xs opacity-70">({cs ? 'Háje' : 'Háje'})</span>
+                            </div>
+                            <p className="text-xs text-gray-400 mt-3">
+                                {cs ? 'Výkonnější sestavy s většími monitory. Ideální pro pohodové hraní ve vyšším rozlišení.' : 'More powerful rigs with bigger monitors. Ideal for relaxed gaming at higher resolution.'}
+                            </p>
+                        </div>
+
+                        <div className="glass-panel rounded-xl p-5 border border-sz-red/30 text-center relative overflow-hidden">
+                            <div className="absolute top-0 right-0 bg-sz-red text-white text-[9px] font-bold px-2 py-0.5 rounded-bl-lg">ESPORT</div>
+                            <div className="text-3xl mb-2">🎯</div>
+                            <h4 className="font-orbitron font-bold text-sm uppercase text-sz-red mb-1">Esport PC</h4>
+                            <p className="text-xs text-gray-500 font-mono mb-3">380Hz Monitor</p>
+                            <div className="bg-sz-red/10 text-sz-red text-sm font-bold rounded-lg px-3 py-1.5 inline-block">
+                                +90,- Kč <span className="font-normal text-xs opacity-70">(+60 Premium/ULTRAS)</span>
+                            </div>
+                            <p className="text-xs text-gray-400 mt-3">
+                                {cs ? 'Maximum FPS. Závodní monitory pro kompetitivní hráče. Každý frame se počítá.' : 'Maximum FPS. Racing monitors for competitive players. Every frame counts.'}
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* Other Surcharges */}
+                    <div className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                        <div className="glass-panel rounded-lg p-4 border border-black/5 dark:border-white/10 text-center">
+                            <Moon className="w-5 h-5 text-indigo-400 mx-auto mb-2" />
+                            <div className="font-bold text-sm text-gray-900 dark:text-white">{cs ? 'Noční' : 'Night'}</div>
+                            <div className="text-xs text-gray-400 font-mono">00:00 – 06:00</div>
+                            <div className="text-indigo-400 font-bold font-mono mt-1">+50,- Kč</div>
+                            <div className="text-[10px] text-gray-500 mt-1">{cs ? 'ULTRAS neplatí' : 'ULTRAS exempt'}</div>
+                        </div>
+                        <div className="glass-panel rounded-lg p-4 border border-black/5 dark:border-white/10 text-center">
+                            <CalendarDays className="w-5 h-5 text-orange-400 mx-auto mb-2" />
+                            <div className="font-bold text-sm text-gray-900 dark:text-white">{cs ? 'Sobota' : 'Saturday'}</div>
+                            <div className="text-xs text-gray-400 font-mono">12:00 – 00:00</div>
+                            <div className="text-orange-400 font-bold font-mono mt-1">+30,- Kč</div>
+                        </div>
+                        <div className="glass-panel rounded-lg p-4 border border-black/5 dark:border-white/10 text-center">
+                            <Gamepad2 className="w-5 h-5 text-purple-400 mx-auto mb-2" />
+                            <div className="font-bold text-sm text-gray-900 dark:text-white">{cs ? 'Ovladač' : 'Controller'}</div>
+                            <div className="text-xs text-gray-400 font-mono">{cs ? 'Zapůjčení' : 'Rental'}</div>
+                            <div className="text-purple-400 font-bold font-mono mt-1">+20,- Kč</div>
+                        </div>
+                        <div className="glass-panel rounded-lg p-4 border border-black/5 dark:border-white/10 text-center">
+                            <Clock className="w-5 h-5 text-green-400 mx-auto mb-2" />
+                            <div className="font-bold text-sm text-gray-900 dark:text-white">DayLAN</div>
+                            <div className="text-xs text-gray-400 font-mono">12:00 – 24:00</div>
+                            <div className="text-green-400 font-bold font-mono mt-1">{cs ? 'od 495,- Kč' : 'from 495,- Kč'}</div>
+                        </div>
+                    </div>
+                </div>
+                {/* ─── Rewards & Vouchers ───────────────────────── */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+                    {/* Try us / Voucher Block */}
+                    <div className="relative glass-panel rounded-2xl border-2 border-sz-red shadow-lg shadow-sz-red/20 p-8 flex flex-col justify-center items-center text-center overflow-hidden">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-sz-red/10 rounded-full blur-[40px] pointer-events-none" />
+                        <Gift className="w-12 h-12 text-sz-red mb-4" />
+                        <h3 className="font-orbitron font-black text-2xl uppercase text-gray-900 dark:text-white mb-2">
+                            {cs ? 'Chceš si nás vyzkoušet?' : 'Want to try us out?'}
+                        </h3>
+                        <p className="text-gray-600 dark:text-gray-400 mb-6">
+                            {cs 
+                                ? 'Máme pro tebe čas zdarma! Stačí při první návštěvě říct heslo obsluze.' 
+                                : 'We have free time for you! Just say the password to the staff on your first visit.'}
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-500 mb-4">
+                            {cs ? 'Platí pro nové členy při první návštěvě.' : 'Valid for new members on their first visit.'}
+                        </p>
+
+                        <a href="/poukaz" className="px-8 py-3 rounded-full bg-sz-red text-white font-bold font-mono text-sm hover:bg-red-700 transition-colors shadow-lg shadow-sz-red/30">
+                            {cs ? 'Zjistit více a získat čas zdarma →' : 'Learn more & get free time →'}
+                        </a>
+                    </div>
+
+                    {/* Various Loyalty Rewards */}
+                    <div className="glass-panel rounded-2xl border-2 border-yellow-400/30 p-8 flex flex-col justify-center">
+                        <h3 className="font-orbitron font-black text-xl uppercase text-yellow-500 mb-6 flex items-center gap-2">
+                            <Crown className="w-6 h-6" />
+                            {cs ? 'Proč být členem?' : 'Why be a member?'}
+                        </h3>
+                        <div className="space-y-4">
+                            <div className="flex gap-4">
+                                <div className="w-10 h-10 rounded-full bg-blue-500/10 text-blue-500 flex items-center justify-center shrink-0">
+                                    <UserPlus className="w-5 h-5" />
                                 </div>
-                                <div className="flex items-center justify-between">
-                                    <span className="text-xs text-gray-500 flex items-center gap-1">
-                                        <Star className="w-3 h-3 text-yellow-400" /> New / Basic / GUEST
-                                    </span>
-                                    <span className="font-bold text-sm font-mono text-gray-900 dark:text-white">595,-</span>
+                                <div>
+                                    <div className="font-bold text-gray-900 dark:text-white">{cs ? 'Přiveď kámoše' : 'Bring a friend'}</div>
+                                    <div className="text-sm text-gray-500">{cs ? 'Získej 120 minut za každýho, koho přivedeš k registraci.' : 'Get 120 min for every friend you bring to register.'}</div>
+                                </div>
+                            </div>
+                            <div className="flex gap-4">
+                                <div className="w-10 h-10 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center shrink-0">
+                                    <Heart className="w-5 h-5" />
+                                </div>
+                                <div>
+                                    <div className="font-bold text-gray-900 dark:text-white">{cs ? 'Dárci krve/plazmy' : 'Blood donors'}</div>
+                                    <div className="text-sm text-gray-500">{cs ? 'Měsíčně dáváme 180 minut dárcům krve/plazmy.' : '180 free minutes monthly for blood/plasma donors.'} <a href="https://www.europlasma.cz/program-slev-a-vyhod-skillzone.html" target="_blank" rel="noopener noreferrer" className="text-sz-red hover:underline">{cs ? 'Více info' : 'More info'} →</a></div>
+                                </div>
+                            </div>
+                            <div className="flex gap-4">
+                                <div className="w-10 h-10 rounded-full bg-yellow-500/10 text-yellow-500 flex items-center justify-center shrink-0">
+                                    <Zap className="w-5 h-5" />
+                                </div>
+                                <div>
+                                    <div className="font-bold text-gray-900 dark:text-white">{cs ? 'Bonusy za dobití' : 'Top-up bonuses'}</div>
+                                    <div className="text-sm text-gray-500">{cs ? 'Dobij si kredit depozitem na baru a získej až desítky minut zcela zdarma.' : 'Top up your credit at the bar and get up to dozens of minutes completely free.'}</div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* ─── Bonuses Section ─────────────────────── */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-16">
-                    {/* Top-up bonuses */}
-                    <div className="glass-panel rounded-xl p-6 border border-black/5 dark:border-white/10">
-                        <div className="flex items-center gap-2 mb-6">
-                            <Gift className="w-5 h-5 text-green-400" />
-                            <h3 className="font-orbitron font-bold text-lg uppercase text-green-400">{cs ? 'Bonusy za dobití' : 'Top-up Bonuses'}</h3>
+                {/* ─── Opening Hours & Info ────────────────────────── */}
+                <div className="glass-panel rounded-2xl p-6 mb-10 border border-gray-200 dark:border-white/10">
+                    <h3 className="font-orbitron font-black text-sm uppercase text-gray-500 mb-4 flex items-center gap-2">
+                        <Clock className="w-4 h-4" />
+                        {cs ? 'Otevírací doby poboček' : 'Branch Opening Hours'}
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                        <div className="flex items-start gap-3 p-3 bg-red-50 dark:bg-sz-red/5 border border-red-100 dark:border-sz-red/20 rounded-lg">
+                            <MapPin className="w-4 h-4 text-sz-red shrink-0 mt-0.5" />
+                            <div>
+                                <div className="font-bold text-gray-900 dark:text-white">Žižkov</div>
+                                <div className="text-sz-red font-mono text-xs font-bold">NONSTOP 24/7</div>
+                            </div>
                         </div>
-                        <p className="text-sm text-gray-500 mb-6">
-                            {cs ? 'Víc dobíješ = víc dostaneš. Bonusové minuty se sčítají!' : 'More you top up = more you get. Bonus minutes stack!'}
-                        </p>
-
-                        {/* Compact bonus table — 4 key breakpoints */}
-                        <div className="rounded-lg overflow-hidden border border-black/5 dark:border-white/5">
-                            {/* Header */}
-                            <div className="grid grid-cols-3 text-[10px] font-mono uppercase text-gray-400 px-4 py-2 bg-gray-100 dark:bg-zinc-900/80 border-b border-black/5 dark:border-white/5">
-                                <span>{cs ? 'Dobití' : 'Top-up'}</span>
-                                <span className="text-center">{cs ? 'Bonus celkem' : 'Total bonus'}</span>
-                                <span className="text-right">Extra</span>
+                        <div className="flex items-start gap-3 p-3 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg">
+                            <MapPin className="w-4 h-4 text-gray-400 shrink-0 mt-0.5" />
+                            <div>
+                                <div className="font-bold text-gray-900 dark:text-white">Háje</div>
+                                <div className="text-gray-500 font-mono text-xs">12:00 – 00:00 {cs ? '(s hráči až 03:00)' : '(till 3am with players)'}</div>
                             </div>
-                            {TOP_UP_BONUSES.map((b, i) => {
-                                const maxBonus = TOP_UP_BONUSES[TOP_UP_BONUSES.length - 1].bonus;
-                                const pct = Math.round((b.bonus / maxBonus) * 100);
-                                const multiplierLabel = i === 0 ? null : '3×';
-                                return (
-                                    <div key={b.amount}
-                                        className={`grid grid-cols-3 items-center px-4 py-3 border-b last:border-0 border-black/5 dark:border-white/5 transition-colors
-                                            ${b.perk ? 'bg-green-500/5 dark:bg-green-500/5' : i % 2 === 0 ? 'bg-gray-50 dark:bg-zinc-900/30' : 'bg-white dark:bg-zinc-900/60'}`}
-                                    >
-                                        {/* Amount */}
-                                        <div>
-                                            <span className={`font-mono font-bold ${b.perk ? 'text-base text-gray-900 dark:text-white' : 'text-sm text-gray-600 dark:text-gray-400'}`}>
-                                                {b.amount.toLocaleString()},- Kč
-                                            </span>
-                                            {multiplierLabel && (
-                                                <span className="ml-1.5 text-[9px] text-gray-400 font-mono">({cs ? '2× předchozí' : '2× prev'})</span>
-                                            )}
-                                        </div>
-                                        {/* Bonus — cumulative */}
-                                        <div className="text-center">
-                                            <span className={`font-mono font-black ${b.perk ? 'text-base text-green-500' : 'text-sm text-green-400/80'}`}>
-                                                +{b.bonus} min
-                                            </span>
-                                            {multiplierLabel && (
-                                                <span className="ml-1 text-[9px] text-green-600/50 font-mono">({multiplierLabel})</span>
-                                            )}
-                                            <div className="w-full bg-gray-200 dark:bg-zinc-700 rounded-full h-1 mt-1 max-w-[80px] mx-auto">
-                                                <div className="bg-green-500 rounded-full h-1 transition-all" style={{ width: `${pct}%` }} />
-                                            </div>
-                                        </div>
-                                        {/* Perk */}
-                                        <div className="text-right">
-                                            {b.perk ? (
-                                                <span className="inline-flex items-center gap-1 bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-mono px-2 py-0.5 rounded-full">
-                                                    💎 PREMIUM 30d
-                                                </span>
-                                            ) : (
-                                                <span className="text-gray-300 dark:text-gray-700 text-xs">—</span>
-                                            )}
-                                        </div>
-                                    </div>
-                                );
-                            })}
                         </div>
-                        <p className="text-[10px] text-gray-400 mt-3 italic font-mono">
-                            * {cs
-                                ? 'Pravidlo: 2× částka = 3× bonus. Platí do 2 000 Kč. Za 2 000 Kč získáš 540 min + PREMIUM na 30 dní.'
-                                : 'Rule: 2× amount = 3× bonus. Applies up to 2 000 Kč. At 2 000 Kč you get 540 min + PREMIUM for 30 days.'}
-                        </p>
-
-                        {/* Bonus slider calculator */}
-                        <div className="mt-6 border-t border-black/5 dark:border-white/5 pt-6">
-                            <div className="flex items-center gap-2 mb-4">
-                                <Calculator className="w-4 h-4 text-yellow-400" />
-                                <h4 className="font-orbitron font-bold text-xs uppercase text-yellow-400">
-                                    {cs ? 'Kalkulačka bonusů' : 'Bonus Calculator'}
-                                </h4>
-                            </div>
-
-                            <div className="flex justify-between text-xs text-gray-400 font-mono mb-1">
-                                <span>250 Kč</span>
-                                <span>2 000 Kč</span>
-                            </div>
-                            <input
-                                type="range"
-                                min={250}
-                                max={2000}
-                                step={250}
-                                value={bonusSlider}
-                                onChange={e => setBonusSlider(parseInt(e.target.value))}
-                                className="w-full h-2 bg-gray-200 dark:bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-sz-red"
-                            />
-
-                            <div className="flex items-center justify-between mt-3 mb-4">
-                                <div>
-                                    <div className="text-xs text-gray-400 font-mono">{cs ? 'Dobíjený kredit' : 'Top-up credit'}</div>
-                                    <div className="text-2xl font-black text-gray-900 dark:text-white">{bonusSlider},- Kč</div>
-                                </div>
-                                <div className="text-right">
-                                    <div className="text-xs text-green-400 font-mono">{cs ? 'Dostaneš bonus' : 'You get bonus'}</div>
-                                    <div className="text-2xl font-black text-green-400">+{bonusInfo.bonus} min</div>
-                                </div>
-                            </div>
-
-                            {bonusInfo.perk && (
-                                <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg px-3 py-2 text-blue-400 text-xs font-mono mb-4 text-center">
-                                    🎁 {cs
-                                        ? `Získáváš ${bonusInfo.bonus} min hraní navíc zdarma + PREMIUM na 30 dní!`
-                                        : `You get ${bonusInfo.bonus} bonus minutes + PREMIUM for 30 days!`
-                                    }
-                                </div>
-                            )}
-
-                            {/* Effective rates — Guest first, then members */}
-                            <div className="text-xs font-mono text-gray-400 mb-2 uppercase">
-                                {cs ? 'Tvoje reálná cena za hodinu' : 'Your effective hourly rate'}
-                            </div>
-                            {/* Guest (Sleeper) — full-width at top */}
-                            {(() => {
-                                const guest = bonusInfo.rates.find(r => r.tier === 'sleeper');
-                                if (!guest) return null;
-                                return (
-                                    <div className="rounded-lg p-3 text-center border border-black/5 dark:border-white/5 bg-gray-50 dark:bg-zinc-800/50 mb-2">
-                                        <div className="text-sm mb-0.5">{guest.icon} <span className="font-bold text-gray-700 dark:text-gray-300">{cs ? 'Host (neregistrovaný)' : 'Guest (unregistered)'}</span></div>
-                                        <div className="flex items-center justify-center gap-1">
-                                            <span className="text-gray-400 line-through text-xs">{guest.base} Kč/h</span>
-                                            <span className="font-black text-lg text-gray-900 dark:text-white">{guest.effective}</span>
-                                            <span className="text-gray-400 text-xs">Kč</span>
-                                        </div>
-                                    </div>
-                                );
-                            })()}
-                            {/* Members — 3-column grid below */}
-                            <div className="grid grid-cols-3 gap-2">
-                                {bonusInfo.rates.filter(r => r.tier !== 'sleeper').map(r => (
-                                    <div key={r.tier} className={`rounded-lg p-3 text-center border ${r.tier === 'ultras' ? 'border-sz-red/30 bg-sz-red/5' : 'border-black/5 dark:border-white/5 bg-gray-50 dark:bg-zinc-800/50'
-                                        }`}>
-                                        <div className="text-sm mb-0.5">{r.icon} <span className="font-bold text-gray-700 dark:text-gray-300">{r.name}</span></div>
-                                        <div className="flex items-center justify-center gap-1">
-                                            <span className="text-gray-400 line-through text-xs">{r.base} Kč/h</span>
-                                            <span className={`font-black text-lg ${r.tier === 'ultras' ? 'text-sz-red' : 'text-gray-900 dark:text-white'}`}>{r.effective}</span>
-                                            <span className="text-gray-400 text-xs">Kč</span>
-                                        </div>
-                                    </div>
-                                ))}
+                        <div className="flex items-start gap-3 p-3 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg">
+                            <MapPin className="w-4 h-4 text-gray-400 shrink-0 mt-0.5" />
+                            <div>
+                                <div className="font-bold text-gray-900 dark:text-white">Stodůlky</div>
+                                <div className="text-gray-500 font-mono text-xs">13:00 – 21:00 {cs ? '(s hráči až 23:00)' : '(till 23:00 with players)'}</div>
                             </div>
                         </div>
                     </div>
-
-                    {/* Rewards & Promos */}
-                    <div className="glass-panel rounded-xl p-6 border border-black/5 dark:border-white/10">
-                        <div className="flex items-center gap-2 mb-6">
-                            <Crown className="w-5 h-5 text-amber-400" />
-                            <h3 className="font-orbitron font-bold text-lg uppercase text-amber-400">{cs ? 'Odměny & Akce' : 'Rewards & Promos'}</h3>
-                        </div>
-
-                        <div className="space-y-4">
-                            {/* Europlasma */}
-                            <div className="bg-gray-50 dark:bg-zinc-900/50 rounded-lg p-4 border border-black/5 dark:border-white/5">
-                                <div className="flex items-center justify-between mb-1">
-                                    <div className="flex items-center gap-2">
-                                        <Heart className="w-4 h-4 text-red-400" />
-                                        <span className="font-bold text-sm text-gray-800 dark:text-white">{cs ? 'Dárci Europlasmy' : 'Europlasma Donors'}</span>
-                                    </div>
-                                    <span className="text-green-400 font-bold font-mono text-sm">180 min {cs ? 'zdarma' : 'free'}</span>
-                                </div>
-                                <p className="text-xs text-gray-400">
-                                    {cs ? 'Odměna za dárcovství každý měsíc.' : 'Monthly reward for donations.'}
-                                </p>
-                            </div>
-
-                            {/* Refer a friend */}
-                            <div className="bg-gray-50 dark:bg-zinc-900/50 rounded-lg p-4 border border-black/5 dark:border-white/5">
-                                <div className="flex items-center justify-between mb-1">
-                                    <div className="flex items-center gap-2">
-                                        <UserPlus className="w-4 h-4 text-blue-400" />
-                                        <span className="font-bold text-sm text-gray-800 dark:text-white">{cs ? 'Přiveď kamaráda' : 'Bring a friend'}</span>
-                                    </div>
-                                    <span className="text-green-400 font-bold font-mono text-sm">120 min {cs ? 'zdarma' : 'free'}</span>
-                                </div>
-                                <p className="text-xs text-gray-400">
-                                    {cs ? 'Získej bonus za jeho registraci.' : 'Get bonus for their registration.'}
-                                </p>
-                            </div>
-
-                            {/* Promo code */}
-                            <div className="bg-gradient-to-r from-sz-red/10 to-transparent rounded-lg p-4 border border-sz-red/20">
-                                <div className="flex items-center justify-between mb-1">
-                                    <div className="flex items-center gap-2">
-                                        <Gift className="w-4 h-4 text-sz-red" />
-                                        <span className="font-bold text-sm text-gray-800 dark:text-white">{cs ? 'Promo kód' : 'Promo Code'}</span>
-                                    </div>
-                                    <span className="text-green-400 font-bold font-mono text-sm">120 min {cs ? 'zdarma' : 'free'}</span>
-                                </div>
-                                <p className="text-xs text-gray-400 mb-2">
-                                    {cs
-                                        ? 'Řekni heslo při první návštěvě (PO-ČT, 08:00-18:00).'
-                                        : 'Say the password on your first visit (MON-THU, 08:00-18:00).'
-                                    }
-                                </p>
-                                <div className="bg-black/10 dark:bg-white/5 rounded-lg px-4 py-2 text-center">
-                                    <span className="font-orbitron font-black text-2xl text-sz-red tracking-widest">
-                                        "{cs ? 'POUKAZ' : 'VOUCHER'}"
-                                    </span>
-                                </div>
-                            </div>
-
-                            {/* Weekly challenge */}
-                            <div className="bg-gray-50 dark:bg-zinc-900/50 rounded-lg p-4 border border-black/5 dark:border-white/5">
-                                <div className="flex items-center justify-between mb-1">
-                                    <div className="flex items-center gap-2">
-                                        <Zap className="w-4 h-4 text-yellow-400" />
-                                        <span className="font-bold text-sm text-gray-800 dark:text-white">{cs ? 'Týdenní výzva (PO-PÁ)' : 'Weekly Challenge (MON-FRI)'}</span>
-                                    </div>
-                                </div>
-                                <p className="text-sm text-gray-600 dark:text-gray-400">
-                                    {cs
-                                        ? 'Odehraj 6 hodin a dostaneš 60 minut zpátky!'
-                                        : 'Play 6 hours and get 60 minutes back!'
-                                    }
-                                </p>
-                            </div>
-
-                            {/* Daily reward */}
-                            <div className="bg-gray-50 dark:bg-zinc-900/50 rounded-lg p-4 border border-black/5 dark:border-white/5">
-                                <div className="flex items-center justify-between mb-1">
-                                    <div className="flex items-center gap-2">
-                                        <CalendarDays className="w-4 h-4 text-purple-400" />
-                                        <span className="font-bold text-sm text-gray-800 dark:text-white">{cs ? 'Denní odměna' : 'Daily Reward'}</span>
-                                    </div>
-                                </div>
-                                <p className="text-sm text-gray-600 dark:text-gray-400">
-                                    {cs
-                                        ? 'Každý den v 8:00 vracíme jednomu členovi čas z předchozího dne!'
-                                        : 'Every day at 8:00 we refund one member\'s time from the previous day!'
-                                    }
-                                </p>
-                            </div>
-                        </div>
+                    <div className="mt-4 text-xs text-gray-500 font-mono flex items-center gap-2">
+                        <Phone className="w-3 h-3 text-sz-red" />
+                        {cs
+                            ? <>Tip: Jakoukoli pobočku lze otevřít mimo otevírací dobu pro skupiny. Stačí se domluvit den předem na <a href="tel:+420777766112" className="text-sz-red hover:underline font-bold">777 766 112</a>.&nbsp;</>
+                            : <>Tip: Any branch can be opened outside hours for groups. Just arrange a day ahead at <a href="tel:+420777766112" className="text-sz-red hover:underline font-bold">777 766 112</a>.</>}
                     </div>
                 </div>
 

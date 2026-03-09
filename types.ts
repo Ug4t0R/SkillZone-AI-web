@@ -16,6 +16,7 @@ export interface GamingLocation {
     mapLink: string;
     openHours: string;
     openYear: string;
+    metro?: string;
     coordinates?: {
         lat: number;
         lng: number;

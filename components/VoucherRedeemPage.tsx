@@ -52,8 +52,8 @@ const VoucherRedeemPage: React.FC<VoucherRedeemPageProps> = ({ onChangeView }) =
             icon: <Clock className="w-5 h-5 text-sz-red" />,
             title: cs ? 'Kdy můžu přijít?' : 'When can I come?',
             text: cs
-                ? 'Poukázku je možné aktivovat v týdnu od pondělí do čtvrtka, od 8:00 do 18:00.'
-                : 'The voucher can be activated Monday to Thursday, from 8:00 AM to 6:00 PM.'
+                ? 'Poukázku lze aktivovat pouze v pondělí až čtvrtek do 18:00. O víkendu a v pátek je provoz příliš vytížený a poukázky neaktivujeme. Vybrat si ji můžeš kdykoliv.'
+                : 'The voucher can only be activated Monday to Thursday until 6 PM. Weekends and Fridays are too busy for voucher activations. You can claim your voucher anytime.'
         },
         {
             icon: <Users className="w-5 h-5 text-sz-red" />,
@@ -127,6 +127,23 @@ const VoucherRedeemPage: React.FC<VoucherRedeemPageProps> = ({ onChangeView }) =
                             ? 'Stačí přijít do jednoho z našich herních klubů, říct heslo „POUKAZ" na baru a užít si stovky her na prémiových herních stanicích.'
                             : 'Simply visit one of our gaming clubs, say the password "POUKAZ" at the bar, and enjoy hundreds of games on premium gaming stations.'}
                     </p>
+                </div>
+
+                {/* TIME RESTRICTION BANNER — high visibility */}
+                <div className="mb-16 bg-yellow-500/10 border-2 border-yellow-500/40 rounded-sm px-6 py-5 flex items-center gap-5 animate-in fade-in slide-in-from-bottom-4">
+                    <div className="w-14 h-14 bg-yellow-500/20 rounded-full flex items-center justify-center shrink-0">
+                        <Clock className="w-7 h-7 text-yellow-400" />
+                    </div>
+                    <div>
+                        <p className="text-yellow-300 font-orbitron font-bold text-base md:text-lg uppercase tracking-wider">
+                            {cs ? 'Aktivace: Pondělí – Čtvrtek do 18:00' : 'Activation: Monday – Thursday until 6 PM'}
+                        </p>
+                        <p className="text-yellow-500/80 text-sm font-mono mt-1.5">
+                            {cs
+                                ? 'V pátek, sobotu a neděli poukázky neaktivujeme — provoz je příliš vytížený. Vybrat si poukázku můžeš ale kdykoliv.'
+                                : 'Vouchers cannot be activated on Fri/Sat/Sun — the venue is too busy. You can claim the voucher anytime though.'}
+                        </p>
+                    </div>
                 </div>
 
                 {/* Steps */}

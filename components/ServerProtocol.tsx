@@ -34,18 +34,18 @@ const ServerProtocol: React.FC = () => {
     };
 
     return (
-        <section className="py-20 bg-zinc-900 border-t border-sz-red/20 relative overflow-hidden">
+        <section className="py-20 bg-gray-100 dark:bg-zinc-900 border-t border-gray-200 dark:border-sz-red/20 relative overflow-hidden transition-colors duration-300">
             {/* Background Tech Elements */}
             <div className="absolute inset-0 pointer-events-none opacity-5 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
             <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-1/2 bg-gradient-to-b from-transparent via-sz-red to-transparent opacity-30"></div>
 
             <div className="max-w-4xl mx-auto px-4 relative z-10">
                 <div ref={headingRef} className="scroll-reveal sr-glitch text-center mb-12">
-                    <div className="inline-flex items-center gap-2 text-sz-red font-mono text-sm uppercase tracking-widest mb-2 border border-sz-red/30 px-3 py-1 rounded bg-black/50">
+                    <div className="inline-flex items-center gap-2 text-sz-red font-mono text-sm uppercase tracking-widest mb-2 border border-sz-red/30 px-3 py-1 rounded bg-white/50 dark:bg-black/50">
                         <Shield className="w-4 h-4" />
                         {t('protocol_status')}
                     </div>
-                    <h2 className="text-3xl md:text-5xl font-orbitron font-black text-white uppercase tracking-tight">
+                    <h2 className="text-3xl md:text-5xl font-orbitron font-black text-gray-900 dark:text-white uppercase tracking-tight">
                         {t('protocol_title')} <span className="text-sz-red text-glow">{t('protocol_title_sub')}</span>
                     </h2>
                 </div>
@@ -56,18 +56,18 @@ const ServerProtocol: React.FC = () => {
                         return (
                             <div
                                 key={rule.id}
-                                className={`bg-black/40 border transition-all duration-300 overflow-hidden group ${isOpen ? 'border-sz-red shadow-[0_0_20px_rgba(227,30,36,0.15)] bg-black/60' : 'border-white/10 hover:border-white/30'}`}
+                                className={`bg-white/80 dark:bg-black/40 border transition-all duration-300 overflow-hidden group ${isOpen ? 'border-sz-red shadow-lg dark:shadow-[0_0_20px_rgba(227,30,36,0.15)] bg-white dark:bg-black/60' : 'border-gray-200 dark:border-white/10 hover:border-gray-400 dark:hover:border-white/30'}`}
                             >
                                 <button
                                     onClick={() => toggleRule(rule.id)}
                                     className="w-full flex items-center justify-between p-5 text-left focus:outline-none"
                                 >
                                     <div className="flex items-center gap-4">
-                                        <div className={`p-2 rounded bg-zinc-800 transition-colors ${isOpen ? 'text-sz-red' : 'text-gray-400 group-hover:text-white'}`}>
+                                        <div className={`p-2 rounded bg-gray-100 dark:bg-zinc-800 transition-colors ${isOpen ? 'text-sz-red' : 'text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white'}`}>
                                             {getIcon(rule.icon)}
                                         </div>
                                         <div className="flex flex-col">
-                                            <span className={`font-orbitron font-bold uppercase transition-colors text-lg ${isOpen ? 'text-white' : 'text-gray-300 group-hover:text-white'}`}>
+                                            <span className={`font-orbitron font-bold uppercase transition-colors text-lg ${isOpen ? 'text-gray-900 dark:text-white' : 'text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white'}`}>
                                                 {rule.title}
                                             </span>
                                             <span className="text-[10px] font-mono text-gray-500 uppercase tracking-wider">

@@ -107,19 +107,19 @@ const Hero: React.FC = () => {
           </div>
           <div className="mt-12 text-center">
             <div className="text-sz-red font-orbitron font-black text-2xl uppercase tracking-[0.3em] animate-pulse">Neural_Sync_Active</div>
-            <div className="mt-2 text-white font-mono text-xs uppercase tracking-widest opacity-70">Skenování biometrických dat a match history...</div>
+            <div className="mt-2 text-gray-900 dark:text-white font-mono text-xs uppercase tracking-widest opacity-70">Skenování biometrických dat a match history...</div>
           </div>
         </div>
       )}
 
       {scanResult && (
-        <div className="fixed top-24 right-8 z-[60] bg-black/90 border border-sz-red p-6 rounded shadow-[0_0_30px_rgba(227,30,36,0.4)] animate-in slide-in-from-right duration-500 max-w-sm">
-          <button onClick={() => setScanResult(null)} className="absolute top-2 right-2 text-gray-500 hover:text-white"><X className="w-4 h-4" /></button>
+        <div className="fixed top-24 right-8 z-[60] bg-white/95 dark:bg-black/90 border border-sz-red p-6 rounded shadow-lg dark:shadow-[0_0_30px_rgba(227,30,36,0.4)] animate-in slide-in-from-right duration-500 max-w-sm">
+          <button onClick={() => setScanResult(null)} className="absolute top-2 right-2 text-gray-500 hover:text-gray-900 dark:hover:text-white"><X className="w-4 h-4" /></button>
           <div className="flex items-center gap-4 mb-4">
             <div className="w-12 h-12 bg-sz-red/20 border border-sz-red flex items-center justify-center"><ShieldCheck className="w-6 h-6 text-sz-red" /></div>
             <div>
               <div className="text-gray-500 text-[10px] font-mono uppercase">Neural_ID: Found</div>
-              <div className="text-white font-orbitron font-bold uppercase">{scanResult}</div>
+              <div className="text-gray-900 dark:text-white font-orbitron font-bold uppercase">{scanResult}</div>
             </div>
           </div>
           <div className="space-y-2 border-t border-white/10 pt-4">

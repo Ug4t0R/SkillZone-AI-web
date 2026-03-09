@@ -34,24 +34,24 @@ const ContactWidget: React.FC = () => {
         <div className="fixed bottom-12 right-4 sm:right-6 z-50 flex flex-col items-end font-sans">
 
             {/* Expanded Options Panel */}
-            <div className={`mb-4 bg-zinc-900/95 border border-sz-red/30 rounded-lg shadow-2xl overflow-hidden transition-all duration-300 origin-bottom-right w-[300px] sm:w-[340px] backdrop-blur-md ${isOpen ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-90 translate-y-10 pointer-events-none'}`}>
+            <div className={`mb-4 bg-white/95 dark:bg-zinc-900/95 border border-gray-200 dark:border-sz-red/30 rounded-lg shadow-2xl overflow-hidden transition-all duration-300 origin-bottom-right w-[300px] sm:w-[340px] backdrop-blur-md ${isOpen ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-90 translate-y-10 pointer-events-none'}`}>
 
-                <div className="bg-black/50 p-3 border-b border-white/10 flex justify-between items-center">
-                    <span className="text-xs font-bold text-gray-400 uppercase tracking-widest font-orbitron">Rychlý kontakt</span>
-                    <button onClick={() => setIsOpen(false)} className="text-gray-500 hover:text-white p-1">
+                <div className="bg-gray-50 dark:bg-black/50 p-3 border-b border-gray-200 dark:border-white/10 flex justify-between items-center">
+                    <span className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-widest font-orbitron">Rychlý kontakt</span>
+                    <button onClick={() => setIsOpen(false)} className="text-gray-400 hover:text-gray-900 dark:hover:text-white p-1">
                         <X className="w-5 h-5" />
                     </button>
                 </div>
 
                 <div className="p-2 space-y-1 max-h-[60vh] overflow-y-auto custom-scrollbar">
                     {contacts.map((contact) => (
-                        <div key={contact.id} className={`flex items-center justify-between p-3 rounded-md ${contact.special ? 'bg-yellow-500/5 border border-yellow-500/20' : 'hover:bg-white/5'}`}>
+                        <div key={contact.id} className={`flex items-center justify-between p-3 rounded-md ${contact.special ? 'bg-yellow-500/5 border border-yellow-500/20' : 'hover:bg-gray-100 dark:hover:bg-white/5'}`}>
 
                             {/* Label */}
                             <div className="flex flex-col max-w-[50%]">
                                 <div className="flex items-center gap-2">
                                     {contact.icon}
-                                    <span className={`font-bold text-sm font-orbitron truncate ${contact.special ? 'text-yellow-500' : 'text-white'}`}>
+                                    <span className={`font-bold text-sm font-orbitron truncate ${contact.special ? 'text-yellow-500' : 'text-gray-900 dark:text-white'}`}>
                                         {contact.label}
                                     </span>
                                 </div>
@@ -63,7 +63,7 @@ const ContactWidget: React.FC = () => {
                                 {/* Call */}
                                 <a
                                     href={`tel:+${contact.phone}`}
-                                    className="w-10 h-10 rounded-full bg-zinc-800 hover:bg-blue-600 text-gray-300 hover:text-white flex items-center justify-center transition-all border border-white/5"
+                                    className="w-10 h-10 rounded-full bg-gray-100 dark:bg-zinc-800 hover:bg-blue-600 text-gray-600 dark:text-gray-300 hover:text-white flex items-center justify-center transition-all border border-gray-200 dark:border-white/5"
                                     title="Zavolat"
                                 >
                                     <Phone className="w-4 h-4" />
@@ -74,7 +74,7 @@ const ContactWidget: React.FC = () => {
                                     href={`https://wa.me/${contact.phone}`}
                                     target="_blank"
                                     rel="noreferrer"
-                                    className="w-10 h-10 rounded-full bg-zinc-800 hover:bg-[#25D366] text-gray-300 hover:text-white flex items-center justify-center transition-all border border-white/5"
+                                    className="w-10 h-10 rounded-full bg-gray-100 dark:bg-zinc-800 hover:bg-[#25D366] text-gray-600 dark:text-gray-300 hover:text-white flex items-center justify-center transition-all border border-gray-200 dark:border-white/5"
                                     title="Napsat na WhatsApp"
                                 >
                                     <MessageCircle className="w-4 h-4" />
@@ -86,7 +86,7 @@ const ContactWidget: React.FC = () => {
                                         href={contact.map}
                                         target="_blank"
                                         rel="noreferrer"
-                                        className="w-10 h-10 rounded-full bg-zinc-800 hover:bg-sz-red text-gray-300 hover:text-white flex items-center justify-center transition-all border border-white/5"
+                                        className="w-10 h-10 rounded-full bg-gray-100 dark:bg-zinc-800 hover:bg-sz-red text-gray-600 dark:text-gray-300 hover:text-white flex items-center justify-center transition-all border border-gray-200 dark:border-white/5"
                                         title="Navigovat"
                                     >
                                         <MapPin className="w-4 h-4" />

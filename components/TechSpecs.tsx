@@ -32,7 +32,7 @@ const TechSpecs: React.FC = () => {
 
                 <div ref={cardsRef} className="sr-stagger scroll-reveal grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     {/* Card 1 */}
-                    <div className="bg-white dark:bg-dark-bg border border-gray-200 dark:border-white/5 p-8 hover:border-sz-red/40 transition-all group relative overflow-hidden shadow-lg dark:shadow-none">
+                    <div className="bg-white dark:bg-dark-bg border border-gray-200 dark:border-white/5 p-8 hover:border-sz-red/40 transition-all group relative overflow-hidden shadow-sm dark:shadow-none">
                         <div className="absolute top-0 right-0 w-20 h-20 bg-sz-red/5 rounded-bl-full -mr-10 -mt-10 transition-transform group-hover:scale-150"></div>
                         <Network className="w-10 h-10 text-gray-500 group-hover:text-sz-red mb-6 transition-colors" />
                         <h3 className="text-xl font-bold font-orbitron mb-2 text-gray-800 dark:text-gray-200">{t('tech_conn')}</h3>
@@ -43,7 +43,7 @@ const TechSpecs: React.FC = () => {
                     </div>
 
                     {/* Card 2 */}
-                    <div className="bg-white dark:bg-dark-bg border border-gray-200 dark:border-white/5 p-8 hover:border-sz-red/40 transition-all group relative overflow-hidden shadow-lg dark:shadow-none">
+                    <div className="bg-white dark:bg-dark-bg border border-gray-200 dark:border-white/5 p-8 hover:border-sz-red/40 transition-all group relative overflow-hidden shadow-sm dark:shadow-none">
                         <div className="absolute top-0 right-0 w-20 h-20 bg-sz-red/5 rounded-bl-full -mr-10 -mt-10 transition-transform group-hover:scale-150"></div>
                         <Monitor className="w-10 h-10 text-gray-500 group-hover:text-sz-red mb-6 transition-colors" />
                         <h3 className="text-xl font-bold font-orbitron mb-2 text-gray-800 dark:text-gray-200">{t('tech_disp')}</h3>
@@ -52,7 +52,7 @@ const TechSpecs: React.FC = () => {
                     </div>
 
                     {/* Card 3 */}
-                    <div className="bg-white dark:bg-dark-bg border border-gray-200 dark:border-white/5 p-8 hover:border-sz-red/40 transition-all group relative overflow-hidden shadow-lg dark:shadow-none">
+                    <div className="bg-white dark:bg-dark-bg border border-gray-200 dark:border-white/5 p-8 hover:border-sz-red/40 transition-all group relative overflow-hidden shadow-sm dark:shadow-none">
                         <div className="absolute top-0 right-0 w-20 h-20 bg-sz-red/5 rounded-bl-full -mr-10 -mt-10 transition-transform group-hover:scale-150"></div>
                         <Cpu className="w-10 h-10 text-gray-500 group-hover:text-sz-red mb-6 transition-colors" />
                         <h3 className="text-xl font-bold font-orbitron mb-2 text-gray-800 dark:text-gray-200">{t('tech_conf')}</h3>
@@ -61,7 +61,7 @@ const TechSpecs: React.FC = () => {
                     </div>
 
                     {/* Card 4 */}
-                    <div className="bg-white dark:bg-dark-bg border border-gray-200 dark:border-white/5 p-8 hover:border-sz-red/40 transition-all group relative overflow-hidden shadow-lg dark:shadow-none">
+                    <div className="bg-white dark:bg-dark-bg border border-gray-200 dark:border-white/5 p-8 hover:border-sz-red/40 transition-all group relative overflow-hidden shadow-sm dark:shadow-none">
                         <div className="absolute top-0 right-0 w-20 h-20 bg-sz-red/5 rounded-bl-full -mr-10 -mt-10 transition-transform group-hover:scale-150"></div>
                         <Mouse className="w-10 h-10 text-gray-500 group-hover:text-sz-red mb-6 transition-colors" />
                         <h3 className="text-xl font-bold font-orbitron mb-2 text-gray-800 dark:text-gray-200">{t('tech_gear')}</h3>

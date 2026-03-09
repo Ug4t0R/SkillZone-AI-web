@@ -28,3 +28,10 @@ supabase/.temp/
 *.njsproj
 *.sln
 *.sw?
+
+# Scratch / dump files
+_*.txt
+skiller_*.txt
+git_history.txt
+supabase_schema.sql
+*.log

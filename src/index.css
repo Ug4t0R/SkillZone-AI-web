@@ -231,68 +231,6 @@ html:not(.dark) .glass-panel {
    LIGHT MODE POLISH
    ======================== */
 
-/* Section backgrounds — subtle alternating */
-html:not(.dark) section:nth-child(even) {
-    background-color: #f9fafb;
-}
-
-html:not(.dark) section:nth-child(odd) {
-    background-color: #ffffff;
-}
-
-/* Cards — clean white with subtle shadow */
-html:not(.dark) [class*="bg-zinc-9"],
-html:not(.dark) [class*="bg-card-bg"],
-html:not(.dark) [class*="bg-black/"] {
-    background-color: rgba(255, 255, 255, 0.9) !important;
-    border-color: rgba(0, 0, 0, 0.08) !important;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
-}
-
-/* Text contrast — ensure readability */
-html:not(.dark) .text-white {
-    color: #111827;
-}
-
-html:not(.dark) .text-gray-400,
-html:not(.dark) .text-gray-500 {
-    color: #6b7280;
-}
-
-html:not(.dark) .text-gray-300 {
-    color: #9ca3af;
-}
-
-/* Borders — softer in light mode */
-html:not(.dark) [class*="border-white/"] {
-    border-color: rgba(0, 0, 0, 0.08) !important;
-}
-
-html:not(.dark) [class*="border-sz-red/"] {
-    border-color: rgba(227, 30, 36, 0.2) !important;
-}
-
-/* Input fields */
-html:not(.dark) input[type="text"],
-html:not(.dark) input[type="email"],
-html:not(.dark) input[type="number"],
-html:not(.dark) textarea,
-html:not(.dark) select {
-    background-color: #f9fafb;
-    color: #111827;
-    border-color: #e5e7eb;
-}
-
-html:not(.dark) input::placeholder,
-html:not(.dark) textarea::placeholder {
-    color: #9ca3af;
-}
-
-/* Font-mono elements (code-like text) */
-html:not(.dark) .font-mono {
-    color: #374151;
-}
-
 /* Motherboard pattern — barely visible in light mode */
 html:not(.dark) .bg-motherboard {
     opacity: 0.05 !important;
@@ -302,17 +240,18 @@ html:not(.dark) .motherboard-energy {
     opacity: 0.08 !important;
 }
 
-/* Status bar / footer */
-html:not(.dark) footer,
-html:not(.dark) [class*="bg-dark-bg"] {
-    background-color: #1f2937 !important;
-    color: #f3f4f6;
+/* Nav — frosted glass effect */
+nav.glass-nav {
+    background-color: rgba(10, 10, 10, 0.75);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-/* Nav in light mode — subtle glass */
-html:not(.dark) nav {
-    background-color: rgba(255, 255, 255, 0.85) !important;
+html:not(.dark) nav.glass-nav {
+    background-color: rgba(255, 255, 255, 0.80);
     backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 }
 

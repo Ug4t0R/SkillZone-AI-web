@@ -123,6 +123,10 @@ const Footer: React.FC<FooterProps> = ({ sections, onNavigate }) => {
 
                 <div className="border-t border-white/5 pt-8 flex flex-col items-center justify-center text-gray-600 text-xs font-mono relative">
                     <p>&copy; {new Date().getFullYear()} SkillZone.cz. {t('footer_rights')}</p>
+                    <p className="mt-1 text-gray-600">
+                        {t('footer_boss_label') ? '' : ''}{/* spacer */}
+                        Problém v provozovně? <a href="tel:+420777766112" className="text-sz-red hover:underline">777 766 112</a>
+                    </p>
                     <button
                         onClick={handleVersionClick}
                         className="mt-2 text-gray-700 hover:text-sz-red transition-colors text-[11px] cursor-pointer"

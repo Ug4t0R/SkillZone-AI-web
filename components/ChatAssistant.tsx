@@ -122,7 +122,7 @@ const ChatAssistant: React.FC<ChatAssistantProps> = ({ isOpen, onClose }) => {
   return (
     <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center sm:p-4 bg-black/95 sm:bg-black/80 backdrop-blur-sm" onClick={handleClose}>
       <div
-        className="w-full h-full sm:h-auto sm:max-h-[600px] sm:max-w-lg bg-dark-bg sm:border border-sz-red shadow-[0_0_50px_rgba(227,30,36,0.3)] flex flex-col overflow-hidden sm:rounded-sm animate-in slide-in-from-bottom duration-200 relative"
+        className="w-full h-full sm:h-auto sm:max-h-[600px] sm:max-w-lg bg-white dark:bg-dark-bg sm:border border-sz-red shadow-lg dark:shadow-[0_0_50px_rgba(227,30,36,0.3)] flex flex-col overflow-hidden sm:rounded-sm animate-in slide-in-from-bottom duration-200 relative"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -132,7 +132,7 @@ const ChatAssistant: React.FC<ChatAssistantProps> = ({ isOpen, onClose }) => {
               <Bot className="w-6 h-6 text-sz-red" />
             </div>
             <div>
-              <h3 className="font-bold text-white text-lg font-orbitron tracking-wide flex items-center gap-2">
+              <h3 className="font-bold text-gray-900 dark:text-white text-lg font-orbitron tracking-wide flex items-center gap-2">
                 Skiller ;)
               </h3>
               <div className="flex items-center gap-2">
@@ -149,10 +149,10 @@ const ChatAssistant: React.FC<ChatAssistantProps> = ({ isOpen, onClose }) => {
         </div>
 
         {/* Messages Area */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 bg-black/90 custom-scrollbar font-mono text-sm bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 bg-gray-50/90 dark:bg-black/90 custom-scrollbar font-mono text-sm dark:bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]">
           {messages.map((msg, idx) => (
             <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-              <div className={`max-w-[85%] p-3 border relative ${msg.role === 'user' ? 'bg-zinc-800 border-white/10 text-white rounded-tl-lg rounded-bl-lg rounded-br-lg' : 'bg-sz-red/5 border-sz-red/30 text-gray-200 rounded-tr-lg rounded-bl-lg rounded-br-lg'
+              <div className={`max-w-[85%] p-3 border relative ${msg.role === 'user' ? 'bg-gray-200 dark:bg-zinc-800 border-black/10 dark:border-white/10 text-gray-900 dark:text-white rounded-tl-lg rounded-bl-lg rounded-br-lg' : 'bg-sz-red/5 border-sz-red/30 text-gray-800 dark:text-gray-200 rounded-tr-lg rounded-bl-lg rounded-br-lg'
                 }`}>
                 {msg.role === 'model' && (
                   <div className="absolute -top-2 -left-2 bg-black border border-sz-red/50 p-0.5 rounded-full">
@@ -178,7 +178,7 @@ const ChatAssistant: React.FC<ChatAssistantProps> = ({ isOpen, onClose }) => {
         </div>
 
         {/* Input Area */}
-        <div className="p-4 bg-zinc-900 border-t border-white/10 shrink-0 pb-safe">
+        <div className="p-4 bg-gray-100 dark:bg-zinc-900 border-t border-black/10 dark:border-white/10 shrink-0 pb-safe">
           <div className="flex gap-3">
             <input
               type="text"
@@ -187,7 +187,7 @@ const ChatAssistant: React.FC<ChatAssistantProps> = ({ isOpen, onClose }) => {
               onKeyDown={handleKeyPress}
               disabled={limitReached}
               placeholder={limitReached ? "Dneska už mám padla..." : "Napiš Skillerovi..."}
-              className="flex-1 bg-black border border-zinc-700 px-4 py-3 text-white focus:outline-none focus:border-sz-red font-mono placeholder-gray-600 rounded-sm disabled:opacity-50"
+              className="flex-1 bg-white dark:bg-black border border-gray-300 dark:border-zinc-700 px-4 py-3 text-gray-900 dark:text-white focus:outline-none focus:border-sz-red font-mono placeholder-gray-400 dark:placeholder-gray-600 rounded-sm disabled:opacity-50"
             />
             <button
               onClick={handleSend}

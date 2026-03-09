@@ -135,7 +135,7 @@ const CorporateTicker: React.FC = () => {
     }, []);
 
     return (
-        <div className="fixed top-0 left-0 right-0 z-[9998] bg-gradient-to-r from-blue-900 to-blue-800 text-white py-1.5 px-4 font-sans text-xs text-center shadow-sm">
+        <div className="fixed top-14 left-0 right-0 z-40 bg-gradient-to-r from-blue-900 to-blue-800 text-white py-1.5 px-4 font-sans text-xs text-center shadow-sm">
             <span className="opacity-60 mr-2">📢</span>
             <span className="transition-opacity duration-500">{CORPORATE_QUOTES[idx]}</span>
             <span className="opacity-40 ml-4">|</span>

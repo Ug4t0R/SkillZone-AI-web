@@ -672,7 +672,7 @@ const SkillerAvatar: React.FC<SkillerAvatarProps> = ({ onChatOpen, hasUnread = f
                 </button>
                 {bubble && (
                     <div className="absolute left-1/2 -translate-x-1/2 top-full mt-1 whitespace-nowrap pointer-events-none animate-in fade-in slide-in-from-top-2 duration-200">
-                        <div className="bg-black/90 border border-sz-red/40 text-white text-[10px] font-mono px-2 py-1 rounded-lg shadow-lg">
+                        <div className="bg-white/95 dark:bg-black/90 border border-sz-red/40 text-gray-900 dark:text-white text-[10px] font-mono px-2 py-1 rounded-lg shadow-lg">
                             {bubble}
                         </div>
                     </div>
@@ -712,9 +712,9 @@ const SkillerAvatar: React.FC<SkillerAvatarProps> = ({ onChatOpen, hasUnread = f
                         transform: 'translateX(-50%)',
                     }}
                 >
-                    <div className="bg-black/90 border border-sz-red/40 text-white text-[11px] font-mono px-3 py-1.5 rounded-lg shadow-lg relative max-w-[300px] whitespace-nowrap text-center leading-relaxed">
+                    <div className="bg-white/95 dark:bg-black/90 border border-sz-red/40 text-gray-900 dark:text-white text-[11px] font-mono px-3 py-1.5 rounded-lg shadow-lg relative max-w-[300px] whitespace-nowrap text-center leading-relaxed">
                         {bubble}
-                        <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-black/90 border-r border-b border-sz-red/40 rotate-45" />
+                        <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-white/95 dark:bg-black/90 border-r border-b border-sz-red/40 rotate-45" />
                     </div>
                 </div>
             )}

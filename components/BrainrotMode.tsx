@@ -6,7 +6,7 @@ import React, { useEffect, useState, useRef } from 'react';
 // DATA
 // ═══════════════════════════════════════════════════════
 
-const EMOJIS = ['💀', '🔥', '🗿', '💯', '😂', '👀', '⚡', '🎮', '🧠', '👑', '🫡', '😈', '🥶', '🤯', '✨'];
+const EMOJIS = ['💀', '🔥', '🗿', '💯', '😂', '👀', '⚡', '🎮', '🧠', '👑', '🫡', '😈', '🥶', '🤯', '✨', '67'];
 
 const SIGMA_QUOTES = [
     "Don't be a beta, visit SkillZone 💪",
@@ -16,14 +16,19 @@ const SIGMA_QUOTES = [
     "No days off. Only GG's. 🔥",
     "While you were sleeping, I was ranking up.",
     "Hustle in silence. Let your KDA speak. 🗿",
-    "Success is a choice. So is SkillZone.",
+    "This place is 67 fr fr 🤙",
     "Built different. Plays different. 👑",
     "The grindset is not a phase, mom.",
     "I don't touch grass. Grass touches me. 😤",
     "Solo queue mentality. Sigma mindset.",
-    "They called it addiction. I call it dedication.",
+    "SkillZone aura is unmatched ✨ +1000 points",
     "Every W starts at SkillZone.",
     "Wake up → SkillZone → Repeat 🔄",
+    "This place got rizz ngl 💯",
+    "Skibidi gaming session activated 🚽",
+    "Ohio lvl gaming but it's actually fire",
+    "POV: ur at SkillZone and ur aura is immaculate",
+    "Chat is this real? Yes. Yes it is. 🗿",
 ];
 
 const ACHIEVEMENTS = [
@@ -36,9 +41,12 @@ const ACHIEVEMENTS = [
     { text: 'Skibidi Level MAX 🚽', color: 'from-violet-500 to-purple-500' },
     { text: 'Fanum Tax Collected 💸', color: 'from-yellow-500 to-green-500' },
     { text: 'Main Character Energy ✨', color: 'from-pink-500 to-rose-500' },
-    { text: 'Caught in 4K 📸', color: 'from-blue-500 to-indigo-500' },
+    { text: '67 Vibes Detected 🤙', color: 'from-blue-500 to-indigo-500' },
     { text: 'GOAT Status 🐐', color: 'from-amber-500 to-yellow-500' },
     { text: 'No Cap Achievement 🧢', color: 'from-red-500 to-orange-500' },
+    { text: 'Aura +9999 fr fr 💫', color: 'from-purple-400 to-pink-400' },
+    { text: 'Chat am I cooked? 🍳', color: 'from-orange-500 to-red-500' },
+    { text: 'Mewing streak: 67 days 🗿', color: 'from-zinc-400 to-zinc-600' },
 ];
 
 const L_RATIO_RESPONSES = [
@@ -50,6 +58,10 @@ const L_RATIO_RESPONSES = [
     'The brainrot is eternal 🧠',
     'Denied. Ratio + L + Blocked',
     'Error 404: Rizz not found 💀',
+    "That's lowkey not sigma of you 🗿",
+    'Chat said no ❌',
+    '67 out of 67 people disagree 🤙',
+    '-1000 aura for trying to stop this',
 ];
 
 // ═══════════════════════════════════════════════════════
@@ -62,7 +74,7 @@ interface FloatingEmoji {
 
 const FloatingEmojis: React.FC = () => {
     const [emojis] = useState<FloatingEmoji[]>(() =>
-        Array.from({ length: 8 }, (_, i) => ({
+        Array.from({ length: 10 }, (_, i) => ({
             id: i,
             emoji: EMOJIS[Math.floor(Math.random() * EMOJIS.length)],
             x: 5 + Math.random() * 90,
@@ -93,54 +105,48 @@ const FloatingEmojis: React.FC = () => {
 };
 
 // ═══════════════════════════════════════════════════════
-// SUBWAY SURFERS SPLIT-SCREEN — True TikTok brainrot experience
+// SUBWAY SURFERS — Small bottom-left corner window
 // ═══════════════════════════════════════════════════════
 
-const SubwaySurfersSplitScreen: React.FC = () => {
+const SubwaySurfersCorner: React.FC = () => {
     const [dismissed, setDismissed] = useState(false);
     const videoId = "n_Dv4JMmAWE";
 
     if (dismissed) return null;
 
     return (
-        <div className="fixed inset-0 z-[9991] pointer-events-none flex flex-col md:flex-row justify-end items-end md:items-stretch overflow-hidden">
-            {/* Split screen: takes bottom half on mobile, right third/half on desktop */}
-            <div className="relative w-full h-[40vh] md:w-[400px] md:h-full lg:w-[500px] border-t-8 md:border-t-0 md:border-l-8 border-black shadow-[0_0_50px_rgba(0,0,0,0.8)] pointer-events-auto group">
-                {/* Muted Subway Surfers gameplay loop */}
+        <div className="fixed bottom-4 left-4 z-[9991] pointer-events-auto group">
+            {/* Small corner video window */}
+            <div className="relative w-[140px] h-[200px] md:w-[160px] md:h-[240px] rounded-2xl overflow-hidden border-2 border-purple-500/50 shadow-[0_0_20px_rgba(147,51,234,0.3)] bg-black">
+                {/* Muted Subway Surfers gameplay loop — low quality for data savings */}
                 <iframe
-                    src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&controls=0&showinfo=0&playlist=${videoId}&playsinline=1&modestbranding=1&fs=0`}
-                    className="w-full h-full border-0 pointer-events-none object-cover"
+                    src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&controls=0&showinfo=0&playlist=${videoId}&playsinline=1&modestbranding=1&fs=0&vq=small`}
+                    className="w-full h-full border-0 pointer-events-none object-cover scale-[1.5]"
                     style={{ filter: 'saturate(1.5) contrast(1.2)' }}
                     allow="autoplay; encrypted-media"
                     title="subway-surfers"
                     tabIndex={-1}
                 />
 
-                {/* TikTok style UI overlay */}
-                <div className="absolute inset-0 pointer-events-none flex flex-col justify-end p-4 bg-gradient-to-t from-black/80 via-transparent to-transparent">
-                    <div className="flex justify-between items-end">
-                        <div className="flex flex-col gap-1">
-                            <span className="text-white font-bold text-lg drop-shadow-md">@brainrot_central</span>
-                            <span className="text-white/90 text-sm drop-shadow-md">Satisfying Subway Surfers Gameplay #fyp #viral #satisfying</span>
-                            <span className="text-white/80 font-bold text-xs flex items-center gap-1 mt-1 drop-shadow-md">
-                                🎵 original sound - Brainrot
-                            </span>
-                        </div>
-                        <div className="flex flex-col gap-3 items-center">
-                            <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm text-xl border border-white/30">🤍</div>
-                            <div className="text-white text-xs font-bold drop-shadow-md">9.9M</div>
-                            <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm text-xl border border-white/30">💬</div>
-                            <div className="text-white text-xs font-bold drop-shadow-md">142K</div>
-                            <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm text-xl border border-white/30">↪️</div>
-                            <div className="text-white text-xs font-bold drop-shadow-md">Share</div>
-                        </div>
+                {/* TikTok-style mini overlay */}
+                <div className="absolute inset-0 pointer-events-none flex flex-col justify-between">
+                    {/* Top: LIVE badge */}
+                    <div className="flex items-center gap-1 p-2">
+                        <div className="bg-red-600 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-sm animate-pulse">LIVE</div>
+                        <span className="text-white text-[8px] drop-shadow-md font-bold">9.9M</span>
+                    </div>
+
+                    {/* Bottom gradient + mini info */}
+                    <div className="bg-gradient-to-t from-black/90 to-transparent p-2">
+                        <div className="text-white text-[8px] font-bold drop-shadow-md">@brainrot_central</div>
+                        <div className="text-white/70 text-[7px] drop-shadow-md">#fyp #sigma #67 #aura</div>
                     </div>
                 </div>
 
                 {/* Close button */}
                 <button
                     onClick={() => setDismissed(true)}
-                    className="absolute top-2 right-2 md:top-4 md:right-4 w-8 h-8 md:w-10 md:h-10 bg-black/80 hover:bg-red-600 text-white rounded-full text-xs md:text-sm font-bold border-2 border-white/20 hover:border-white transition-colors flex items-center justify-center z-50 pointer-events-auto"
+                    className="absolute top-1 right-1 w-5 h-5 bg-black/80 hover:bg-red-600 text-white rounded-full text-[8px] font-bold border border-white/20 hover:border-white transition-colors flex items-center justify-center z-50 pointer-events-auto opacity-0 group-hover:opacity-100"
                     title="Dismiss video"
                 >
                     ✕
@@ -221,17 +227,26 @@ const AchievementPopup: React.FC = () => {
 };
 
 // ═══════════════════════════════════════════════════════
-// AURA COUNTER — bottom-right widget
+// AURA COUNTER — bottom-right widget (enhanced with 67)
 // ═══════════════════════════════════════════════════════
 
 const AuraCounter: React.FC = () => {
     const [aura, setAura] = useState(1337);
+    const [sixSeven, setSixSeven] = useState(false);
     const lastScrollY = useRef(0);
 
     useEffect(() => {
         // Slowly increase with time
         const timer = setInterval(() => {
-            setAura(a => a + Math.floor(Math.random() * 3) + 1);
+            setAura(a => {
+                const next = a + Math.floor(Math.random() * 3) + 1;
+                // Easter egg: flash "67" when aura hits multiples of 67
+                if (next % 67 === 0) {
+                    setSixSeven(true);
+                    setTimeout(() => setSixSeven(false), 1500);
+                }
+                return next;
+            });
         }, 2000);
 
         // Boost on scroll
@@ -253,9 +268,14 @@ const AuraCounter: React.FC = () => {
                 <div className="text-[9px] text-purple-400 font-bold uppercase tracking-widest mb-0.5" style={{ fontFamily: "'Comic Sans MS', cursive" }}>
                     ✨ Your Aura
                 </div>
-                <div className="text-xl md:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400 tabular-nums" style={{ fontFamily: "'Comic Sans MS', cursive" }}>
-                    {aura.toLocaleString()}
+                <div className={`text-xl md:text-2xl font-black tabular-nums transition-all duration-300 ${sixSeven ? 'text-yellow-400 scale-110' : 'text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400'}`} style={{ fontFamily: "'Comic Sans MS', cursive" }}>
+                    {sixSeven ? '6️⃣7️⃣' : aura.toLocaleString()}
                 </div>
+                {sixSeven && (
+                    <div className="text-[8px] text-yellow-400 font-bold animate-bounce" style={{ fontFamily: "'Comic Sans MS', cursive" }}>
+                        🤙 SIXTY SEVEN DETECTED
+                    </div>
+                )}
             </div>
         </div>
     );
@@ -308,7 +328,7 @@ const BrainrotMode: React.FC<{ isActive: boolean; onToggle: () => void }> = ({ i
         <>
             <SigmaQuoteTicker />
             <FloatingEmojis />
-            <SubwaySurfersSplitScreen />
+            <SubwaySurfersCorner />
             <AchievementPopup />
             <AuraCounter />
             <ControlButtons onRealToggle={onToggle} />

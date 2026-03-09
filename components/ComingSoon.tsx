@@ -289,7 +289,7 @@ const ComingSoon: React.FC<ComingSoonProps> = ({ targetDate, onUnlock, onPlayAim
                 // else if (ip === '5.6.7.8') setPrankType('competitor');
                 // else if (ip === '9.10.11.12') setPrankType('tomas');
             })
-            .catch(console.error);
+            .catch(() => { /* ipify unreachable or blocked by CSP — ignore */ });
     }, []);
 
     // Heartbeat pulse every second

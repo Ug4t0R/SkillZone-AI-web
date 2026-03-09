@@ -1,5 +1,6 @@
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Star, Quote, MapPin, ExternalLink, Sparkles, Shield, AlertTriangle, MessageSquare, ChevronDown } from 'lucide-react';
 import { Review, GOOGLE_MAPS_URLS, loadReviews, loadLocationRatings, FALLBACK_REVIEWS_CS, FALLBACK_REVIEWS_EN } from '../data/reviews';
 import { PlaceRating } from '../services/googleReviewsService';
@@ -118,13 +119,24 @@ const Reviews: React.FC = () => {
     // Filter: public site shows ONLY featured reviews (AI-curated best)
     const publicReviews = locationFiltered.filter(r => r.is_featured);
     // Fallback: if no featured reviews exist, show all (for first-time setup)
-    const sortedReviews = publicReviews.length > 0 ? publicReviews : locationFiltered;
+    const baseReviews = publicReviews.length > 0 ? publicReviews : locationFiltered;
+
+    // Shuffle reviews randomly (stable per page load, changes on refresh)
+    const sortedReviews = useMemo(() => {
+        const arr = [...baseReviews];
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }, [baseReviews.map(r => r.id).join(','), activeFilter]);
 
     // Show limited unless expanded
     const displayedReviews = showAll ? sortedReviews : sortedReviews.slice(0, 8);
 
-    // Overall stats
-    const allRatings: PlaceRating[] = Object.values(ratings);
+    // Overall stats — filter out deleted/inactive locations with 0 reviews
+    const activeRatings = Object.entries(ratings).filter(([, data]) => data.totalReviews > 0);
+    const allRatings: PlaceRating[] = activeRatings.map(([, data]) => data);
     const avgRating = allRatings.length > 0
         ? (allRatings.reduce((sum: number, r: PlaceRating) => sum + r.rating, 0) / allRatings.length).toFixed(1)
         : '4.6';
@@ -138,13 +150,13 @@ const Reviews: React.FC = () => {
                         {t('rev_title')} <span className="text-sz-red">{t('rev_title_sub')}</span>
                     </h2>
 
-                    {/* AI-curated badge */}
+                    {/* Curated badge — no AI mention for public site */}
                     <div className="flex items-center justify-center gap-2 mb-3">
                         <Sparkles className="w-4 h-4 text-yellow-500" />
                         <p className="text-gray-500 font-mono text-xs uppercase tracking-wider">
                             {language === 'cs'
-                                ? 'Nejlepší recenze vybrané umělou inteligencí'
-                                : 'Best reviews curated by AI'}
+                                ? 'Reálné recenze z Google — žádný fake, jen krutá realita'
+                                : 'Real reviews from Google — no fakes, just the brutal truth'}
                         </p>
                     </div>
 
@@ -162,9 +174,9 @@ const Reviews: React.FC = () => {
                         <span className="text-xs text-gray-500 font-mono">/ {totalReviews} {language === 'cs' ? 'recenzí' : 'reviews'}</span>
                     </div>
 
-                    {/* Location rating badges */}
+                    {/* Location rating badges — only active locations */}
                     <div className="flex items-center justify-center gap-4 flex-wrap mb-6">
-                        {Object.entries(ratings).map(([loc, data]: [string, PlaceRating]) => (
+                        {activeRatings.map(([loc, data]: [string, PlaceRating]) => (
                             <a
                                 key={loc}
                                 href={GOOGLE_MAPS_URLS[loc as keyof typeof GOOGLE_MAPS_URLS]}
@@ -267,17 +279,7 @@ const Reviews: React.FC = () => {
                                             "{review.text}"
                                         </p>
 
-                                        {/* AI Comment */}
-                                        {review.ai_comment && tagCfg && (
-                                            <div className={`${tagCfg.bg} border ${tagCfg.border} rounded-lg px-3 py-2 mb-4`}>
-                                                <div className={`flex items-start gap-2 ${tagCfg.text}`}>
-                                                    <MessageSquare className="w-3 h-3 mt-0.5 shrink-0" />
-                                                    <p className="text-[11px] leading-relaxed">
-                                                        {review.ai_comment}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        )}
+                                        {/* AI Comment — hidden from public, visible only in DevMenu */}
 
                                         {/* Author + source */}
                                         <div className="mt-auto border-t border-gray-100 dark:border-white/5 pt-4 flex items-end justify-between">

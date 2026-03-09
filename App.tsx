@@ -432,10 +432,10 @@ const App: React.FC = () => {
             {sections.gallery && <><Gallery /><CyberSeparator /></>}
             {sections.protocol && <><ServerProtocol /><CyberSeparator /></>}
             {sections.locations && (
-              <div className="py-20 flex justify-center bg-light-bg dark:bg-dark-bg transition-colors duration-300">
+              <div className="py-20 flex justify-center bg-gray-50 dark:bg-dark-bg transition-colors duration-300">
                 <button
                   onClick={() => { setCurrentView('locations'); window.scrollTo(0, 0); }}
-                  className="bg-transparent border border-sz-red text-sz-red px-10 py-4 font-orbitron font-bold uppercase hover:bg-sz-red hover:text-white transition-all shadow-[0_0_15px_rgba(227,30,36,0.1)] hover:shadow-[0_0_25px_rgba(227,30,36,0.3)]"
+                  className="bg-white dark:bg-transparent border border-sz-red text-sz-red px-10 py-4 font-orbitron font-bold uppercase hover:bg-sz-red hover:text-white dark:hover:bg-sz-red dark:hover:text-white transition-all shadow-md dark:shadow-[0_0_15px_rgba(227,30,36,0.1)] hover:shadow-lg dark:hover:shadow-[0_0_25px_rgba(227,30,36,0.3)]"
                 >
                   {language === 'cs' ? 'Zobrazit Všechny Lokace' : 'View All Locations'}
                 </button>
