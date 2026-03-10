@@ -135,11 +135,11 @@ const CorporateTicker: React.FC = () => {
     }, []);
 
     return (
-        <div className="fixed top-14 left-0 right-0 z-40 bg-gradient-to-r from-blue-900 to-blue-800 text-white py-1.5 px-4 font-sans text-xs text-center shadow-sm">
+        <div className="fixed top-[60px] md:top-[72px] left-0 right-0 z-40 bg-gradient-to-r from-blue-900 to-blue-800 text-white py-1.5 px-4 font-sans text-xs text-center shadow-sm">
             <span className="opacity-60 mr-2">📢</span>
-            <span className="transition-opacity duration-500">{CORPORATE_QUOTES[idx]}</span>
-            <span className="opacity-40 ml-4">|</span>
-            <span className="opacity-60 ml-4 text-[10px]">SkillZone s.r.o. — Vaše herní řešení™</span>
+            <span className="transition-opacity duration-500 line-clamp-1">{CORPORATE_QUOTES[idx]}</span>
+            <span className="opacity-40 ml-4 hidden md:inline">|</span>
+            <span className="opacity-60 ml-4 text-[10px] hidden md:inline">SkillZone s.r.o. — Vaše herní řešení™</span>
         </div>
     );
 };
@@ -160,10 +160,10 @@ const MeetingWidget: React.FC = () => {
     if (!visible) return null;
 
     return (
-        <div className="fixed bottom-20 right-4 z-[9997] animate-in slide-in-from-right duration-500">
+        <div className="fixed bottom-20 right-2 md:right-4 z-[9997] animate-in slide-in-from-right duration-500 max-w-[calc(100vw-1rem)]">
             <div
                 className="bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden"
-                style={{ fontFamily: "'Segoe UI', Arial, sans-serif", width: expanded ? '280px' : '220px' }}
+                style={{ fontFamily: "'Segoe UI', Arial, sans-serif", width: expanded ? 'min(280px, calc(100vw - 2rem))' : 'min(220px, calc(100vw - 2rem))' }}
             >
                 <div
                     className="bg-blue-600 text-white px-4 py-2 flex items-center justify-between cursor-pointer"
@@ -254,9 +254,9 @@ const EmailPopup: React.FC = () => {
     const email = EMAILS[emailIdx];
 
     return (
-        <div className="fixed bottom-4 right-4 z-[9996] animate-in slide-in-from-bottom-2 duration-300">
+        <div className="fixed bottom-4 right-2 md:right-4 z-[9996] animate-in slide-in-from-bottom-2 duration-300 max-w-[calc(100vw-1rem)]">
             <div
-                className="bg-white rounded-lg shadow-xl border border-gray-200 p-3 w-72"
+                className="bg-white rounded-lg shadow-xl border border-gray-200 p-3 w-72 max-w-full"
                 style={{ fontFamily: "'Segoe UI', Arial, sans-serif" }}
             >
                 <div className="flex items-start gap-2">
@@ -281,7 +281,7 @@ const EmailPopup: React.FC = () => {
 
 const CorporateToggle: React.FC<{ onToggle: () => void }> = ({ onToggle }) => {
     return (
-        <div className="fixed top-10 right-4 z-[9999]">
+        <div className="fixed top-[100px] md:top-[110px] right-2 md:right-4 z-[9999]">
             <button
                 onClick={onToggle}
                 className="bg-white border border-gray-300 text-gray-600 text-xs px-3 py-1.5 rounded shadow-sm hover:bg-gray-50 transition-all"

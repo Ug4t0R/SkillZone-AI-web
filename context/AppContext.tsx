@@ -106,6 +106,25 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const setBrainrot = (v: boolean) => { setBrainrotRaw(v); if (v) setCorporateRaw(false); };
   const setCorporate = (v: boolean) => { setCorporateRaw(v); if (v) setBrainrotRaw(false); };
 
+  // URL-based mode activation: ?mode=brainrot or ?mode=corporate
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const mode = params.get('mode')?.toLowerCase();
+    if (mode === 'brainrot' || mode === 'genz' || mode === 'zoomer') {
+      setBrainrot(true);
+    } else if (mode === 'corporate' || mode === 'corp' || mode === 'office') {
+      setCorporate(true);
+    }
+    // Clean the URL param without page reload
+    if (mode) {
+      params.delete('mode');
+      const newUrl = params.toString()
+        ? `${window.location.pathname}?${params.toString()}`
+        : window.location.pathname;
+      window.history.replaceState({}, '', newUrl);
+    }
+  }, []);
+
   // Load editable content overrides from Supabase
   const [contentReady, setContentReady] = useState(false);
   useEffect(() => {

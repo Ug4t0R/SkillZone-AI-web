@@ -113,6 +113,11 @@ export const cs = {
     slide_cta_bootcamp: 'Zjistit víc o Bootcampu',
     slide_cta_pricing: 'Kolik to stojí?',
     slide_cta_gallery: 'Prohlédnout galerii',
+    slide_voucher_badge: 'AKCE PRO NOVÉ HRÁČE',
+    slide_voucher_title: 'VYZKOUŠEJ NÁS',
+    slide_voucher_highlight: 'ZDARMA',
+    slide_voucher_desc: 'Zaregistruj se u nás v klubu a získej 2 hodiny hraní zdarma! Registrace je zdarma a trvá minutu.',
+    slide_cta_voucher: 'Získat poukaz',
 
     book_mission: 'Jaká je tvoje',
     book_mission_sub: 'mise?',

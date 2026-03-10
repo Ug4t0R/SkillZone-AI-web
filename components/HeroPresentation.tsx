@@ -1,13 +1,14 @@
 
 import React, { useState, useEffect } from 'react';
-import { Wifi, Users, Calendar, ChevronRight, ChevronLeft, Zap, Monitor, Lock, Wallet, MessageCircle, Pause, Play, ArrowRight } from 'lucide-react';
+import { Wifi, Users, Calendar, ChevronRight, ChevronLeft, Zap, Monitor, Lock, Wallet, MessageCircle, Pause, Play, ArrowRight, Gift } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 import { getYearsOnMarket } from '../utils/founding';
 import { pushRoute } from '../services/routeConfig';
 import { AppView } from '../types';
 
 const SLIDE_DURATION = 10000; // 10 seconds per slide — enough to read
-const TOTAL_SLIDES = 7;
+const TOTAL_SLIDES = 8;
+const VOUCHER_SLIDE_INDEX = 0; // Voucher slide is the first one
 
 // Simple animated counter component
 const AnimatedCounter: React.FC<{ end: number; duration?: number; suffix?: string }> = ({ end, duration = 2000, suffix = '' }) => {
@@ -34,7 +35,9 @@ const AnimatedCounter: React.FC<{ end: number; duration?: number; suffix?: strin
 };
 
 const HeroPresentation: React.FC = () => {
-    const [currentSlide, setCurrentSlide] = useState(0);
+    // Show voucher slide first for new visitors who haven't seen it yet
+    const isNewVisitor = !localStorage.getItem('sz_seen_voucher_slide');
+    const [currentSlide, setCurrentSlide] = useState(isNewVisitor ? VOUCHER_SLIDE_INDEX : 1);
     const [strikeAnimated, setStrikeAnimated] = useState(false);
     const [glitchTrigger, setGlitchTrigger] = useState(false);
     const [isPaused, setIsPaused] = useState(false);
@@ -49,8 +52,12 @@ const HeroPresentation: React.FC = () => {
         setGlitchTrigger(true);
         const timer = setTimeout(() => setGlitchTrigger(false), 500); // Short glitch on change
 
-        if (currentSlide === 0) {
+        if (currentSlide === 1) {
             setTimeout(() => setStrikeAnimated(true), 800); // Delay strike for effect
+        }
+        // Mark voucher slide as seen once visitor moves past it
+        if (currentSlide !== VOUCHER_SLIDE_INDEX && isNewVisitor) {
+            localStorage.setItem('sz_seen_voucher_slide', '1');
         }
         return () => clearTimeout(timer);
     }, [currentSlide]);
@@ -105,8 +112,32 @@ const HeroPresentation: React.FC = () => {
                     </div>
                 )}
 
-                {/* SLIDE 1: Identity / Correction */}
+                {/* SLIDE 0: Voucher Promo — New Customer Acquisition */}
                 <div className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-500 px-4 ${currentSlide === 0 ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}`}>
+                    <div className="relative">
+                        {/* Glowing badge */}
+                        <div className="flex justify-center mb-4">
+                            <span className="px-3 py-1 bg-sz-red/10 border border-sz-red/40 rounded-sm text-sz-red font-mono text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] animate-pulse shadow-[0_0_15px_rgba(227,30,36,0.15)]">
+                                🎁 {t('slide_voucher_badge')}
+                            </span>
+                        </div>
+                        <h2 className={`text-2xl sm:text-4xl md:text-6xl font-orbitron font-black text-gray-900 dark:text-white uppercase tracking-tighter text-center leading-none mb-3 ${glitchTrigger ? 'animate-glitch-text' : ''}`}>
+                            {t('slide_voucher_title')} <span className="text-sz-red text-glow">{t('slide_voucher_highlight')}</span>
+                        </h2>
+                        <div className="bg-white/80 dark:bg-black/60 backdrop-blur-sm border border-sz-red/30 px-5 md:px-6 py-2 md:py-3 rounded-sm max-w-2xl text-center relative overflow-hidden">
+                            <div className="absolute top-0 left-0 w-1 h-full bg-sz-red"></div>
+                            <p className="text-gray-600 dark:text-gray-300 font-mono text-sm md:text-base">
+                                {t('slide_voucher_desc')}
+                            </p>
+                        </div>
+                        <div className="flex justify-center">
+                            <SlideCTA label={t('slide_cta_voucher')} view="poukaz" />
+                        </div>
+                    </div>
+                </div>
+
+                {/* SLIDE 1: Identity / Correction */}
+                <div className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-500 px-4 ${currentSlide === 1 ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}`}>
                     <div className="relative mb-4">
                         <span className="text-2xl sm:text-4xl md:text-5xl font-orbitron font-black text-gray-400 dark:text-gray-500 opacity-50 tracking-widest">
                             {t('slide_we_are')}
@@ -129,12 +160,12 @@ const HeroPresentation: React.FC = () => {
                 </div>
 
                 {/* SLIDE 2: Stats */}
-                <div className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-500 px-4 ${currentSlide === 1 ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}`}>
+                <div className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-500 px-4 ${currentSlide === 2 ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}`}>
                     <div className="grid grid-cols-3 gap-3 md:gap-6 w-full max-w-4xl">
                         <div className="bg-gradient-to-b from-gray-100 to-white dark:from-zinc-900 dark:to-black border border-gray-200 dark:border-sz-red/20 p-4 md:p-5 rounded-sm flex flex-col items-center justify-center group hover:border-sz-red/60 transition-all shadow-lg">
                             <Calendar className="w-6 h-6 text-sz-red mb-2 group-hover:scale-110 transition-transform" />
                             <span className="text-3xl md:text-4xl font-black font-orbitron text-gray-900 dark:text-white mb-1">
-                                {currentSlide === 1 ? <AnimatedCounter end={getYearsOnMarket()} /> : '0'}
+                                {currentSlide === 2 ? <AnimatedCounter end={getYearsOnMarket()} /> : '0'}
                             </span>
                             <span className="text-gray-500 text-[10px] uppercase tracking-widest font-bold">{t('slide_years')}</span>
                         </div>
@@ -142,7 +173,7 @@ const HeroPresentation: React.FC = () => {
                             <div className="absolute inset-0 bg-sz-red/5 animate-pulse"></div>
                             <Users className="w-6 h-6 text-sz-red mb-2 group-hover:scale-110 transition-transform relative z-10" />
                             <span className="text-3xl md:text-4xl font-black font-orbitron text-gray-900 dark:text-white mb-1 relative z-10">
-                                {currentSlide === 1 ? <AnimatedCounter end={18179} /> : '0'}
+                                {currentSlide === 2 ? <AnimatedCounter end={18179} /> : '0'}
                             </span>
                             <span className="text-gray-500 text-[10px] uppercase tracking-widest font-bold relative z-10">{t('slide_db')}</span>
                             <div className="absolute bottom-0 left-0 w-full p-2 bg-black/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-center">
@@ -152,7 +183,7 @@ const HeroPresentation: React.FC = () => {
                         <div className="bg-gradient-to-b from-gray-100 to-white dark:from-zinc-900 dark:to-black border border-gray-200 dark:border-sz-red/20 p-4 md:p-5 rounded-sm flex flex-col items-center justify-center group hover:border-sz-red/60 transition-all shadow-lg">
                             <Wifi className="w-6 h-6 text-sz-red mb-2 group-hover:scale-110 transition-transform" />
                             <span className="text-3xl md:text-4xl font-black font-orbitron text-gray-900 dark:text-white mb-1">
-                                {currentSlide === 1 ? <AnimatedCounter end={10000} /> : '0'}
+                                {currentSlide === 2 ? <AnimatedCounter end={10000} /> : '0'}
                             </span>
                             <span className="text-gray-500 text-[10px] uppercase tracking-widest font-bold">Mbps (Žižkov)</span>
                         </div>
@@ -161,7 +192,7 @@ const HeroPresentation: React.FC = () => {
                 </div>
 
                 {/* SLIDE 3: Hardware (380Hz) */}
-                <div className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-500 px-4 ${currentSlide === 2 ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}`}>
+                <div className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-500 px-4 ${currentSlide === 3 ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}`}>
                     <div className="relative">
                         <Monitor className="w-16 h-16 text-sz-red mx-auto mb-4 opacity-20 absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 scale-150" />
                         <h2 className={`text-3xl sm:text-5xl md:text-7xl font-orbitron font-black text-gray-900 dark:text-white uppercase tracking-tighter text-center leading-none mb-3 ${glitchTrigger ? 'animate-glitch-text' : ''}`}>
@@ -177,7 +208,7 @@ const HeroPresentation: React.FC = () => {
                 </div>
 
                 {/* SLIDE 4: Bootcamp Private Space */}
-                <div className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-500 px-4 ${currentSlide === 3 ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}`}>
+                <div className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-500 px-4 ${currentSlide === 4 ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}`}>
                     <Lock className="w-8 h-8 text-sz-red mb-3 opacity-50" />
                     <h2 className={`text-2xl sm:text-3xl md:text-6xl font-orbitron font-black text-gray-900 dark:text-white uppercase tracking-tighter text-center leading-tight mb-3 ${glitchTrigger ? 'animate-glitch-text' : ''}`}>
                         {t('slide_boot_q').split(' ').slice(0, 1).join(' ')} <span className="text-sz-red">{t('slide_boot_q').split(' ').slice(1).join(' ')}</span>
@@ -195,7 +226,7 @@ const HeroPresentation: React.FC = () => {
                 </div>
 
                 {/* SLIDE 5: Flexible Pricing */}
-                <div className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-500 px-4 ${currentSlide === 4 ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}`}>
+                <div className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-500 px-4 ${currentSlide === 5 ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}`}>
                     <Wallet className="w-8 h-8 text-sz-red mb-3 opacity-50" />
                     <h2 className={`text-2xl sm:text-3xl md:text-6xl font-orbitron font-black text-gray-900 dark:text-white uppercase tracking-tighter text-center leading-tight mb-3 ${glitchTrigger ? 'animate-glitch-text' : ''}`}>
                         {t('slide_price_q').split(' ').slice(0, 1).join(' ')} <span className="text-sz-red">{t('slide_price_q').split(' ').slice(1).join(' ')}</span>
@@ -213,7 +244,7 @@ const HeroPresentation: React.FC = () => {
                 </div>
 
                 {/* SLIDE 6: Tykáme si */}
-                <div className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-500 px-4 ${currentSlide === 5 ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}`}>
+                <div className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-500 px-4 ${currentSlide === 6 ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}`}>
                     <MessageCircle className="w-8 h-8 text-sz-red mb-3 opacity-50" />
                     <h2 className={`text-2xl sm:text-3xl md:text-6xl font-orbitron font-black text-gray-900 dark:text-white uppercase tracking-tighter text-center leading-tight mb-3 ${glitchTrigger ? 'animate-glitch-text' : ''}`}>
                         {t('slide_vibe_q').split(' ').slice(0, 1).join(' ')} <span className="text-sz-red">{t('slide_vibe_q').split(' ').slice(1).join(' ')}</span>
@@ -231,7 +262,7 @@ const HeroPresentation: React.FC = () => {
                 </div>
 
                 {/* SLIDE 7: Atmosphere (Original Slogan) */}
-                <div className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-500 px-4 ${currentSlide === 6 ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}`}>
+                <div className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-500 px-4 ${currentSlide === 7 ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}`}>
                     <h1 className="font-orbitron text-2xl sm:text-4xl md:text-6xl font-black mb-2 leading-tight tracking-tight text-center drop-shadow-2xl">
                         <span className="text-gray-900 dark:text-white block mb-2 opacity-90">{t('intro_s1')}</span>
                         <span className="text-gray-500 text-lg md:text-2xl block font-sans font-bold mb-4 tracking-widest bg-white/50 dark:bg-black/50 px-4 py-1.5 inline-block rounded">

@@ -113,6 +113,11 @@ export const en = {
     slide_cta_bootcamp: 'Learn More About Bootcamp',
     slide_cta_pricing: 'See Pricing',
     slide_cta_gallery: 'Browse Gallery',
+    slide_voucher_badge: 'NEW PLAYER OFFER',
+    slide_voucher_title: 'TRY US OUT',
+    slide_voucher_highlight: 'FOR FREE',
+    slide_voucher_desc: 'Register at our club and get 2 hours of free gaming! Registration is free and takes a minute.',
+    slide_cta_voucher: 'Get Voucher',
 
     book_mission: 'What is your',
     book_mission_sub: 'mission?',
