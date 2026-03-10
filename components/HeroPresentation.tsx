@@ -138,7 +138,8 @@ const HeroPresentation: React.FC = () => {
 
                 {/* SLIDE 1: Identity / Correction */}
                 <div className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-500 px-4 ${currentSlide === 1 ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}`}>
-                    <div className="relative mb-4">
+                    <div className="absolute inset-0 z-0"><img src="/bg/P3.webp" alt="" className="w-full h-full object-cover" /><div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/70 to-black/50" /></div>
+                    <div className="relative mb-4 z-10">
                         <span className="text-2xl sm:text-4xl md:text-5xl font-orbitron font-black text-gray-400 dark:text-gray-500 opacity-50 tracking-widest">
                             {t('slide_we_are')}
                         </span>
@@ -193,7 +194,8 @@ const HeroPresentation: React.FC = () => {
 
                 {/* SLIDE 3: Hardware (380Hz) */}
                 <div className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-500 px-4 ${currentSlide === 3 ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}`}>
-                    <div className="relative">
+                    <div className="absolute inset-0 z-0"><img src="/bg/P4.webp" alt="" className="w-full h-full object-cover" /><div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/70 to-black/50" /></div>
+                    <div className="relative z-10">
                         <Monitor className="w-16 h-16 text-sz-red mx-auto mb-4 opacity-20 absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 scale-150" />
                         <h2 className={`text-3xl sm:text-5xl md:text-7xl font-orbitron font-black text-gray-900 dark:text-white uppercase tracking-tighter text-center leading-none mb-3 ${glitchTrigger ? 'animate-glitch-text' : ''}`}>
                             380Hz <span className="text-sz-red">{t('slide_monitors')}</span>
@@ -209,20 +211,21 @@ const HeroPresentation: React.FC = () => {
 
                 {/* SLIDE 4: Bootcamp Private Space */}
                 <div className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-500 px-4 ${currentSlide === 4 ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}`}>
-                    <Lock className="w-8 h-8 text-sz-red mb-3 opacity-50" />
-                    <h2 className={`text-2xl sm:text-3xl md:text-6xl font-orbitron font-black text-gray-900 dark:text-white uppercase tracking-tighter text-center leading-tight mb-3 ${glitchTrigger ? 'animate-glitch-text' : ''}`}>
+                    <div className="absolute inset-0 z-0"><img src="/bg/bootcamp.webp" alt="" className="w-full h-full object-cover" /><div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/70 to-black/50" /></div>
+                    <Lock className="w-8 h-8 text-sz-red mb-3 opacity-50 relative z-10" />
+                    <h2 className={`relative z-10 text-2xl sm:text-3xl md:text-6xl font-orbitron font-black text-white uppercase tracking-tighter text-center leading-tight mb-3 ${glitchTrigger ? 'animate-glitch-text' : ''}`}>
                         {t('slide_boot_q').split(' ').slice(0, 1).join(' ')} <span className="text-sz-red">{t('slide_boot_q').split(' ').slice(1).join(' ')}</span>
                     </h2>
-                    <div className="bg-white/80 dark:bg-black/60 backdrop-blur-sm border border-sz-red/30 px-6 py-3 rounded-sm max-w-2xl text-center relative overflow-hidden">
+                    <div className="relative z-10 bg-black/60 backdrop-blur-sm border border-sz-red/30 px-6 py-3 rounded-sm max-w-2xl text-center overflow-hidden">
                         <div className="absolute top-0 left-0 w-1 h-full bg-sz-red"></div>
-                        <p className="text-lg text-gray-900 dark:text-white font-bold font-sans uppercase tracking-wide">
+                        <p className="text-lg text-white font-bold font-sans uppercase tracking-wide">
                             {t('slide_boot_a')}
                         </p>
-                        <p className="text-gray-600 dark:text-gray-400 font-mono text-xs mt-1">
+                        <p className="text-gray-300 font-mono text-xs mt-1">
                             {t('slide_boot_desc')}
                         </p>
                     </div>
-                    <SlideCTA label={t('slide_cta_bootcamp')} view="branch_bootcamp" />
+                    <div className="relative z-10"><SlideCTA label={t('slide_cta_bootcamp')} view="branch_bootcamp" /></div>
                 </div>
 
                 {/* SLIDE 5: Flexible Pricing */}
@@ -245,34 +248,36 @@ const HeroPresentation: React.FC = () => {
 
                 {/* SLIDE 6: Tykáme si */}
                 <div className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-500 px-4 ${currentSlide === 6 ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}`}>
-                    <MessageCircle className="w-8 h-8 text-sz-red mb-3 opacity-50" />
-                    <h2 className={`text-2xl sm:text-3xl md:text-6xl font-orbitron font-black text-gray-900 dark:text-white uppercase tracking-tighter text-center leading-tight mb-3 ${glitchTrigger ? 'animate-glitch-text' : ''}`}>
+                    <div className="absolute inset-0 z-0"><img src="/bg/P5.webp" alt="" className="w-full h-full object-cover" /><div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/70 to-black/50" /></div>
+                    <MessageCircle className="w-8 h-8 text-sz-red mb-3 opacity-50 relative z-10" />
+                    <h2 className={`relative z-10 text-2xl sm:text-3xl md:text-6xl font-orbitron font-black text-white uppercase tracking-tighter text-center leading-tight mb-3 ${glitchTrigger ? 'animate-glitch-text' : ''}`}>
                         {t('slide_vibe_q').split(' ').slice(0, 1).join(' ')} <span className="text-sz-red">{t('slide_vibe_q').split(' ').slice(1).join(' ')}</span>
                     </h2>
-                    <div className="bg-white/80 dark:bg-black/60 backdrop-blur-sm border border-sz-red/30 px-6 py-3 rounded-sm max-w-2xl text-center relative overflow-hidden">
+                    <div className="relative z-10 bg-black/60 backdrop-blur-sm border border-sz-red/30 px-6 py-3 rounded-sm max-w-2xl text-center overflow-hidden">
                         <div className="absolute top-0 left-0 w-1 h-full bg-sz-red"></div>
-                        <p className="text-lg text-gray-900 dark:text-white font-bold font-sans uppercase tracking-wide">
+                        <p className="text-lg text-white font-bold font-sans uppercase tracking-wide">
                             {t('slide_vibe_a')}
                         </p>
-                        <p className="text-gray-600 dark:text-gray-400 font-mono text-xs mt-1">
+                        <p className="text-gray-300 font-mono text-xs mt-1">
                             {t('slide_vibe_desc')}
                         </p>
                     </div>
-                    <SlideCTA label={t('slide_cta_gallery')} view="gallery" />
+                    <div className="relative z-10"><SlideCTA label={t('slide_cta_gallery')} view="gallery" /></div>
                 </div>
 
                 {/* SLIDE 7: Atmosphere (Original Slogan) */}
                 <div className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-500 px-4 ${currentSlide === 7 ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}`}>
-                    <h1 className="font-orbitron text-2xl sm:text-4xl md:text-6xl font-black mb-2 leading-tight tracking-tight text-center drop-shadow-2xl">
-                        <span className="text-gray-900 dark:text-white block mb-2 opacity-90">{t('intro_s1')}</span>
-                        <span className="text-gray-500 text-lg md:text-2xl block font-sans font-bold mb-4 tracking-widest bg-white/50 dark:bg-black/50 px-4 py-1.5 inline-block rounded">
+                    <div className="absolute inset-0 z-0"><img src="/bg/P3.webp" alt="" className="w-full h-full object-cover" /><div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/60 to-black/40" /></div>
+                    <h1 className="relative z-10 font-orbitron text-2xl sm:text-4xl md:text-6xl font-black mb-2 leading-tight tracking-tight text-center drop-shadow-2xl">
+                        <span className="text-white block mb-2 opacity-90">{t('intro_s1')}</span>
+                        <span className="text-gray-300 text-lg md:text-2xl block font-sans font-bold mb-4 tracking-widest bg-black/50 px-4 py-1.5 inline-block rounded">
                             {t('intro_s2')}
                         </span>
                         <span className={`text-sz-red text-glow block transform -skew-x-6 mt-1 text-3xl sm:text-5xl md:text-7xl ${glitchTrigger ? 'animate-glitch-text' : ''}`}>
                             {t('intro_s3')}
                         </span>
                     </h1>
-                    <SlideCTA label={t('slide_cta_locations')} view="locations" />
+                    <div className="relative z-10"><SlideCTA label={t('slide_cta_locations')} view="locations" /></div>
                 </div>
             </div>
 
