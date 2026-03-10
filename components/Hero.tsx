@@ -1,33 +1,43 @@
 
 import React, { useState } from 'react';
-// Added X to the imports from lucide-react to fix 'Cannot find name X' error
 import { ChevronDown, ScanFace, ShieldCheck, Activity, Brain, X } from 'lucide-react';
 import HeroPresentation from './HeroPresentation';
 import { useAppContext } from '../context/AppContext';
 import { getUserProfile, saveUserProfile } from '../utils/devTools';
 
+// Background photo mapping: slide index -> photo path
+const SLIDE_BACKGROUNDS: Record<number, string> = {
+    0: '/bg/P3.webp',
+    1: '/bg/P3.webp',
+    2: '/bg/P4.webp',
+    3: '/bg/P4.webp',
+    4: '/bg/bootcamp.webp',
+    5: '/bg/P5.webp',
+    6: '/bg/P5.webp',
+    7: '/bg/P3.webp',
+};
+const UNIQUE_PHOTOS = ['/bg/P3.webp', '/bg/P4.webp', '/bg/P5.webp', '/bg/bootcamp.webp'];
+
 const Hero: React.FC = () => {
   const { t } = useAppContext();
   const [isScanning, setIsScanning] = useState(false);
   const [scanResult, setScanResult] = useState<string | null>(null);
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const activePhoto = SLIDE_BACKGROUNDS[currentSlide] || UNIQUE_PHOTOS[0];
 
   const startScan = () => {
     setIsScanning(true);
     setScanResult(null);
-
-    // Safety timeout — forcefully dismiss overlay after 10s no matter what
     const safety = setTimeout(() => { setIsScanning(false); }, 10000);
-
     setTimeout(async () => {
       const classes = ["Elite Fragger", "Tactical Master", "Grind Overlord", "Neon Wanderer", "Neural Nomad"];
       const result = classes[Math.floor(Math.random() * classes.length)];
-
       try {
         const profile = await getUserProfile();
         profile.interactionCount += 5;
         await saveUserProfile(profile);
-      } catch { /* DB fail is fine — scan still works */ }
-
+      } catch { /* DB fail is fine */ }
       setScanResult(result);
       setIsScanning(false);
       clearTimeout(safety);
@@ -35,15 +45,29 @@ const Hero: React.FC = () => {
   };
 
   return (
-    <div className="relative h-screen w-full flex items-center justify-center overflow-hidden bg-light-bg dark:bg-dark-bg transition-colors duration-300">
+    <div className="relative h-screen w-full flex items-center justify-center overflow-hidden bg-black transition-colors duration-300">
 
-      {/* Background Effects */}
-      <div className="absolute inset-0 z-0 bg-dark-bg">
-        <div className="absolute inset-0 bg-motherboard opacity-20 dark:opacity-30"></div>
-        <div className="absolute inset-0 motherboard-energy opacity-30 dark:opacity-50 pointer-events-none"></div>
-        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-sz-red/5 dark:bg-sz-red/10 blur-[150px] rounded-full z-0 animate-pulse-slow"></div>
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-sz-red/5 dark:bg-sz-red/5 blur-[120px] rounded-full z-0 animate-pulse-slow"></div>
-        <div className="absolute inset-0 bg-gradient-to-b from-light-bg/90 via-light-bg/50 to-light-bg dark:from-dark-bg/90 dark:via-dark-bg/50 dark:to-dark-bg z-0"></div>
+      {/* Full-page crossfading gallery backgrounds */}
+      <div className="absolute inset-0 z-0">
+        {UNIQUE_PHOTOS.map((src) => (
+          <div
+            key={src}
+            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${activePhoto === src ? 'opacity-100' : 'opacity-0'}`}
+          >
+            <img
+              src={src}
+              alt=""
+              className="w-full h-full object-cover scale-[1.02]"
+              loading="eager"
+            />
+          </div>
+        ))}
+        {/* Heavy dark overlay for readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/65 to-black/90 z-[1]" />
+        <div className="absolute inset-0 backdrop-blur-[1px] z-[1]" />
+        {/* Subtle atmospheric glow */}
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-sz-red/5 blur-[150px] rounded-full z-[2] animate-pulse-slow"></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-sz-red/5 blur-[120px] rounded-full z-[2] animate-pulse-slow"></div>
       </div>
 
       <div className="relative z-10 text-center px-4 max-w-6xl mx-auto w-full">
@@ -59,7 +83,7 @@ const Hero: React.FC = () => {
 
         {/* Interactive Presentation Component */}
         <div className="mb-16 min-h-[300px]">
-          <HeroPresentation />
+          <HeroPresentation onSlideChange={setCurrentSlide} />
         </div>
 
         <div className="flex flex-col sm:flex-row gap-6 justify-center items-center animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-700 mt-8">
@@ -73,13 +97,13 @@ const Hero: React.FC = () => {
             {t('hero_cta')}
           </button>
 
-          <div className="flex items-center gap-4 text-gray-600 dark:text-gray-400 bg-white/50 dark:bg-black/50 px-4 py-2 rounded-sm border border-black/5 dark:border-white/5 backdrop-blur-sm shadow-sm">
+          <div className="flex items-center gap-4 text-gray-400 bg-black/50 px-4 py-2 rounded-sm border border-white/5 backdrop-blur-sm shadow-sm">
             <div className="flex -space-x-2">
-              <div className="w-8 h-8 rounded-full border-2 border-white dark:border-dark-bg bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center text-xs">👽</div>
-              <div className="w-8 h-8 rounded-full border-2 border-white dark:border-dark-bg bg-zinc-300 dark:bg-zinc-700 flex items-center justify-center text-xs">👾</div>
-              <div className="w-8 h-8 rounded-full border-2 border-white dark:border-dark-bg bg-zinc-400 dark:bg-zinc-600 flex items-center justify-center text-xs">🤖</div>
+              <div className="w-8 h-8 rounded-full border-2 border-dark-bg bg-zinc-800 flex items-center justify-center text-xs">👽</div>
+              <div className="w-8 h-8 rounded-full border-2 border-dark-bg bg-zinc-700 flex items-center justify-center text-xs">👾</div>
+              <div className="w-8 h-8 rounded-full border-2 border-dark-bg bg-zinc-600 flex items-center justify-center text-xs">🤖</div>
             </div>
-            <span className="text-sm font-medium"><span className="text-black dark:text-white font-bold">18 179</span> {t('hero_players')}</span>
+            <span className="text-sm font-medium"><span className="text-white font-bold">18 179</span> {t('hero_players')}</span>
           </div>
         </div>
       </div>
@@ -107,19 +131,19 @@ const Hero: React.FC = () => {
           </div>
           <div className="mt-12 text-center">
             <div className="text-sz-red font-orbitron font-black text-2xl uppercase tracking-[0.3em] animate-pulse">Neural_Sync_Active</div>
-            <div className="mt-2 text-gray-900 dark:text-white font-mono text-xs uppercase tracking-widest opacity-70">Skenování biometrických dat a match history...</div>
+            <div className="mt-2 text-white font-mono text-xs uppercase tracking-widest opacity-70">Skenování biometrických dat a match history...</div>
           </div>
         </div>
       )}
 
       {scanResult && (
-        <div className="fixed top-24 right-8 z-[60] bg-white/95 dark:bg-black/90 border border-sz-red p-6 rounded shadow-lg dark:shadow-[0_0_30px_rgba(227,30,36,0.4)] animate-in slide-in-from-right duration-500 max-w-sm">
-          <button onClick={() => setScanResult(null)} className="absolute top-2 right-2 text-gray-500 hover:text-gray-900 dark:hover:text-white"><X className="w-4 h-4" /></button>
+        <div className="fixed top-24 right-8 z-[60] bg-black/90 border border-sz-red p-6 rounded shadow-[0_0_30px_rgba(227,30,36,0.4)] animate-in slide-in-from-right duration-500 max-w-sm">
+          <button onClick={() => setScanResult(null)} className="absolute top-2 right-2 text-gray-500 hover:text-white"><X className="w-4 h-4" /></button>
           <div className="flex items-center gap-4 mb-4">
             <div className="w-12 h-12 bg-sz-red/20 border border-sz-red flex items-center justify-center"><ShieldCheck className="w-6 h-6 text-sz-red" /></div>
             <div>
               <div className="text-gray-500 text-[10px] font-mono uppercase">Neural_ID: Found</div>
-              <div className="text-gray-900 dark:text-white font-orbitron font-bold uppercase">{scanResult}</div>
+              <div className="text-white font-orbitron font-bold uppercase">{scanResult}</div>
             </div>
           </div>
           <div className="space-y-2 border-t border-white/10 pt-4">

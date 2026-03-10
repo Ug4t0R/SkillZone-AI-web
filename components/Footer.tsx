@@ -133,7 +133,7 @@ const Footer: React.FC<FooterProps> = ({ sections, onNavigate }) => {
                         className="mt-2 text-gray-700 hover:text-sz-red transition-colors text-[11px] cursor-pointer"
                         title="SkillZone Build Version"
                     >
-                        v26.03.02
+                        v26.03.10
                     </button>
                     {versionClicks > 0 && versionClicks < 5 && (
                         <div className="absolute -bottom-4 text-[9px] text-sz-red animate-pulse">

@@ -10,21 +10,6 @@ const SLIDE_DURATION = 10000; // 10 seconds per slide
 const TOTAL_SLIDES = 8;
 const VOUCHER_SLIDE_INDEX = 0;
 
-// Background photo mapping: slide index -> photo path
-const SLIDE_BACKGROUNDS: Record<number, string> = {
-    0: '/bg/P3.webp',  // Voucher
-    1: '/bg/P3.webp',  // Identity / Network
-    2: '/bg/P4.webp',  // Stats
-    3: '/bg/P4.webp',  // 380Hz Monitors
-    4: '/bg/bootcamp.webp', // Bootcamp
-    5: '/bg/P5.webp',  // Pricing
-    6: '/bg/P5.webp',  // Tykame si
-    7: '/bg/P3.webp',  // Atmosphere
-};
-
-// Unique photos for crossfade layers
-const UNIQUE_PHOTOS = ['/bg/P3.webp', '/bg/P4.webp', '/bg/P5.webp', '/bg/bootcamp.webp'];
-
 // Simple animated counter component
 const AnimatedCounter: React.FC<{ end: number; duration?: number; suffix?: string }> = ({ end, duration = 2000, suffix = '' }) => {
     const [count, setCount] = useState(0);
@@ -46,7 +31,11 @@ const AnimatedCounter: React.FC<{ end: number; duration?: number; suffix?: strin
     return <span>{count.toLocaleString()}{suffix}</span>;
 };
 
-const HeroPresentation: React.FC = () => {
+interface HeroPresentationProps {
+    onSlideChange?: (slideIndex: number) => void;
+}
+
+const HeroPresentation: React.FC<HeroPresentationProps> = ({ onSlideChange }) => {
     const isNewVisitor = !localStorage.getItem('sz_seen_voucher_slide');
     const [currentSlide, setCurrentSlide] = useState(isNewVisitor ? VOUCHER_SLIDE_INDEX : 1);
     const [strikeAnimated, setStrikeAnimated] = useState(false);
@@ -56,6 +45,11 @@ const HeroPresentation: React.FC = () => {
     const { t } = useAppContext();
 
     const effectivelyPaused = isPaused || isHovered;
+
+    // Notify parent about slide changes for background sync
+    useEffect(() => {
+        onSlideChange?.(currentSlide);
+    }, [currentSlide, onSlideChange]);
 
     useEffect(() => {
         setStrikeAnimated(false);
@@ -102,37 +96,14 @@ const HeroPresentation: React.FC = () => {
         </button>
     );
 
-    // Current background photo for this slide
-    const activePhoto = SLIDE_BACKGROUNDS[currentSlide] || UNIQUE_PHOTOS[0];
-
     return (
         <div
             className="group/slider select-none"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
-            {/* Slides container */}
+            {/* Slides container — no internal background (Hero.tsx handles full-page bg) */}
             <div className="relative w-full h-[320px] sm:h-[360px] md:h-[300px] flex flex-col justify-center items-center overflow-hidden">
-
-                {/* UNIFIED BACKGROUND — crossfade between photos */}
-                {UNIQUE_PHOTOS.map((src) => (
-                    <div
-                        key={src}
-                        className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${activePhoto === src ? 'opacity-100' : 'opacity-0'}`}
-                        style={{ zIndex: 0 }}
-                    >
-                        <img
-                            src={src}
-                            alt=""
-                            className="w-full h-full object-cover scale-105"
-                            loading="eager"
-                        />
-                    </div>
-                ))}
-
-                {/* Dark overlay + subtle blur to keep focus on content */}
-                <div className="absolute inset-0 z-[1] bg-gradient-to-t from-black/90 via-black/75 to-black/60" />
-                <div className="absolute inset-0 z-[1] backdrop-blur-[2px]" />
 
                 {/* Pause indicator */}
                 {isHovered && !isPaused && (
@@ -142,7 +113,7 @@ const HeroPresentation: React.FC = () => {
                 )}
 
                 {/* SLIDE 0: Voucher Promo */}
-                <div className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-500 px-4 z-[2] ${currentSlide === 0 ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}`}>
+                <div className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-500 px-4 ${currentSlide === 0 ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}`}>
                     <div className="relative">
                         <div className="flex justify-center mb-4">
                             <span className="px-3 py-1 bg-sz-red/10 border border-sz-red/40 rounded-sm text-sz-red font-mono text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] animate-pulse shadow-[0_0_15px_rgba(227,30,36,0.15)]">
@@ -165,7 +136,7 @@ const HeroPresentation: React.FC = () => {
                 </div>
 
                 {/* SLIDE 1: Identity / Correction */}
-                <div className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-500 px-4 z-[2] ${currentSlide === 1 ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}`}>
+                <div className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-500 px-4 ${currentSlide === 1 ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}`}>
                     <div className="relative mb-4">
                         <span className="text-2xl sm:text-4xl md:text-5xl font-orbitron font-black text-gray-500 opacity-50 tracking-widest">
                             {t('slide_we_are')}
@@ -188,7 +159,7 @@ const HeroPresentation: React.FC = () => {
                 </div>
 
                 {/* SLIDE 2: Stats */}
-                <div className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-500 px-4 z-[2] ${currentSlide === 2 ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}`}>
+                <div className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-500 px-4 ${currentSlide === 2 ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}`}>
                     <div className="grid grid-cols-3 gap-3 md:gap-6 w-full max-w-4xl">
                         <div className="bg-gradient-to-b from-zinc-900/90 to-black/90 border border-sz-red/20 p-4 md:p-5 rounded-sm flex flex-col items-center justify-center group hover:border-sz-red/60 transition-all shadow-lg backdrop-blur-sm">
                             <Calendar className="w-6 h-6 text-sz-red mb-2 group-hover:scale-110 transition-transform" />
@@ -220,7 +191,7 @@ const HeroPresentation: React.FC = () => {
                 </div>
 
                 {/* SLIDE 3: Hardware (380Hz) */}
-                <div className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-500 px-4 z-[2] ${currentSlide === 3 ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}`}>
+                <div className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-500 px-4 ${currentSlide === 3 ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}`}>
                     <div className="relative">
                         <Monitor className="w-16 h-16 text-sz-red mx-auto mb-4 opacity-20 absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 scale-150" />
                         <h2 className={`text-3xl sm:text-5xl md:text-7xl font-orbitron font-black text-white uppercase tracking-tighter text-center leading-none mb-3 ${glitchTrigger ? 'animate-glitch-text' : ''}`}>
@@ -236,7 +207,7 @@ const HeroPresentation: React.FC = () => {
                 </div>
 
                 {/* SLIDE 4: Bootcamp Private Space */}
-                <div className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-500 px-4 z-[2] ${currentSlide === 4 ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}`}>
+                <div className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-500 px-4 ${currentSlide === 4 ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}`}>
                     <Lock className="w-8 h-8 text-sz-red mb-3 opacity-50" />
                     <h2 className={`text-2xl sm:text-3xl md:text-6xl font-orbitron font-black text-white uppercase tracking-tighter text-center leading-tight mb-3 ${glitchTrigger ? 'animate-glitch-text' : ''}`}>
                         {t('slide_boot_q').split(' ').slice(0, 1).join(' ')} <span className="text-sz-red">{t('slide_boot_q').split(' ').slice(1).join(' ')}</span>
@@ -254,7 +225,7 @@ const HeroPresentation: React.FC = () => {
                 </div>
 
                 {/* SLIDE 5: Flexible Pricing */}
-                <div className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-500 px-4 z-[2] ${currentSlide === 5 ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}`}>
+                <div className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-500 px-4 ${currentSlide === 5 ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}`}>
                     <Wallet className="w-8 h-8 text-sz-red mb-3 opacity-50" />
                     <h2 className={`text-2xl sm:text-3xl md:text-6xl font-orbitron font-black text-white uppercase tracking-tighter text-center leading-tight mb-3 ${glitchTrigger ? 'animate-glitch-text' : ''}`}>
                         {t('slide_price_q').split(' ').slice(0, 1).join(' ')} <span className="text-sz-red">{t('slide_price_q').split(' ').slice(1).join(' ')}</span>
@@ -272,7 +243,7 @@ const HeroPresentation: React.FC = () => {
                 </div>
 
                 {/* SLIDE 6: Tykáme si */}
-                <div className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-500 px-4 z-[2] ${currentSlide === 6 ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}`}>
+                <div className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-500 px-4 ${currentSlide === 6 ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}`}>
                     <MessageCircle className="w-8 h-8 text-sz-red mb-3 opacity-50" />
                     <h2 className={`text-2xl sm:text-3xl md:text-6xl font-orbitron font-black text-white uppercase tracking-tighter text-center leading-tight mb-3 ${glitchTrigger ? 'animate-glitch-text' : ''}`}>
                         {t('slide_vibe_q').split(' ').slice(0, 1).join(' ')} <span className="text-sz-red">{t('slide_vibe_q').split(' ').slice(1).join(' ')}</span>
@@ -290,7 +261,7 @@ const HeroPresentation: React.FC = () => {
                 </div>
 
                 {/* SLIDE 7: Atmosphere (Original Slogan) */}
-                <div className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-500 px-4 z-[2] ${currentSlide === 7 ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}`}>
+                <div className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-500 px-4 ${currentSlide === 7 ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}`}>
                     <h1 className="font-orbitron text-2xl sm:text-4xl md:text-6xl font-black mb-2 leading-tight tracking-tight text-center drop-shadow-2xl">
                         <span className="text-white block mb-2 opacity-90">{t('intro_s1')}</span>
                         <span className="text-gray-300 text-lg md:text-2xl block font-sans font-bold mb-4 tracking-widest bg-black/50 px-4 py-1.5 inline-block rounded">
