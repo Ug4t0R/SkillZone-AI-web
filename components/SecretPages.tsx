@@ -124,6 +124,32 @@ const SECRET_PAGES: SecretPageInfo[] = [
         icon: <Eye className="w-5 h-5" />,
         category: 'system',
     },
+    {
+        path: '/?mode=brainrot',
+        view: 'home',
+        title: 'GenZ / Brainrot Mode',
+        description: 'Aktivuje Brainrot mode — sigma quotes, floating emoji, Ohio rizz energy. Pro sdílení s kamarády.',
+        icon: <Skull className="w-5 h-5" />,
+        category: 'easteregg',
+        aliases: ['/?mode=genz', '/?mode=zoomer'],
+    },
+    {
+        path: '/?mode=corporate',
+        view: 'home',
+        title: 'Corporate Mode',
+        description: 'Aktivuje korporátní režim — synergy leveraging, fake cookie bannery, meeting widgety. Pro sdílení s kolegy z office.',
+        icon: <Shield className="w-5 h-5" />,
+        category: 'easteregg',
+        aliases: ['/?mode=corp', '/?mode=office'],
+    },
+    {
+        path: '/pobocky → taktická mapa → klikni na střed trojúhelníku',
+        view: 'secretpages',
+        title: '🔺 Illuminati Confirmed',
+        description: 'Na taktické mapě naše pobočky tvoří trojúhelník. Najdi střed, klikni na oko a zjisti, co se stane. All seeing eye.',
+        icon: <Eye className="w-5 h-5" />,
+        category: 'easteregg',
+    },
 ];
 
 // Home aliases that are secret entry points
@@ -133,11 +159,12 @@ const CATEGORY_LABELS: Record<string, { label: string; color: string; icon: Reac
     branch: { label: '📍 Detail poboček', color: 'text-blue-400', icon: <MapPin className="w-4 h-4" /> },
     promo: { label: '🎯 SEO Landing Pages', color: 'text-purple-400', icon: <Sword className="w-4 h-4" /> },
     hidden: { label: '🔒 Skryté funkční stránky', color: 'text-green-400', icon: <EyeOff className="w-4 h-4" /> },
+    easteregg: { label: '🥚 Easter Eggy & Skryté módy', color: 'text-yellow-400', icon: <Eye className="w-4 h-4" /> },
     system: { label: '⚙️ Systémové', color: 'text-gray-400', icon: <Shield className="w-4 h-4" /> },
 };
 
 const SecretPages: React.FC<SecretPagesProps> = ({ onChangeView }) => {
-    const categories = ['branch', 'promo', 'hidden', 'system'] as const;
+    const categories = ['branch', 'promo', 'hidden', 'easteregg', 'system'] as const;
 
     const navigate = (view: AppView) => {
         onChangeView(view);

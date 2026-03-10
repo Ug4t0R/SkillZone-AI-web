@@ -1,7 +1,8 @@
 
-import React, { useState } from 'react';
-import { MapPin, Crown, Star, Clock, Monitor, Zap } from 'lucide-react';
+import React, { useState, useCallback } from 'react';
+import { MapPin, Crown, Star, Clock, Monitor, Zap, Eye } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
+import { pushRoute } from '../services/routeConfig';
 
 interface MapPoint {
     id: string;
@@ -16,7 +17,20 @@ interface MapPoint {
 
 const AllLocationsMap: React.FC = () => {
     const [hoveredPin, setHoveredPin] = useState<string | null>(null);
+    const [triangleHovered, setTriangleHovered] = useState(false);
+    const [illuminatiRevealed, setIlluminatiRevealed] = useState(false);
     const { language } = useAppContext();
+
+    const handleTriangleClick = useCallback(() => {
+        setIlluminatiRevealed(true);
+        // Brief dramatic reveal then navigate
+        setTimeout(() => {
+            setIlluminatiRevealed(false);
+            pushRoute('secretpages');
+            window.dispatchEvent(new Event('popstate'));
+            window.scrollTo(0, 0);
+        }, 1500);
+    }, []);
 
     const mapPoints: MapPoint[] = [
         {
@@ -90,6 +104,39 @@ const AllLocationsMap: React.FC = () => {
                         <animate attributeName="stroke-dashoffset" values="0;-20" dur="3s" repeatCount="indefinite" />
                     </line>
                 </svg>
+
+                {/* 🔺 Illuminati Easter Egg — Hidden clickable triangle center */}
+                <div
+                    className="absolute z-[2] cursor-pointer transition-all duration-500"
+                    style={{ top: '50%', left: '50%', transform: 'translate(-50%, -10%)' }}
+                    onClick={handleTriangleClick}
+                    onMouseEnter={() => setTriangleHovered(true)}
+                    onMouseLeave={() => setTriangleHovered(false)}
+                    title=""
+                >
+                    <svg width="60" height="52" viewBox="0 0 60 52" className={`transition-all duration-500 ${triangleHovered ? 'opacity-40 scale-110' : 'opacity-0 scale-100'} ${illuminatiRevealed ? '!opacity-100 !scale-150' : ''}`}>
+                        <polygon points="30,2 58,50 2,50" fill="none" stroke="#E31E24" strokeWidth="1.5" opacity="0.6" />
+                        <polygon points="30,14 46,44 14,44" fill="none" stroke="#E31E24" strokeWidth="0.8" opacity="0.4" />
+                        {/* Eye */}
+                        <ellipse cx="30" cy="32" rx="8" ry="5" fill="none" stroke="#E31E24" strokeWidth="1" opacity="0.7" />
+                        <circle cx="30" cy="32" r="2.5" fill="#E31E24" opacity="0.8" />
+                    </svg>
+                    {/* Glow effect on hover */}
+                    {(triangleHovered || illuminatiRevealed) && (
+                        <div className={`absolute inset-0 rounded-full blur-xl transition-opacity ${illuminatiRevealed ? 'bg-sz-red/30 animate-pulse' : 'bg-sz-red/10'}`} />
+                    )}
+                </div>
+
+                {/* Illuminati reveal overlay */}
+                {illuminatiRevealed && (
+                    <div className="absolute inset-0 z-[50] flex items-center justify-center bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
+                        <div className="text-center">
+                            <Eye className="w-16 h-16 text-sz-red mx-auto mb-4 animate-pulse" />
+                            <p className="font-orbitron text-xl text-sz-red font-bold tracking-[0.3em] uppercase">ILLUMINATI CONFIRMED</p>
+                            <p className="text-gray-500 text-xs font-mono mt-2">REDIRECTING TO CLASSIFIED INTEL...</p>
+                        </div>
+                    </div>
+                )}
 
                 {/* Pins */}
                 {mapPoints.map((point) => (
