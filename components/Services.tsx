@@ -54,7 +54,9 @@ const Services: React.FC = () => {
                                 {service.desc}
                             </p>
                             <a
-                                href="mailto:info@skillzone.cz"
+                                href="https://wa.me/420777766112?text=Ahoj%2C%20m%C3%A1m%20z%C3%A1jem%20o%20spolupr%C3%A1ci..."
+                                target="_blank"
+                                rel="noreferrer"
                                 className="inline-flex items-center gap-2 text-gray-900 dark:text-white font-bold uppercase text-sm tracking-wider hover:text-sz-red dark:hover:text-sz-red transition-colors"
                             >
                                 {t('serv_btn')} <ArrowRight className="w-4 h-4" />

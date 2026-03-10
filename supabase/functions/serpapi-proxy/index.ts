@@ -39,8 +39,8 @@ serve(async (req) => {
             });
         }
 
-        // Only allow whitelisted engines (google_maps_reviews for reviews, google for SEO checks)
-        const ALLOWED_ENGINES = ['google_maps_reviews', 'google'];
+        // Only allow whitelisted engines
+        const ALLOWED_ENGINES = ['google_maps_reviews', 'google', 'google_maps', 'bing', 'yandex'];
         if (!ALLOWED_ENGINES.includes(params.engine)) {
             return new Response(JSON.stringify({ error: `Engine "${params.engine}" not allowed` }), {
                 status: 403,

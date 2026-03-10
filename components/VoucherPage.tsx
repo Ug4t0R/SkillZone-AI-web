@@ -183,8 +183,8 @@ const VoucherPage: React.FC<VoucherPageProps> = ({ onChangeView }) => {
                                 <Info className="w-5 h-5 text-gray-400 shrink-0" />
                                 <p className="text-[10px] text-gray-500 font-mono leading-relaxed">
                                     {language === 'cs' 
-                                        ? 'Potřebujete poukaz na jinou částku nebo pro firmu? Kontaktujte nás na info@skillzone.cz a domluvíme se na individuálním řešení pro váš event.' 
-                                        : 'Need a voucher for a different amount or for a company? Contact us at info@skillzone.cz for a custom solution for your event.'}
+                                        ? 'Potřebujete poukaz na jinou částku nebo pro firmu? Napište nám na WhatsApp (777 766 112) a domluvíme se na individuálním řešení pro váš event.' 
+                                        : 'Need a voucher for a different amount or for a company? Message us on WhatsApp (777 766 112) for a custom solution for your event.'}
                                 </p>
                             </div>
                         </div>

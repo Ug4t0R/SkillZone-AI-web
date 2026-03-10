@@ -31,7 +31,7 @@ export interface ChatMessage {
     timestamp: number;
 }
 
-export type AppView = 'home' | 'locations' | 'branch_zizkov' | 'branch_haje' | 'branch_stodulky' | 'branch_bootcamp' | 'pricing' | 'history' | 'booking' | 'rentals' | 'services' | 'gift' | 'poukaz' | 'gallery' | 'map' | 'arena' | 'mvp' | 'cybersport' | 'reservation-status';
+export type AppView = 'home' | 'locations' | 'branch_zizkov' | 'branch_haje' | 'branch_stodulky' | 'branch_bootcamp' | 'pricing' | 'history' | 'booking' | 'rentals' | 'services' | 'gift' | 'poukaz' | 'gallery' | 'map' | 'arena' | 'mvp' | 'cybersport' | 'reservation-status' | 'secretpages' | 'contact';
 
 export type HistoryCategory = 'business' | 'community' | 'tech' | 'expansion';
 

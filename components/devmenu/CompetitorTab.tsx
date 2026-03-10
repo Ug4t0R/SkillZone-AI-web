@@ -24,15 +24,15 @@ interface Competitor {
     website: string;
     color: string;
     isUs: boolean;
-    branches: { city: string; address: string }[];
+    branches: { city: string; address: string; pcCount?: number; specs?: string }[];
     pcCount: number;
     gpu: string;
     cpu: string;
     ram: string;
     monitor: string;
-    pricePerHour: string;        // display string
-    priceMin: number;            // for chart (lowest hourly rate, Kč)
-    priceMax: number;            // for chart (highest hourly rate, Kč)
+    pricePerHour: string;
+    priceMin: number;
+    priceMax: number;
     openHours: string;
     internet: string;
     consoles: string;
@@ -43,7 +43,14 @@ interface Competitor {
     yearsActive: number;
     extras: string[];
     sourceUrls: { label: string; url: string }[];
-    googlePlaceId?: string;      // for live rating fetch
+    googlePlaceId?: string;
+    // ARES & Business info
+    ico?: string;
+    owner?: string;
+    legalForm?: string;
+    aresNote?: string;
+    // Social media
+    socialMedia?: { platform: string; url: string; icon: string }[];
 }
 
 const COMPETITORS: Competitor[] = [
@@ -55,11 +62,12 @@ const COMPETITORS: Competitor[] = [
         color: '#E31E24',
         isUs: true,
         branches: [
-            { city: 'Praha 3', address: 'Orebitská 630/4, Žižkov' },
-            { city: 'Praha 4', address: 'Arkalycká 877/4, Háje' },
-            { city: 'Praha 5', address: 'Mukařovského 1986/7, Stodůlky' },
+            { city: 'Praha 3', address: 'Orebitská 630/4, Žižkov', pcCount: 29, specs: '240Hz + 380Hz + VIP 2.5K' },
+            { city: 'Praha 4', address: 'Arkalycká 877/4, Háje', pcCount: 27, specs: '240Hz + 380Hz + VIP 2.5K + Konzole' },
+            { city: 'Praha 5', address: 'Mukařovského 1986/7, Stodůlky', pcCount: 15, specs: 'RTX 40 Series, Next-Gen' },
+            { city: 'Praha 4', address: 'Bootcamp Háje (Private)', pcCount: 10, specs: 'BYOB, Soukromý vchod, Pípa' },
         ],
-        pcCount: 32,
+        pcCount: 81,
         gpu: 'RTX 4070 Ti Super',
         cpu: 'Intel i7-13700KF',
         ram: '64 GB DDR5',
@@ -69,15 +77,22 @@ const COMPETITORS: Competitor[] = [
         priceMax: 119,
         openHours: 'NONSTOP 24/7 (Žižkov)',
         internet: '10 Gbps',
-        consoles: '—',
-        food: '—',
+        consoles: 'Konzole s 65" TV',
+        food: 'Barista káva',
         lanParty: true,
         vr: false,
         founded: '2005',
         yearsActive: new Date().getFullYear() - 2005,
-        extras: ['NONSTOP 24/7', '21 let na trhu', '10Gbps internet', 'SkillParty', 'Esport 380Hz PC', 'Hráčský profil app'],
+        extras: ['NONSTOP 24/7', `${new Date().getFullYear() - 2005} let na trhu`, '10Gbps internet', 'SkillParty', 'Esport 380Hz PC', 'Hráčský profil app', 'Private Bootcamp'],
         sourceUrls: [{ label: 'Web', url: 'https://skillzone.cz/' }],
         googlePlaceId: 'ChIJb1rmyqmUC0cRT5nRhm_j490',
+        ico: '03674525',
+        owner: 'Tomáš Švec',
+        legalForm: 's.r.o.',
+        socialMedia: [
+            { platform: 'Facebook', url: 'https://www.facebook.com/SkillZone.cz', icon: '📘' },
+            { platform: 'Instagram', url: 'https://www.instagram.com/skillzone.cz', icon: '📸' },
+        ],
     },
     {
         id: 'mvp',
@@ -87,13 +102,13 @@ const COMPETITORS: Competitor[] = [
         color: '#6366f1',
         isUs: false,
         branches: [
-            { city: 'Praha 1', address: 'Spálená 51' },
-            { city: 'Brno', address: 'Centrum' },
+            { city: 'Praha 1', address: 'Spálená 51', specs: 'NEZJIŠTĚNO' },
+            { city: 'Brno', address: 'Centrum', specs: 'NEZJIŠTĚNO' },
         ],
-        pcCount: 15, // Expanded based on feedback
-        gpu: 'RTX 4070 Ti',
-        cpu: 'Intel i7-13700KF',
-        ram: '64 GB',
+        pcCount: 0, // NEZJIŠTĚNO — web neukazuje
+        gpu: 'NEZJIŠTĚNO',
+        cpu: 'NEZJIŠTĚNO',
+        ram: 'NEZJIŠTĚNO',
         monitor: '240Hz 25" BenQ Zowie',
         pricePerHour: '45–80 Kč',
         priceMin: 45,
@@ -106,9 +121,15 @@ const COMPETITORS: Competitor[] = [
         vr: false,
         founded: '~2020',
         yearsActive: new Date().getFullYear() - 2020,
-        extras: ['Centrum Prahy', 'Pobočka v Brně', 'Day/Night passy'],
-        sourceUrls: [{ label: 'Ceník', url: 'https://mvpesports.cz/#cenik' }],
+        extras: ['Centrum Prahy', 'Pobočka v Brně', 'Day/Night passy', 'Franšíza', 'Mobilní appka'],
+        sourceUrls: [
+            { label: 'Web Praha', url: 'https://mvpesports.cz/praha' },
+            { label: 'Web Brno', url: 'https://mvpesports.cz/brno' },
+        ],
         googlePlaceId: 'ChIJz3TaLIaUC0cRThN4uyflYL4',
+        socialMedia: [
+            { platform: 'Instagram', url: 'https://www.instagram.com/mvpesports.cz', icon: '📸' },
+        ],
     },
     {
         id: 'playzone',
@@ -118,7 +139,7 @@ const COMPETITORS: Competitor[] = [
         color: '#22c55e',
         isUs: false,
         branches: [
-            { city: 'Praha 4', address: 'OC Westfield Chodov' },
+            { city: 'Praha 4', address: 'OC Westfield Chodov, Roztylská 2321/19', pcCount: 55, specs: '20 open + 7× bootcamp, VR, simulátory' },
         ],
         pcCount: 55,
         gpu: 'RTX 4060Ti — RTX 5070Ti',
@@ -136,9 +157,15 @@ const COMPETITORS: Competitor[] = [
         vr: true,
         founded: '~2019',
         yearsActive: new Date().getFullYear() - 2019,
-        extras: ['55 PC (20 open, 7x bootcamp room)', 'VR stanice', 'Několik simulátorů', 'Restaurace', 'V OC Chodov'],
-        sourceUrls: [{ label: 'Web', url: 'https://www.playzonearena.cz/provozovny/playzone-arena/' }],
+        extras: ['55 PC (20 open, 7x bootcamp room)', 'VR stanice', 'Závodní simulátory', 'PIXEL BURGER restaurace', 'V OC Chodov', 'Kempy pro děti', 'Narozeninové oslavy'],
+        sourceUrls: [{ label: 'Web', url: 'https://www.playzonearena.cz/' }],
         googlePlaceId: 'ChIJU0DPK5OTC0cR53f9-0LcXxA',
+        ico: '07551096',
+        legalForm: 's.r.o.',
+        socialMedia: [
+            { platform: 'Instagram', url: 'https://www.instagram.com/playzonearena', icon: '📸' },
+            { platform: 'Facebook', url: 'https://www.facebook.com/PlayzoneArena', icon: '📘' },
+        ],
     },
     {
         id: 'pitstop',
@@ -150,14 +177,14 @@ const COMPETITORS: Competitor[] = [
         branches: [
             { city: 'Praha', address: 'N/A' },
         ],
-        pcCount: 12,
-        gpu: 'RTX 4060 Ti',
-        cpu: 'N/A',
-        ram: 'N/A',
-        monitor: '240Hz',
-        pricePerHour: 'od 60 Kč (odhad)',
-        priceMin: 60,
-        priceMax: 100,
+        pcCount: 12, // NEZJIŠTĚNO přesně
+        gpu: 'RTX 4060 Ti', // NEZJIŠTĚNO přesně
+        cpu: 'NEZJIŠTĚNO',
+        ram: 'NEZJIŠTĚNO',
+        monitor: 'NEZJIŠTĚNO',
+        pricePerHour: 'NEZJIŠTĚNO',
+        priceMin: 0, // NEZJIŠTĚNO
+        priceMax: 0, // NEZJIŠTĚNO,
         openHours: 'PO-SO 10:00–22:00',
         internet: 'N/A',
         consoles: 'PS5, Xbox',
@@ -206,13 +233,13 @@ const COMPETITORS: Competitor[] = [
         color: '#a855f7',
         isUs: false,
         branches: [
-            { city: 'Praha 1', address: 'Na Florenci 23' },
+            { city: 'Praha 1', address: 'Na Florenci 23', pcCount: 36, specs: '25 open + 2×5 bootcamp + VIP (360Hz)' },
         ],
         pcCount: 36,
         gpu: 'RTX 5070 Ti',
         cpu: 'Intel i7-14700KF',
         ram: 'N/A',
-        monitor: '240Hz 27" ZOWIE',
+        monitor: '240Hz 27" ZOWIE + 360Hz VIP',
         pricePerHour: '90 Kč',
         priceMin: 90,
         priceMax: 90,
@@ -220,12 +247,15 @@ const COMPETITORS: Competitor[] = [
         internet: 'N/A',
         consoles: 'PS5 + VR',
         food: 'Minibar v VIP',
-        lanParty: false,
+        lanParty: true,
         vr: true,
         founded: '~2024',
         yearsActive: new Date().getFullYear() - 2024,
-        extras: ['VIP Room (360Hz)', '200 m² prostor', 'Nové vybavení'],
+        extras: ['VIP Room (360Hz)', '200 m²', 'RTX 5070 Ti', '2× Bootcamp room', 'Klimatizace', 'HyperX příslušenství'],
         sourceUrls: [{ label: 'Web', url: 'https://cyberempire.cz/' }],
+        socialMedia: [
+            { platform: 'Instagram', url: 'https://www.instagram.com/cyberempirecz/', icon: '📸' },
+        ],
     },
     {
         id: 'esportarena',
@@ -337,7 +367,7 @@ ${c.isUs ? '>>> THIS IS OUR COMPANY <<<' : ''}`;
 
         try {
             const { GoogleGenAI } = await import('@google/genai');
-            const ai = new GoogleGenAI({ apiKey: (window as any).__GEMINI_API_KEY__ || '' });
+            const ai = new GoogleGenAI({ apiKey: (process.env as any).GEMINI_API_KEY || '' });
 
             const result = await ai.models.generateContent({
                 model: 'gemini-2.0-flash',
@@ -469,7 +499,7 @@ Be specific, data-driven, and reference actual numbers. Focus on the Czech gamin
                         </div>
                         <div className="space-y-1">
                             <div className="text-[10px] font-mono text-gray-500 flex items-center gap-1">
-                                <Monitor className="w-3 h-3" /> {c.pcCount} PC
+                                <Monitor className="w-3 h-3" /> {c.pcCount > 0 ? `${c.pcCount} PC` : 'NEZJIŠTĚNO'}
                             </div>
                             <div className="text-[10px] font-mono text-gray-500 flex items-center gap-1">
                                 <MapPin className="w-3 h-3" /> {c.branches.length} poboč{c.branches.length === 1 ? 'ka' : c.branches.length < 5 ? 'ky' : 'ek'}
@@ -494,18 +524,45 @@ Be specific, data-driven, and reference actual numbers. Focus on the Czech gamin
             {expandedCompetitor && (() => {
                 const c = COMPETITORS.find(x => x.id === expandedCompetitor)!;
                 return (
-                    <div className="bg-black/40 border border-white/10 rounded-lg p-4 space-y-3 animate-in slide-in-from-top-2">
+                    <div className="bg-black/40 border border-white/10 rounded-lg p-4 space-y-4 animate-in slide-in-from-top-2">
+                        {/* Header */}
                         <div className="flex items-center justify-between">
                             <h4 className="text-sm font-bold text-white flex items-center gap-2">
                                 <div className="w-3 h-3 rounded-full" style={{ background: c.color }} />
                                 {c.name}
                                 {c.isUs && <span className="text-[8px] bg-red-500 text-white px-1.5 py-0.5 rounded-full">MY COMPANY</span>}
                             </h4>
-                            <a href={`https://${c.website}`} target="_blank" rel="noopener noreferrer"
-                                className="text-[10px] font-mono text-blue-400 hover:text-blue-300 flex items-center gap-1">
-                                {c.website} <ExternalLink className="w-3 h-3" />
-                            </a>
+                            <div className="flex items-center gap-3">
+                                {c.socialMedia?.map((s, i) => (
+                                    <a key={i} href={s.url} target="_blank" rel="noopener noreferrer"
+                                        className="text-[10px] text-gray-400 hover:text-white transition-colors" title={s.platform}>
+                                        {s.icon}
+                                    </a>
+                                ))}
+                                <a href={`https://${c.website}`} target="_blank" rel="noopener noreferrer"
+                                    className="text-[10px] font-mono text-blue-400 hover:text-blue-300 flex items-center gap-1">
+                                    {c.website} <ExternalLink className="w-3 h-3" />
+                                </a>
+                            </div>
                         </div>
+
+                        {/* ARES / Business Info */}
+                        {(c.ico || c.owner || c.legalForm) && (
+                            <div className="bg-blue-500/5 border border-blue-500/20 rounded-lg p-3">
+                                <div className="text-[10px] font-bold text-blue-400 uppercase mb-2 flex items-center gap-1.5">
+                                    🏛️ Obchodní rejstřík (ARES)
+                                </div>
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-[10px] font-mono">
+                                    {c.ico && <div><span className="text-gray-500">IČO:</span> <span className="text-white">{c.ico}</span></div>}
+                                    {c.owner && <div><span className="text-gray-500">Majitel:</span> <span className="text-white">{c.owner}</span></div>}
+                                    {c.legalForm && <div><span className="text-gray-500">Forma:</span> <span className="text-white">{c.legalForm}</span></div>}
+                                    <div><span className="text-gray-500">Založeno:</span> <span className="text-white">{c.founded}</span></div>
+                                </div>
+                                {c.aresNote && <div className="text-[9px] text-gray-500 mt-1 italic">{c.aresNote}</div>}
+                            </div>
+                        )}
+
+                        {/* Hardware Grid */}
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-[10px] font-mono">
                             <div className="bg-white/5 rounded px-2 py-1.5">
                                 <span className="text-gray-500">GPU:</span> <span className="text-white">{c.gpu}</span>
@@ -535,7 +592,38 @@ Be specific, data-driven, and reference actual numbers. Focus on the Czech gamin
                                 <span className="text-gray-500">Hodiny:</span> <span className="text-white">{c.openHours}</span>
                             </div>
                         </div>
-                        <div className="flex flex-wrap gap-1.5 mt-2">
+
+                        {/* Per-Branch Breakdown Table */}
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-[10px] font-mono border-collapse">
+                                <thead>
+                                    <tr className="border-b border-white/10">
+                                        <th className="text-left py-1.5 px-2 text-gray-500">Pobočka</th>
+                                        <th className="text-left py-1.5 px-2 text-gray-500">Adresa</th>
+                                        <th className="text-center py-1.5 px-2 text-gray-500">PC</th>
+                                        <th className="text-left py-1.5 px-2 text-gray-500">Specifikace</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {c.branches.map((b, i) => (
+                                        <tr key={i} className="border-b border-white/5 hover:bg-white/[0.02]">
+                                            <td className="py-1.5 px-2 text-white">{b.city}</td>
+                                            <td className="py-1.5 px-2 text-gray-400">{b.address}</td>
+                                            <td className="py-1.5 px-2 text-center font-bold" style={{ color: c.color }}>{b.pcCount || '?'}</td>
+                                            <td className="py-1.5 px-2 text-gray-500">{b.specs || '—'}</td>
+                                        </tr>
+                                    ))}
+                                    <tr className="border-t border-white/10 bg-white/[0.02]">
+                                        <td className="py-1.5 px-2 text-white font-bold" colSpan={2}>Celkem</td>
+                                        <td className="py-1.5 px-2 text-center font-bold" style={{ color: c.color }}>{c.pcCount}</td>
+                                        <td className="py-1.5 px-2 text-gray-500">{c.branches.length} poboč{c.branches.length === 1 ? 'ka' : c.branches.length < 5 ? 'ky' : 'ek'}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {/* Extras tags */}
+                        <div className="flex flex-wrap gap-1.5">
                             {c.extras.map((e, i) => (
                                 <span key={i} className="text-[9px] font-mono px-2 py-0.5 rounded-full border"
                                     style={{ borderColor: `${c.color}40`, color: c.color, background: `${c.color}10` }}>
@@ -543,9 +631,9 @@ Be specific, data-driven, and reference actual numbers. Focus on the Czech gamin
                                 </span>
                             ))}
                         </div>
-                        <div className="text-[10px] text-gray-500 font-mono flex items-center gap-2 mt-2">
-                            <span>Pobočky: {c.branches.map(b => `${b.city} (${b.address})`).join(' · ')}</span>
-                            <span className="opacity-30">|</span>
+
+                        {/* Sources */}
+                        <div className="text-[10px] text-gray-500 font-mono flex items-center gap-2 flex-wrap">
                             <span className="flex items-center gap-2">
                                 Zdroje:
                                 {c.sourceUrls.map((s, i) => (
@@ -554,6 +642,15 @@ Be specific, data-driven, and reference actual numbers. Focus on the Czech gamin
                                     </a>
                                 ))}
                             </span>
+                            {c.ico && (
+                                <>
+                                    <span className="opacity-30">|</span>
+                                    <a href={`https://ares.gov.cz/ekonomicke-subjekty-v-be/detail/${c.ico}`} target="_blank" rel="noopener noreferrer"
+                                        className="text-blue-400 hover:text-blue-300 underline">
+                                        ARES Detail
+                                    </a>
+                                </>
+                            )}
                         </div>
                     </div>
                 );

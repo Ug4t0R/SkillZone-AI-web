@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Instagram, Twitch, Mail, User, Gamepad2 } from 'lucide-react';
+import { Instagram, Twitch, MessageCircle, User, Gamepad2 } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 import { SectionConfig } from '../services/sectionConfig';
 import { AppView } from '../types';
@@ -101,6 +101,7 @@ const Footer: React.FC<FooterProps> = ({ sections, onNavigate }) => {
                                     <span className="text-[8px] bg-sz-red/20 text-sz-red px-1.5 py-0.5 rounded-sm font-bold uppercase">Quiz</span>
                                 </button>
                             </li>
+                            <li><button onClick={() => handleNav('contact')} className="hover:text-sz-red transition-colors">{arrow} Kontakt</button></li>
                         </ul>
                     </div>
 
@@ -114,8 +115,8 @@ const Footer: React.FC<FooterProps> = ({ sections, onNavigate }) => {
                             <a href="https://twitch.tv/skillzonetv" target="_blank" rel="noreferrer" className="w-11 h-11 rounded-sm border border-white/10 flex items-center justify-center hover:bg-[#9146FF] hover:border-[#9146FF] hover:text-white transition-all text-gray-400">
                                 <Twitch className="w-5 h-5" />
                             </a>
-                            <a href="mailto:info@skillzone.cz" className="w-11 h-11 rounded-sm border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-all text-gray-400">
-                                <Mail className="w-5 h-5" />
+                            <a href="https://wa.me/420777766112" target="_blank" rel="noreferrer" className="w-11 h-11 rounded-sm border border-white/10 flex items-center justify-center hover:bg-[#25D366] hover:border-[#25D366] hover:text-white transition-all text-gray-400">
+                                <MessageCircle className="w-5 h-5" />
                             </a>
                         </div>
                     </div>

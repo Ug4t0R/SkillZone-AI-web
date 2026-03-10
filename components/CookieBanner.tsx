@@ -104,7 +104,7 @@ const CookieBanner: React.FC = () => {
                                     <div className="space-y-3 text-gray-400 text-xs leading-relaxed font-mono">
                                         <p>
                                             <strong className="text-gray-300">Správce údajů:</strong> SkillZone s.r.o., IČO: 03674525,
-                                            DIČ: CZ03674525, se sídlem Na Ohradě 91, 386 01 Strakonice. Kontakt: info@skillzone.cz
+                                            DIČ: CZ03674525, se sídlem Na Ohradě 91, 386 01 Strakonice. Kontakt: WhatsApp 777 766 112
                                         </p>
 
                                         <p>
@@ -139,7 +139,7 @@ const CookieBanner: React.FC = () => {
                                         </p>
 
                                         <p className="text-gray-500 italic">
-                                            Poslední aktualizace: únor 2025. Plné znění zásad je k dispozici na vyžádání na info@skillzone.cz.
+                                            Poslední aktualizace: únor 2025. Plné znění zásad je k dispozici na vyžádání na WhatsApp 777 766 112 nebo na stránce /kontakt.
                                         </p>
                                     </div>
                                 </div>

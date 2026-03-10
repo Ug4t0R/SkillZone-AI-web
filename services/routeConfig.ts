@@ -136,6 +136,19 @@ const ROUTES: RouteEntry[] = [
         titleKey: 'nav_home',
         hidden: true,
     },
+    {
+        view: 'secretpages',
+        canonical: '/prisnetajne',
+        aliases: ['/secret-pages', '/hidden'],
+        titleKey: 'nav_home',
+        hidden: true,
+    },
+    {
+        view: 'contact',
+        canonical: '/kontakt',
+        aliases: ['/contact', '/kontakty'],
+        titleKey: 'nav_contact',
+    },
 ];
 
 // ─── LOOKUP MAPS (built once) ────────────────────────────────────────
