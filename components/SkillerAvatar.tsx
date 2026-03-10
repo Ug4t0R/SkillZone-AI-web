@@ -24,22 +24,22 @@ import { SkillerCharacter, SnowParticles, ExplosionEffect } from './skilleravata
 // ═══════════════════════════════════════════════════════
 
 const IDLE_PHRASES = [
-    'Čau, potřebuješ help? 🎮',
-    'GG EZ 💀',
-    'Nudim se… napiš mi!',
-    'Skiller online 🟢',
-    '*sipuje Monster*',
+    '*šouře se po liště*',
+    '🔧 *opravuje pixel*',
+    '*schovává se za scrollbar*',
+    '*žvýká kabel*',
+    'pssst… 🤫',
+    '*číhá z rohu*',
     'Tryhard mode: ON',
-    '1v1 me bro',
+    '*škrábe se*',
     'ez clap 🔥',
-    'Klikni na mě!',
-    'gg wp, next?',
-    '🎧 Grinding rank...',
-    'Skill issue? Napiš mi.',
-    'AFK? Probůdim tě!',
-    'Elo hell je real...',
-    'noob spotted? nie, jsem tu já! 😏',
-    'Cursor na mě? sheesh 👀',
+    '*sniffs monitor*',
+    '🎧 *tichý grind*',
+    '*crawling through code*',
+    '*mrká ze tmy*',
+    '*tiše pozoruje*',
+    '*hehe* 👀',
+    '*přebíhá*',
 ];
 
 /** Fráze závislé na čase */
@@ -119,11 +119,61 @@ const SHOT_PHRASES = [
 ];
 
 const WAVE_BACK_PHRASES = [
-    'Vrať se! 👋',
-    'Hej, kam jdeš? 👀',
-    'Don\'t leave me bro 😤',
-    'Čau čau… nebo se vrátíš? 🥺',
+    '*schová se*',
+    '👀 …',
+    '*zmizí do stínu*',
+    '*tiše pískne*',
 ];
+
+/** Context-aware phrases based on which section the user is viewing */
+const SECTION_PHRASES: Record<string, string[]> = {
+    tech: [
+        '*olizuje GPU*',
+        'RTX ON 🟢 *hehe*',
+        '*osahává RAM*',
+        'Mmm, 380Hz… *blaženě mhouří oči*',
+    ],
+    pricing: [
+        '*počítá na prstech*',
+        'Levnější než tvůj skin 💸',
+        '*krade mince*',
+        'Zlatej deal, trust me 🤫',
+    ],
+    gallery: [
+        '*pózuje do fotky*',
+        '📸 *photobomb!*',
+        '*schovává se za monitor*',
+        '*mává na kameru*',
+    ],
+    locations: [
+        '*kreslí mapu*',
+        'Trojúhelník je reálný 👁️',
+        '*šeptá souřadnice*',
+        '⚡ *přebíhá mezi pobočkami*',
+    ],
+    reviews: [
+        '*čte recenze*',
+        '5 ⭐ = smells legit',
+        '*píše fake review… wait*',
+        '*souhlasně přikyvuje*',
+    ],
+    history: [
+        '*čte kroniku*',
+        '2005… já pamatuju 👴',
+        '*prochází archiv*',
+        'Lore je deep 📜',
+    ],
+    contact: [
+        '*zvedá telefon*',
+        '📞 Ring ring!',
+        '*předstírá že je recepční*',
+    ],
+    hero: [
+        '*surf na pozadí*',
+        '*skáče mezi slidy*',
+        '*čeká na loading*',
+    ],
+};
 
 // ═══════════════════════════════════════════════════════
 // MAIN COMPONENT
@@ -268,8 +318,8 @@ const SkillerAvatar: React.FC<SkillerAvatarProps> = ({ onChatOpen, hasUnread = f
         if (!visible || isMobile || isShotDown) return;
 
         const scheduleElevator = () => {
-            // Hidden phase: wait 20-50s, then rise
-            const hideDelay = 20000 + Math.random() * 30000;
+            // Hidden phase: wait 40-90s, then rise (less intrusive)
+            const hideDelay = 40000 + Math.random() * 50000;
             elevatorTimer.current = setTimeout(() => {
                 const surfaceX = 15 + Math.random() * 70;
                 setPosX(surfaceX);
@@ -277,13 +327,13 @@ const SkillerAvatar: React.FC<SkillerAvatarProps> = ({ onChatOpen, hasUnread = f
                 setIsWalking(false);
                 setIsPaused(true);
 
-                // 30% chance of half-peek, 70% full rise
-                const doHalfPeek = Math.random() < 0.3;
+                // 50% chance of half-peek (sneakier, more gremlin-like)
+                const doHalfPeek = Math.random() < 0.5;
 
                 if (doHalfPeek) {
                     // Half-peek: just eyes peeking out for 4-8s
                     setIsElevated('half');
-                    const peekPhrases = ['👀', '...', '🤫', '👁️'];
+                    const peekPhrases = ['👀', '...', '🤫', '👁️', '*číhá*', '*sniffs*', '*hele*'];
                     setBubble(peekPhrases[Math.floor(Math.random() * peekPhrases.length)]);
                     const peekDuration = 4000 + Math.random() * 4000;
                     elevatorTimer.current = setTimeout(() => {
@@ -295,10 +345,10 @@ const SkillerAvatar: React.FC<SkillerAvatarProps> = ({ onChatOpen, hasUnread = f
                                 setPosX(surfaceX);
                                 setTargetX(surfaceX);
                                 setIsElevated('full');
-                                const arrivalPhrases = ['Tak hele, jsem tu! 😄', 'Neodolal jsem 😏', 'Ok ok, jdu ven 🚀'];
+                                const arrivalPhrases = ['*vyklouzne z díry* 😏', '*hehe* vykoukl jsem', '*tiše se vyšplhá*'];
                                 setBubble(arrivalPhrases[Math.floor(Math.random() * arrivalPhrases.length)]);
                                 setTimeout(() => setBubble(null), 3000);
-                                const showDuration = 10000 + Math.random() * 20000;
+                                const showDuration = 8000 + Math.random() * 7000;
                                 elevatorTimer.current = setTimeout(() => {
                                     setIsElevated('hidden');
                                     setIsWalking(false);
@@ -314,10 +364,10 @@ const SkillerAvatar: React.FC<SkillerAvatarProps> = ({ onChatOpen, hasUnread = f
                 } else {
                     // Full rise
                     setIsElevated('full');
-                    const arrivalPhrases = ['Čau! 👋', 'Skiller tu! 🟢', 'Někdo volal? 😏', 'Yo! 🎮', '🔔 *ding*'];
+                    const arrivalPhrases = ['*vykoukne* 👀', '*vyšplhá se*', '*tiše* …tu jsem', '*proklouže štěrbinou*', '*vyleze z RAM*'];
                     setBubble(arrivalPhrases[Math.floor(Math.random() * arrivalPhrases.length)]);
                     setTimeout(() => setBubble(null), 3000);
-                    const showDuration = 10000 + Math.random() * 20000;
+                    const showDuration = 8000 + Math.random() * 7000;
                     elevatorTimer.current = setTimeout(() => {
                         setIsElevated('hidden');
                         setIsWalking(false);
@@ -329,8 +379,8 @@ const SkillerAvatar: React.FC<SkillerAvatarProps> = ({ onChatOpen, hasUnread = f
             }, hideDelay);
         };
 
-        // First appearance: show quickly (3-8s after load)
-        const initialDelay = 3000 + Math.random() * 5000;
+        // First appearance: delayed for subtlety (10-20s after load)
+        const initialDelay = 10000 + Math.random() * 10000;
         elevatorTimer.current = setTimeout(() => {
             const surfaceX = 20 + Math.random() * 60;
             setPosX(surfaceX);
@@ -338,7 +388,7 @@ const SkillerAvatar: React.FC<SkillerAvatarProps> = ({ onChatOpen, hasUnread = f
             setIsElevated('full');
             setIsPaused(true);
 
-            const showDuration = 15000 + Math.random() * 15000;
+            const showDuration = 8000 + Math.random() * 7000;
             elevatorTimer.current = setTimeout(() => {
                 setIsElevated('hidden');
                 setIsWalking(false);
@@ -477,25 +527,46 @@ const SkillerAvatar: React.FC<SkillerAvatarProps> = ({ onChatOpen, hasUnread = f
 
         const showBubble = () => {
             if (isHovered) return;
+
+            // Context-aware: detect which section is currently in view
+            const getVisibleSection = (): string | null => {
+                const sections = ['tech', 'pricing', 'gallery', 'locations', 'reviews', 'history', 'contact', 'hero'];
+                for (const id of sections) {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        const rect = el.getBoundingClientRect();
+                        if (rect.top < window.innerHeight * 0.6 && rect.bottom > window.innerHeight * 0.3) {
+                            return id;
+                        }
+                    }
+                }
+                return null;
+            };
+
             const roll = Math.random();
             let phrases: string[];
             const timePhrases = getTimePhrases();
-            if (roll < 0.2 && newsPhrases.length > 0) {
+            const visibleSection = getVisibleSection();
+
+            // 35% chance: context-aware reaction based on visible section
+            if (roll < 0.35 && visibleSection && SECTION_PHRASES[visibleSection]) {
+                phrases = SECTION_PHRASES[visibleSection];
+            } else if (roll < 0.45 && newsPhrases.length > 0) {
                 phrases = newsPhrases;
-            } else if (roll < 0.35 && timePhrases.length > 0) {
+            } else if (roll < 0.55 && timePhrases.length > 0) {
                 phrases = timePhrases;
-            } else if (roll < 0.65 && weather !== 'unknown') {
+            } else if (roll < 0.7 && weather !== 'unknown') {
                 phrases = WEATHER_PHRASES[weather];
             } else {
                 phrases = IDLE_PHRASES;
             }
             const phrase = phrases[Math.floor(Math.random() * phrases.length)];
             setBubble(phrase);
-            setTimeout(() => setBubble(null), 4000);
-            bubbleTimer.current = setTimeout(showBubble, 8000 + Math.random() * 8000);
+            setTimeout(() => setBubble(null), 3500);
+            bubbleTimer.current = setTimeout(showBubble, 10000 + Math.random() * 10000);
         };
 
-        bubbleTimer.current = setTimeout(showBubble, 3000 + Math.random() * 3000);
+        bubbleTimer.current = setTimeout(showBubble, 5000 + Math.random() * 5000);
         return () => { if (bubbleTimer.current) clearTimeout(bubbleTimer.current); };
     }, [visible, isHovered, isShotDown, isMobile, weather, isElevated]);
 
@@ -576,7 +647,7 @@ const SkillerAvatar: React.FC<SkillerAvatarProps> = ({ onChatOpen, hasUnread = f
         if (hoverLeaveTimeout.current) clearTimeout(hoverLeaveTimeout.current);
         setIsHovered(true);
         if (!isShotDown && action !== 'dance') {
-            setBubble('Ooo, koukáš? 👀 | Hold → 💥 | 2× → 🕺');
+            setBubble('*zamrzne* 👀');
         }
     }, [isShotDown, action]);
 
