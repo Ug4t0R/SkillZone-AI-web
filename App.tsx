@@ -86,6 +86,7 @@ const ArenaPromo = React.lazy(() => import('./components/seo/ArenaPromo'));
 const MvpPromo = React.lazy(() => import('./components/seo/MvpPromo'));
 const CybersportPromo = React.lazy(() => import('./components/seo/CybersportPromo'));
 const SecretPages = React.lazy(() => import('./components/SecretPages'));
+const IlluminatiPage = React.lazy(() => import('./components/IlluminatiPage'));
 const Contact = React.lazy(() => import('./components/Contact'));
 
 import { AUTHORIZED_ADMIN_EMAIL as AUTHORIZED_EMAIL } from './utils/auth';
@@ -420,6 +421,12 @@ const App: React.FC = () => {
         return (
           <Suspense fallback={<SkeletonLoader />}>
             <SecretPages onChangeView={setCurrentView} />
+          </Suspense>
+        );
+      case 'illuminati':
+        return (
+          <Suspense fallback={<SkeletonLoader />}>
+            <IlluminatiPage />
           </Suspense>
         );
       case 'contact':

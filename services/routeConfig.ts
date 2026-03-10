@@ -149,6 +149,13 @@ const ROUTES: RouteEntry[] = [
         aliases: ['/contact', '/kontakty'],
         titleKey: 'nav_contact',
     },
+    {
+        view: 'illuminati',
+        canonical: '/illuminati',
+        aliases: ['/triangle', '/all-seeing-eye', '/oko'],
+        titleKey: 'nav_home',
+        hidden: true,
+    },
 ];
 
 // ─── LOOKUP MAPS (built once) ────────────────────────────────────────

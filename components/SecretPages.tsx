@@ -143,12 +143,13 @@ const SECRET_PAGES: SecretPageInfo[] = [
         aliases: ['/?mode=corp', '/?mode=office'],
     },
     {
-        path: '/pobocky → taktická mapa → klikni na střed trojúhelníku',
-        view: 'secretpages',
+        path: '/illuminati',
+        view: 'illuminati',
         title: '🔺 Illuminati Confirmed',
-        description: 'Na taktické mapě naše pobočky tvoří trojúhelník. Najdi střed, klikni na oko a zjisti, co se stane. All seeing eye.',
+        description: 'Na taktické mapě naše pobočky tvoří trojúhelník. Najdi střed, klikni na oko a zjisti, co se stane. Nebo prostě běž na /illuminati.',
         icon: <Eye className="w-5 h-5" />,
         category: 'easteregg',
+        aliases: ['/triangle', '/all-seeing-eye', '/oko'],
     },
 ];
 

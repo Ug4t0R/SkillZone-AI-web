@@ -26,7 +26,7 @@ const AllLocationsMap: React.FC = () => {
         // Brief dramatic reveal then navigate
         setTimeout(() => {
             setIlluminatiRevealed(false);
-            pushRoute('secretpages');
+            pushRoute('illuminati');
             window.dispatchEvent(new Event('popstate'));
             window.scrollTo(0, 0);
         }, 1500);
@@ -108,7 +108,7 @@ const AllLocationsMap: React.FC = () => {
                 {/* 🔺 Illuminati Easter Egg — Hidden clickable triangle center */}
                 <div
                     className="absolute z-[2] cursor-pointer transition-all duration-500"
-                    style={{ top: '50%', left: '50%', transform: 'translate(-50%, -10%)' }}
+                    style={{ top: '61.7%', left: '51.7%', transform: 'translate(-50%, -50%)' }}
                     onClick={handleTriangleClick}
                     onMouseEnter={() => setTriangleHovered(true)}
                     onMouseLeave={() => setTriangleHovered(false)}
