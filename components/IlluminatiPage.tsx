@@ -338,13 +338,6 @@ const IlluminatiPage: React.FC = () => {
                         </p>
                         <div className="mt-6 flex flex-wrap justify-center gap-3">
                             <button
-                                onClick={() => navigateTo('secretpages')}
-                                className="text-[10px] font-mono text-gray-500 hover:text-sz-red border border-white/10 hover:border-sz-red/30 px-4 py-2 rounded-sm transition-all"
-                            >
-                                <Skull className="w-3 h-3 inline mr-1.5" />
-                                DALŠÍ TAJNÉ STRÁNKY
-                            </button>
-                            <button
                                 onClick={() => navigateTo('locations')}
                                 className="text-[10px] font-mono text-gray-500 hover:text-sz-red border border-white/10 hover:border-sz-red/30 px-4 py-2 rounded-sm transition-all"
                             >
