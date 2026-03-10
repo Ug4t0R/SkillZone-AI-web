@@ -36,8 +36,8 @@ const AllLocationsMap: React.FC = () => {
         {
             id: 'zizkov',
             label: language === 'cs' ? 'Žižkov (Nonstop)' : 'Žižkov (Nonstop)',
-            top: '40%',
-            left: '55%',
+            top: '28%',
+            left: '58%',
             type: 'public',
             specs: '240Hz, 10Gbps',
             status: 'NONSTOP 24/7',
@@ -46,8 +46,8 @@ const AllLocationsMap: React.FC = () => {
         {
             id: 'haje',
             label: language === 'cs' ? 'Háje / Bootcamp' : 'Háje / Bootcamp',
-            top: '80%',
-            left: '75%',
+            top: '78%',
+            left: '72%',
             type: 'hybrid',
             specs: '240Hz & 380Hz',
             status: '12:00 – 03:00+',
@@ -56,8 +56,8 @@ const AllLocationsMap: React.FC = () => {
         {
             id: 'stodulky',
             label: language === 'cs' ? 'Stodůlky (NOVÉ)' : 'Stodůlky (NEW)',
-            top: '65%',
-            left: '25%',
+            top: '72%',
+            left: '28%',
             type: 'new',
             specs: 'RTX 40 Series',
             status: '13:00 – 23:00',
@@ -94,13 +94,13 @@ const AllLocationsMap: React.FC = () => {
 
                 {/* Connection Lines between locations */}
                 <svg className="absolute inset-0 w-full h-full pointer-events-none z-[1]" preserveAspectRatio="none">
-                    <line x1="55%" y1="40%" x2="75%" y2="80%" stroke="#E31E24" strokeWidth="1" opacity="0.15" strokeDasharray="6 4">
+                    <line x1="58%" y1="28%" x2="72%" y2="78%" stroke="#E31E24" strokeWidth="1" opacity="0.15" strokeDasharray="6 4">
                         <animate attributeName="stroke-dashoffset" values="0;-20" dur="2s" repeatCount="indefinite" />
                     </line>
-                    <line x1="55%" y1="40%" x2="25%" y2="65%" stroke="#E31E24" strokeWidth="1" opacity="0.15" strokeDasharray="6 4">
+                    <line x1="58%" y1="28%" x2="28%" y2="72%" stroke="#E31E24" strokeWidth="1" opacity="0.15" strokeDasharray="6 4">
                         <animate attributeName="stroke-dashoffset" values="0;-20" dur="2.5s" repeatCount="indefinite" />
                     </line>
-                    <line x1="25%" y1="65%" x2="75%" y2="80%" stroke="#E31E24" strokeWidth="1" opacity="0.1" strokeDasharray="6 4">
+                    <line x1="28%" y1="72%" x2="72%" y2="78%" stroke="#E31E24" strokeWidth="1" opacity="0.1" strokeDasharray="6 4">
                         <animate attributeName="stroke-dashoffset" values="0;-20" dur="3s" repeatCount="indefinite" />
                     </line>
                 </svg>
@@ -108,7 +108,7 @@ const AllLocationsMap: React.FC = () => {
                 {/* 🔺 Illuminati Easter Egg — Hidden clickable triangle center */}
                 <div
                     className="absolute z-[2] cursor-pointer transition-all duration-500"
-                    style={{ top: '61.7%', left: '51.7%', transform: 'translate(-50%, -50%)' }}
+                    style={{ top: '59.3%', left: '52.7%', transform: 'translate(-50%, -50%)' }}
                     onClick={handleTriangleClick}
                     onMouseEnter={() => setTriangleHovered(true)}
                     onMouseLeave={() => setTriangleHovered(false)}

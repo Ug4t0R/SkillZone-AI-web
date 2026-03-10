@@ -193,7 +193,7 @@ interface ComingSoonProps {
 }
 
 const ComingSoon: React.FC<ComingSoonProps> = ({ targetDate, onUnlock, onPlayAim, onPlayReaction }) => {
-    const { t, language, setLanguage, allLanguages } = useAppContext();
+    const { t, language, setLanguage, allLanguages, isBrainrot } = useAppContext();
     const timeLeft = useCountdown(targetDate);
     const hasCountdown = targetDate && timeLeft.total > 0;
     const [pulse, setPulse] = useState(false);
@@ -658,6 +658,33 @@ const ComingSoon: React.FC<ComingSoonProps> = ({ targetDate, onUnlock, onPlayAim
                     </form>
                 )}
             </footer>
+
+            {/* 🛹 Subway Surfers — GenZ / Brainrot mode only */}
+            {isBrainrot && (
+                <div className="fixed bottom-4 left-4 z-[9991]">
+                    <div className="relative w-[160px] h-[280px] md:w-[200px] md:h-[360px] rounded-2xl overflow-hidden border-2 border-purple-500/50 shadow-[0_0_25px_rgba(147,51,234,0.4)] bg-black">
+                        <iframe
+                            src="https://www.youtube.com/embed/n_Dv4JMmAWE?autoplay=1&mute=1&loop=1&controls=0&showinfo=0&playlist=n_Dv4JMmAWE&playsinline=1&modestbranding=1&fs=0&vq=small"
+                            className="w-full h-full border-0 pointer-events-none scale-[1.5]"
+                            style={{ filter: 'saturate(1.5) contrast(1.2)' }}
+                            allow="autoplay; encrypted-media"
+                            title="subway-surfers"
+                            tabIndex={-1}
+                        />
+                        {/* TikTok-style overlay */}
+                        <div className="absolute inset-0 pointer-events-none flex flex-col justify-between">
+                            <div className="flex items-center gap-1 p-2">
+                                <div className="bg-red-600 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-sm animate-pulse">LIVE</div>
+                                <span className="text-white text-[8px] drop-shadow-md font-bold">9.9M</span>
+                            </div>
+                            <div className="bg-gradient-to-t from-black/90 to-transparent p-3">
+                                <div className="text-white text-[9px] font-bold drop-shadow-md">@brainrot_central</div>
+                                <div className="text-white/70 text-[7px] drop-shadow-md">#fyp #sigma #67 #aura #skibidi</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
