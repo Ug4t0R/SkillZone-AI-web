@@ -22,8 +22,12 @@ const ContactWidget: React.FC = () => {
 
     const contacts = sortedLocations.map(loc => ({
         id: loc.id,
-        label: loc.name.replace(/Praha \d+: /, '').toUpperCase(), // Simplify name for widget
-        sub: loc.type === LocationType.PRIVATE ? 'Private / VIP' : loc.address.split(',')[0],
+        label: loc.type === LocationType.PRIVATE
+            ? 'VELKÉ SKUPINY 8+'
+            : loc.name.replace(/Praha \d+: /, '').toUpperCase(),
+        sub: loc.type === LocationType.PRIVATE
+            ? 'Soukromé i veřejné prostory · Eventy'
+            : loc.address.split(',')[0],
         phone: loc.phone.replace(/\s/g, ''),
         map: loc.mapLink,
         icon: loc.type === LocationType.PRIVATE ? <Crown className="w-4 h-4 text-yellow-500" /> : null,
@@ -48,14 +52,14 @@ const ContactWidget: React.FC = () => {
                         <div key={contact.id} className={`flex items-center justify-between p-3 rounded-md ${contact.special ? 'bg-yellow-500/5 border border-yellow-500/20' : 'hover:bg-gray-100 dark:hover:bg-white/5'}`}>
 
                             {/* Label */}
-                            <div className="flex flex-col max-w-[50%]">
+                            <div className="flex flex-col min-w-0 flex-1 mr-2">
                                 <div className="flex items-center gap-2">
                                     {contact.icon}
-                                    <span className={`font-bold text-sm font-orbitron truncate ${contact.special ? 'text-yellow-500' : 'text-gray-900 dark:text-white'}`}>
+                                    <span className={`font-bold text-sm font-orbitron ${contact.special ? 'text-yellow-500' : 'text-gray-900 dark:text-white'}`}>
                                         {contact.label}
                                     </span>
                                 </div>
-                                <span className="text-[10px] text-gray-500 uppercase tracking-wide truncate">{contact.sub}</span>
+                                <span className="text-[10px] text-gray-600 dark:text-gray-400 uppercase tracking-wide">{contact.sub}</span>
                             </div>
 
                             {/* Action Buttons */}

@@ -19,7 +19,7 @@ const BRANCHES = [
         hours_cs: 'NONSTOP 24/7',
         hours_en: 'NONSTOP 24/7',
         emoji: '🔴',
-        maps: 'https://maps.app.goo.gl/QXsEJ7R7yR7KM6cZ6',
+        maps: 'https://share.google/1sTUyG7cfbPHZSNce',
         wa: 'https://wa.me/420777766113',
     },
     {
@@ -29,17 +29,17 @@ const BRANCHES = [
         hours_cs: '12:00 – 00:00 (s hráči do 03:00)',
         hours_en: '12:00 – 00:00 (w/ players until 03:00)',
         emoji: '🟢',
-        maps: 'https://maps.app.goo.gl/eUPW2HhSJxqMDGFq9',
+        maps: 'https://share.google/XBcvMnkhHHB3eL13P',
         wa: 'https://wa.me/420777766114',
     },
     {
         name: 'SkillZone Stodůlky',
-        address: 'Mukařovského 1986/7, Praha 5',
+        address: 'Prusíkova 2577/16, Praha 13',
         phone: '+420 777 766 115',
         hours_cs: '13:00 – 21:00 (s hráči do 23:00)',
         hours_en: '13:00 – 21:00 (w/ players until 23:00)',
         emoji: '🔵',
-        maps: 'https://maps.app.goo.gl/B4vN6RwTi3Q7DPXHA',
+        maps: 'https://share.google/Bm7VrkmwoRSA3TwVI',
         wa: 'https://wa.me/420777766115',
         isNew: true,
     },
@@ -470,38 +470,48 @@ const ComingSoon: React.FC<ComingSoonProps> = ({ targetDate, onUnlock, onPlayAim
                 {/* ------------------------- */}
 
                 {/* Branch Cards */}
-                <div className="w-full max-w-2xl">
-                    <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest font-mono text-center mb-4">
-                        {t('coming_location_title')}
+                <div className="w-full max-w-3xl">
+                    <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest font-mono text-center mb-6">
+                        📍 {t('coming_location_title')}
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div className="grid grid-cols-1 gap-4">
                         {BRANCHES.map((b, i) => (
-                            <div key={i} className="bg-white/[0.03] backdrop-blur-sm border border-white/5 rounded-xl p-4 hover:border-red-500/20 transition-all hover:scale-[1.02] group">
-                                <div className="flex items-center gap-2 mb-2">
-                                    <span className="text-lg">{b.emoji}</span>
-                                    <h4 className="text-xs font-bold text-white truncate">{b.name.replace('SkillZone ', '')}</h4>
-                                    {'isNew' in b && (b as any).isNew && (
-                                        <span className="text-[8px] font-bold bg-gradient-to-r from-yellow-500 to-orange-500 text-black px-1.5 py-0.5 rounded-full uppercase tracking-wider animate-pulse shrink-0">NEW</span>
-                                    )}
+                            <div key={i} className="bg-white/[0.04] backdrop-blur-sm border border-white/10 rounded-2xl p-5 md:p-6 hover:border-red-500/30 transition-all group">
+                                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <span className="text-xl">{b.emoji}</span>
+                                            <h4 className="text-base md:text-lg font-bold text-white">{b.name}</h4>
+                                            {'isNew' in b && (b as any).isNew && (
+                                                <span className="text-[9px] font-bold bg-gradient-to-r from-yellow-500 to-orange-500 text-black px-2 py-0.5 rounded-full uppercase tracking-wider animate-pulse shrink-0">NEW</span>
+                                            )}
+                                        </div>
+                                        <a href={b.maps} target="_blank" rel="noopener noreferrer"
+                                            className="text-sm text-gray-400 hover:text-white block transition-colors mb-1">
+                                            📍 {b.address}
+                                        </a>
+                                        <div className="text-sm text-gray-500 font-mono">
+                                            🕐 {language === 'cs' || language === 'sk' ? b.hours_cs : b.hours_en}
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-2 shrink-0">
+                                        <a href={`tel:${b.phone.replace(/\s/g, '')}`} className="flex items-center gap-1.5 px-3 py-2 bg-white/5 hover:bg-red-600/20 border border-white/10 hover:border-red-500/30 rounded-lg text-red-400 hover:text-red-300 font-mono transition-all text-sm">
+                                            📞 {b.phone.replace('+420 ', '')}
+                                        </a>
+                                        <a href={b.wa} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 px-3 py-2 bg-white/5 hover:bg-green-600/20 border border-white/10 hover:border-green-500/30 rounded-lg text-green-400 hover:text-green-300 font-mono transition-all text-sm">
+                                            💬 WA
+                                        </a>
+                                        <a href={b.maps} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 px-3 py-2 bg-white/5 hover:bg-blue-600/20 border border-white/10 hover:border-blue-500/30 rounded-lg text-blue-400 hover:text-blue-300 font-mono transition-all text-sm">
+                                            🗺️ Mapa
+                                        </a>
+                                    </div>
                                 </div>
-                                <a href={b.maps} target="_blank" rel="noopener noreferrer"
-                                    className="text-[10px] text-gray-500 hover:text-white block transition-colors mb-2 truncate">
-                                    📍 {b.address} →
-                                </a>
-                                <div className="flex items-center gap-3 flex-wrap">
-                                    <a href={`tel:${b.phone.replace(/\s/g, '')}`} className="text-[10px] text-red-400 hover:text-red-300 font-mono transition-colors">
-                                        📞 {b.phone}
-                                    </a>
-                                    <a href={b.wa} target="_blank" rel="noopener noreferrer" className="text-[10px] text-green-400 hover:text-green-300 font-mono transition-colors">
-                                        💬 WA
-                                    </a>
-                                </div>
-                                <div className="text-[9px] text-gray-600 font-mono mt-1.5">🕐 {language === 'cs' || language === 'sk' ? b.hours_cs : b.hours_en}</div>
                             </div>
                         ))}
                     </div>
 
-                    {/* Voucher Promo */}
+                    {/* Voucher Promo — hidden on Fri/Sat/Sun since it's only valid Mon–Thu */}
+                    {(() => { const day = new Date().getDay(); return day >= 1 && day <= 4; })() && (
                     <div className="mt-8 relative w-full rounded-2xl border border-yellow-500/30 bg-gradient-to-br from-yellow-900/20 via-black/40 to-orange-900/20 backdrop-blur-md p-6 overflow-hidden group hover:border-yellow-500/50 transition-all">
                         <div className="absolute -inset-20 bg-gradient-to-r from-yellow-500/10 via-orange-500/5 to-transparent blur-3xl rounded-full opacity-40 pointer-events-none group-hover:opacity-60 transition-opacity" />
                         <div className="relative text-center">
@@ -519,11 +529,14 @@ const ComingSoon: React.FC<ComingSoonProps> = ({ targetDate, onUnlock, onPlayAim
                             <div className="inline-block px-6 py-3 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-xl transform hover:scale-105 transition-transform shadow-lg shadow-yellow-500/20">
                                 <span className="text-2xl font-orbitron font-black text-black tracking-widest">„POUKAZ"</span>
                             </div>
-                            <p className="mt-4 text-[10px] text-gray-500 font-mono max-w-md mx-auto leading-relaxed">
-                                {t('coming_voucher_fine' as any)}
-                            </p>
+                            <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-yellow-500/15 border border-yellow-500/30 rounded-lg">
+                                <span className="text-yellow-400 text-sm font-bold font-mono">
+                                    ⏰ {t('coming_voucher_fine' as any)}
+                                </span>
+                            </div>
                         </div>
                     </div>
+                    )}
 
                     {/* Mini-Games to Kill Time */}
                     {(onPlayAim || onPlayReaction) && (
@@ -554,13 +567,29 @@ const ComingSoon: React.FC<ComingSoonProps> = ({ targetDate, onUnlock, onPlayAim
                         <p className="text-gray-400 text-xs md:text-sm font-mono leading-relaxed max-w-lg mx-auto mb-6">
                             {t('coming_boss_desc' as any)}
                         </p>
-                        <div className="flex flex-wrap items-center justify-center gap-4">
-                            <a href="tel:+420777766112" className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-green-400 hover:text-green-300 font-mono transition-colors text-sm">
-                                📞 {t('coming_boss_call' as any)}
-                            </a>
-                            <a href="https://instagram.com/skillzone.cz" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-pink-400 hover:text-pink-300 font-mono transition-colors text-sm">
-                                📸 INSTAGRAM
-                            </a>
+                        <div className="space-y-4">
+                            <div>
+                                <p className="text-[10px] text-gray-600 font-mono uppercase tracking-widest mb-2">Napsat šéfovi</p>
+                                <div className="flex flex-wrap items-center justify-center gap-3">
+                                    <a href="tel:+420777766112" className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-green-400 hover:text-green-300 font-mono transition-colors text-sm">
+                                        📞 {t('coming_boss_call' as any)}
+                                    </a>
+                                    <a href="https://wa.me/420777766112" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-green-400 hover:text-green-300 font-mono transition-colors text-sm">
+                                        💬 WhatsApp
+                                    </a>
+                                    <a href="https://instagram.com/Ug4t0R" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-pink-400 hover:text-pink-300 font-mono transition-colors text-sm">
+                                        📸 @Ug4t0R
+                                    </a>
+                                </div>
+                            </div>
+                            <div className="border-t border-white/5 pt-3">
+                                <p className="text-[10px] text-gray-600 font-mono uppercase tracking-widest mb-2">Firemní profil</p>
+                                <div className="flex justify-center">
+                                    <a href="https://instagram.com/skillzone.cz" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-purple-400 hover:text-purple-300 font-mono transition-colors text-sm">
+                                        🏢 @skillzone.cz
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -45,7 +45,7 @@ const SECRET_PAGES: SecretPageInfo[] = [
         path: '/provozovny/stodulky',
         view: 'branch_stodulky',
         title: 'Stodůlky (Nově otevřeno)',
-        description: 'Detail stránka nejnovější pobočky v Praze 5. Mukařovského 1986/7.',
+        description: 'Detail stránka nejnovější pobočky v Praze 13. Prusíkova 2577/16.',
         icon: <MapPin className="w-5 h-5" />,
         category: 'branch',
         aliases: ['/stodulky'],

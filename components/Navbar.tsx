@@ -97,14 +97,14 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, onChangeView, adminStatus,
             )}
           </div>
 
-          <div className="hidden md:flex items-center">
-            <div className="ml-10 flex items-baseline space-x-6">
+          <div className="hidden xl:flex items-center min-w-0">
+            <div className="ml-4 flex items-baseline space-x-2 2xl:space-x-4 flex-shrink min-w-0">
               {navLinks.map((link) => (
                 <button
                   key={link.id}
                   onClick={() => handleNavClick(link.id)}
                   className={`${currentView === link.id ? 'text-sz-red border-b-2 border-sz-red' : 'text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white'
-                    } transition-colors px-3 py-2 text-sm font-bold uppercase tracking-wide font-orbitron`}
+                    } transition-colors px-1.5 py-2 text-[11px] 2xl:text-sm font-bold uppercase tracking-wide font-orbitron whitespace-nowrap`}
                 >
                   {link.name}
                 </button>
@@ -112,7 +112,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, onChangeView, adminStatus,
             </div>
 
             {/* Toggles & Admin Trigger */}
-            <div className="flex items-center gap-3 ml-6 pl-6 border-l border-gray-300 dark:border-white/10">
+            <div className="flex items-center gap-1.5 ml-3 pl-3 border-l border-gray-300 dark:border-white/10 flex-shrink-0">
               <button
                 onClick={onAdminClick}
                 className={`p-2 rounded-full transition-all ${adminStatus ? 'text-green-500 bg-green-500/10 shadow-[0_0_10px_rgba(34,197,94,0.3)]' : 'text-gray-500 dark:text-gray-400 hover:text-sz-red'}`}
@@ -199,14 +199,14 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, onChangeView, adminStatus,
             {(!sections || sections.booking) && (
               <button
                 onClick={() => handleNavClick('booking')}
-                className="ml-6 bg-sz-red hover:bg-sz-red-dark text-white px-6 py-2 font-bold text-sm transition-all clip-angle uppercase tracking-widest hover:shadow-[0_0_15px_rgba(227,30,36,0.5)]"
+                className="ml-4 bg-sz-red hover:bg-sz-red-dark text-white px-4 py-2 font-bold text-xs 2xl:text-sm transition-all clip-angle uppercase tracking-widest hover:shadow-[0_0_15px_rgba(227,30,36,0.5)]"
               >
                 {t('nav_booking')}
               </button>
             )}
           </div>
 
-          <div className="-mr-2 flex md:hidden items-center gap-2">
+          <div className="-mr-2 flex xl:hidden items-center gap-2">
             {/* Mobile: Flag button */}
             <button
               onClick={() => setLangDropdownOpen(!langDropdownOpen)}
@@ -232,7 +232,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, onChangeView, adminStatus,
 
       {/* Mobile menu */}
       {isOpen && (
-        <div className="md:hidden bg-light-bg dark:bg-card-bg border-b border-sz-red/30">
+        <div className="xl:hidden bg-light-bg dark:bg-card-bg border-b border-sz-red/30">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
             {navLinks.map((link) => (
               <button

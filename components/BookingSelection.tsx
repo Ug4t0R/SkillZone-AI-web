@@ -36,7 +36,7 @@ const BRANCHES = [
     {
         id: 'stodulky',
         name: 'SkillZone Stodůlky',
-        address: 'Mukařovského 1986/7, Praha 5',
+        address: 'Prusíkova 2577/16, Praha 13',
         phone: '777 766 115',
         hours: '13:00 – 21:00 (s hráči až do 23:00)',
         metro: '🚇 Stodůlky',

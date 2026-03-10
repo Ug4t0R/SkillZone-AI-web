@@ -361,7 +361,7 @@ const App: React.FC = () => {
                 description: 'Budoucí Mecca všech hráčů na Praze 5. Připravujeme zcela nový koncept.',
                 subtitle: 'PŘIPRAVUJEME',
                 heroImage: LOCATIONS_CS.find(l => l.id === 'stodulky')?.imgUrl || '',
-                address: 'Mukařovského 1986/7, 155 00 Praha 5',
+                address: 'Prusíkova 2577/16, 155 00 Praha 13',
                 openHours: 'Připravujeme na 2026',
                 specs: ['Nejnovější HW architektura', 'Gastro zázemí', 'Cybersport zóna'],
               }}
@@ -514,6 +514,9 @@ const App: React.FC = () => {
           onPlayAim={() => setIsAimOpen(true)}
           onPlayReaction={() => setIsReactionOpen(true)}
         />
+        <Suspense fallback={null}>
+          <ContactWidget />
+        </Suspense>
         {isAimOpen && (
           <GameErrorBoundary onClose={() => setIsAimOpen(false)}>
             <Suspense fallback={null}>

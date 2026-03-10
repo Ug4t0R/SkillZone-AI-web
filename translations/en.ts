@@ -147,7 +147,7 @@ export const en = {
     coming_badge: '🚀 Something big is coming',
     coming_title1: 'LEVEL UP',
     coming_title2: 'LOADING...',
-    coming_desc: '21 years on the scene! We survived Covid, recovered, opened new branches, and now we are using modern technologies to push the whole project to the next level. Stay tuned.',
+    coming_desc: '21 years on the scene! We survived Covid, recovered, opened new branches, and now with modern tech we\'re pushing the whole project forward — time for a new website. Our 7th one. And once again, it\'ll be different. It\'s in our DNA. Stay tuned.',
     coming_progress: 'PROGRESS',
     coming_almost: 'ALMOST THERE',
     coming_location_title: '📍 You can find us here meanwhile',
@@ -163,8 +163,8 @@ export const en = {
 
     coming_voucher_badge: 'New player offer',
     coming_voucher_title: '2 hours FREE!',
-    coming_voucher_desc: 'Want to try our services? Register at our club (registration is FREE) and say the code from Monday to Thursday during registration:',
-    coming_voucher_fine: 'The 2h free voucher can be redeemed during daytime opening hours Monday to Thursday, between 8:00 and 18:00.',
+    coming_voucher_desc: 'Register for FREE at any club and say the password:',
+    coming_voucher_fine: 'Valid Mon–Thu, 8:00–18:00. Registration + 2h gaming free.',
 
     coming_games_title: 'Kill some time training',
     coming_boss_title: 'Questions? Praises? Complaints?',

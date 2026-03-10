@@ -63,7 +63,7 @@ describe('Noscript SEO Content', () => {
         it('should contain all 3 branch addresses', () => {
             expect(noscriptContent).toContain('Orebitská 630/4');
             expect(noscriptContent).toContain('Arkalycká 877/4');
-            expect(noscriptContent).toContain('Mukařovského 1986/7');
+            expect(noscriptContent).toContain('Prusíkova 2577/16');
         });
 
         it('should contain all 3 phone numbers', () => {

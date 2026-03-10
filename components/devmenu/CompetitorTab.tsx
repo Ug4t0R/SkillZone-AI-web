@@ -64,7 +64,7 @@ const COMPETITORS: Competitor[] = [
         branches: [
             { city: 'Praha 3', address: 'Orebitská 630/4, Žižkov', pcCount: 29, specs: '240Hz + 380Hz + VIP 2.5K' },
             { city: 'Praha 4', address: 'Arkalycká 877/4, Háje', pcCount: 27, specs: '240Hz + 380Hz + VIP 2.5K + Konzole' },
-            { city: 'Praha 5', address: 'Mukařovského 1986/7, Stodůlky', pcCount: 15, specs: 'RTX 40 Series, Next-Gen' },
+            { city: 'Praha 13', address: 'Prusíkova 2577/16, Stodůlky', pcCount: 15, specs: 'RTX 40 Series, Next-Gen' },
             { city: 'Praha 4', address: 'Bootcamp Háje (Private)', pcCount: 10, specs: 'BYOB, Soukromý vchod, Pípa' },
         ],
         pcCount: 81,

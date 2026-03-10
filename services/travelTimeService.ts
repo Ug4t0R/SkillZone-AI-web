@@ -39,7 +39,7 @@ export interface TravelResult {
 export const LOCATION_COORDS: Record<string, { lat: number; lng: number; address: string; label: string }> = {
     zizkov: { lat: 50.085536, lng: 14.454236, address: 'Orebitská 630/4, Praha 3', label: 'SkillZone Žižkov' },
     haje: { lat: 50.031670, lng: 14.527940, address: 'Arkalycká 877/4, Praha 4', label: 'SkillZone Háje' },
-    stodulky: { lat: 50.0382827, lng: 14.3387003, address: 'Mukařovského 1986/7, Praha 5', label: 'SkillZone Stodůlky' },
+    stodulky: { lat: 50.0382827, lng: 14.3387003, address: 'Prusíkova 2577/16, Praha 13', label: 'SkillZone Stodůlky' },
 };
 
 // ─── Cache ──────────────────────────────────────────────────────────
