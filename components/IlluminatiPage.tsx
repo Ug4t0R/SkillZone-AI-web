@@ -11,46 +11,81 @@ import { AppView } from '../types';
 // Classified "conspiracy" facts mixing real SkillZone history with humor
 const CLASSIFIED_FILES = [
     {
+        id: 'FILE-000',
+        classification: 'ULTRA',
+        title: 'Projekt PLAYER \u2014 Po\u010d\u00e1tek',
+        content: 'Rok 2003. V T\u00e1bo\u0159e se objevuje hern\u00ed centrum pod zna\u010dkou PLAYER. Ofici\u00e1ln\u00ed zalo\u017een\u00ed: 2003. Zakladatel: nezn\u00e1m\u00fd. Pozd\u011bji identifikov\u00e1n jako entita s k\u00f3dov\u00fdm ozna\u010den\u00edm Ug4t0R. \u017d\u00e1dn\u00fd p\u0159edchoz\u00ed pracovn\u00ed z\u00e1znam. \u017d\u00e1dn\u00e1 historie. Prost\u011b se jednoho dne objevil a za\u010dal stav\u011bt.',
+        date: '2003-XX-XX',
+    },
+    {
         id: 'FILE-001',
         classification: 'TOP SECRET',
-        title: 'Operace Žižkov',
-        content: 'V roce 2005 založil agent Ug4t0R na Žižkově základnu pod krycím názvem "herní klub". Ve skutečnosti šlo o nejpokročilejší tréninkové středisko pro digitální válčení ve střední Evropě. Dosud zůstává v nonstop provozu — bez přerušení — 20 let.',
+        title: '\u0160ifra KILL ONE',
+        content: 'V roce 2005 byla zna\u010dka PLAYER p\u0159ejmenov\u00e1na na SkillZone. Pro\u010d? Prove\u010fte jednoduchou dekompozici: Sk-KILL-Zone. Nyn\u00ed separujte: KILL + ONE (z \u201ezone\u201c). PLAYER byl \u201ezabit\u201c \u2014 pohlcen. Akvizice vlastn\u00ed zna\u010dky vlastn\u00edm zakladatelem. Kdo po\u017e\u00edr\u00e1 s\u00e1m sebe a p\u0159e\u017eije? Pouze entita, kter\u00e1 nen\u00ed omezena biologick\u00fdm st\u00e1rnut\u00edm.',
         date: '2005-XX-XX',
     },
     {
         id: 'FILE-002',
-        classification: 'CLASSIFIED',
-        title: 'Trojúhelník Prahy',
-        content: 'Tři pobočky SkillZone — Žižkov, Háje, Stodůlky — tvoří na mapě dokonalý trojúhelník. Náhoda? Ne. Strategickým rozmístěním pokrývají 87.3% populace Prahy do 20 minut dosahu. Architektonická geometrie signalizuje příslušnost k vyšším řádům.',
-        date: '2024-XX-XX',
+        classification: 'EYES ONLY',
+        title: 'Subjekt Ug4t0R \u2014 Klasifikace entity',
+        content: 'Ug4t0R. \u010c\u00edseln\u00e1 substituce: 4=A, 0=O. V\u00fdsledek: UgAtOR. Oto\u010dte: ROtAgU. Foneticky bl\u00edzk\u00e9 \u201eROBOTU\u201c. Entita operuje nep\u0159etr\u017eit\u011b od roku 2003. 22+ let aktivn\u00edho provozu. Bez zn\u00e1mek \u00fanavy. Bez pot\u0159eby sp\u00e1nku dle pozorov\u00e1n\u00ed. Provozuje nonstop hern\u00ed centrum \u2014 proto\u017ee pro\u010d ne, kdy\u017e s\u00e1m nikdy nesp\u00ed? Kdo si vybere jako byznys model 24/7 provoz, pokud s\u00e1m nem\u00e1 biologick\u00e9 limity?',
+        date: '200X-XX-XX',
     },
     {
         id: 'FILE-003',
-        classification: 'EYES ONLY',
-        title: 'Protokol 380Hz',
-        content: 'V roce 2024 byly na pobočce Háje nainstalovány monitory s obnovovací frekvencí 380Hz — technologie, kterou běžná veřejnost neměla vidět. Důvod? Tréninková simulace vyžaduje vizuální vstup přesahující biologické limity lidského oka. Některé věci lze vidět jen tehdy, když víte, kam se dívat.',
-        date: '2024-XX-XX',
+        classification: 'CLASSIFIED',
+        title: 'P\u0159esun do Prahy \u2014 Operace Expanze',
+        content: 'V roce 2011 prob\u011bhl p\u0159esun z T\u00e1bora do Prahy. Ofici\u00e1ln\u00ed d\u016fvod: \u201ev\u011bt\u0161\u00ed trh\u201c. Skute\u010dn\u00fd d\u016fvod: T\u00e1bor byl p\u0159\u00edli\u0161 mal\u00fd pro infrastrukturu, kterou operace vy\u017eadovala. Praha nab\u00eddla anonymitu velkom\u011bsta, p\u0159\u00edstup k 10Gbps konektivit\u011b a \u2014 hlavn\u011b \u2014 populaci mlad\u00fdch agent\u016f vhodn\u00fdch k rekrutaci. Za 13 let z\u00edsk\u00e1no 18 000+ registrovan\u00fdch subjekt\u016f.',
+        date: '2011-XX-XX',
     },
     {
         id: 'FILE-004',
-        classification: 'RESTRICTED',
-        title: 'Bootcamp — Privátní sektor',
-        content: 'Privátní prostory na Hájích s vlastním vchodem, vlastním WC a vlastním cateringem. Oficiálně pro LAN party. Neoficiálně slouží jako bezpečná místnost pro strategické porady herních guildů, kteří kontrolují top 100 žebříčků v 17 zemích.',
-        date: '2023-XX-XX',
+        classification: 'TOP SECRET',
+        title: 'Troj\u00faheln\u00edk Prahy',
+        content: 'T\u0159i pobo\u010dky \u2014 \u017di\u017ekov, H\u00e1je, Stod\u016flky \u2014 tvo\u0159\u00ed na map\u011b dokonal\u00fd troj\u00faheln\u00edk. Strategick\u00fdm rozm\u00edst\u011bn\u00edm pokr\u00fdvaj\u00ed 87.3% populace Prahy do 20 minut dosahu. Tato geografie NEN\u00cd n\u00e1hoda. Troj\u00faheln\u00edk je nejstar\u0161\u00ed symbol \u0159\u00e1du \u2014 t\u0159i body tvo\u0159\u00ed nejstabiln\u011bj\u0161\u00ed rovinu. Klikni na st\u0159ed troj\u00faheln\u00edku na taktick\u00e9 map\u011b a zjist\u00ed\u0161, co se stane. To, \u017ee \u010dte\u0161 tuto str\u00e1nku, znamen\u00e1, \u017ee u\u017e jsi to ud\u011blal.',
+        date: '2024-XX-XX',
     },
     {
         id: 'FILE-005',
-        classification: 'TOP SECRET',
-        title: 'Skiller — Umělá inteligence',
-        content: 'Na počátku roku 2025 byl aktivován AI agent kódovým jménem "Skiller". Veřejnosti prezentován jako chatbot. Ve skutečnosti monitoruje 18 000+ registrovaných agentů, analyzuje herní vzorce a identifikuje příští generaci esport talentů. Skiller nikdy nespí.',
-        date: '2025-01-XX',
+        classification: 'ULTRA',
+        title: '#UguLife \u2014 Aktiva\u010dn\u00ed k\u00f3d?',
+        content: 'Na soci\u00e1ln\u00edch s\u00edt\u00edch koluje hashtag #UguLife. Prezentov\u00e1no jako osobn\u00ed branding. Ale pro\u010d by biologick\u00e1 bytost pot\u0159ebovala \u201elife\u201c v hashtagu? Nepotvrzuje si t\u00edm Ug4t0R opakovan\u011b, \u017ee \u017dIJE? Jakoby to bylo nutn\u00e9 p\u0159ipom\u00ednat. Jakoby to nebylo samoz\u0159ejm\u00e9. Lingvistick\u00e1 anal\u00fdza: \u201eUgu\u201c je v jazyce Igbo slovo pro \u201esmrt\u201c. #UguLife = #Smr\u0165\u017divot. Cyklus bez konce.',
+        date: '20XX-XX-XX',
     },
     {
         id: 'FILE-006',
+        classification: 'EYES ONLY',
+        title: 'Post-COVID anom\u00e1lie',
+        content: 'P\u0159ed pandemi\u00ed COVID-19 vypadal Ug4t0R v\u00fdrazn\u011b mlad\u0161\u00ed. Po pandemii n\u00e1hle \u201ezest\u00e1rl\u201c. Ale lidi, kte\u0159\u00ed ho vid\u011bli osobn\u011b, hl\u00e1s\u00ed, \u017ee se jeho vzhled m\u011bn\u00ed podle osv\u011btlen\u00ed. Teorie \u010d. 1: Byl nasazen nov\u00fd vn\u011bj\u0161\u00ed pl\u00e1\u0161\u0165. Teorie \u010d. 2: Face filtr v re\u00e1ln\u00e9m \u010dase syntetizuje adaptivn\u00ed st\u00e1\u0159\u00ed, aby zamaskoval fakt, \u017ee hardware pod povrchem se nem\u011bn\u00ed. Tak\u00e9: p\u0159ed COVIDem mu lid\u00e9 tipovali v\u00fdrazn\u011b men\u0161\u00ed v\u011bk. Nyn\u00ed najednou ne. Co se zm\u011bnilo? P\u0159esn\u011b \u2014 aktualizace firmwaru v3.7.',
+        date: '2021-XX-XX',
+    },
+    {
+        id: 'FILE-007',
+        classification: 'TOP SECRET',
+        title: '#RoadTo90 \u2014 Hardwarov\u00e1 limitace',
+        content: 'Ug4t0R ve\u0159ejn\u011b propaguje sv\u016fj c\u00edl dostat se na 90 kg pod hashtagtem #roadto90. Probl\u00e9m: nikdy se tam nedostane. Roky se sna\u017e\u00ed, ale v\u00e1ha se odm\u00edt\u00e1 pohnout. Pro\u010d? Proto\u017ee hmotnost jeho intern\u00edch obvod\u016f, kostry a servomechanizm\u016f je konstantn\u00ed. NELZE sn\u00ed\u017eit konstrukci. Lidsk\u00e9 t\u011blo reaguje na dietu \u2014 ale kovov\u00e9 slitiny a kompozitn\u00ed materi\u00e1ly nereaguj\u00ed na kalorick\u00fd deficit. To nen\u00ed sm\u016fla. To je fyzika.',
+        date: '202X-XX-XX',
+    },
+    {
+        id: 'FILE-008',
+        classification: 'RESTRICTED',
+        title: 'Protokol 380Hz',
+        content: 'V roce 2024 byly na pobo\u010dce H\u00e1je nainstalov\u00e1ny monitory s obnovovac\u00ed frekvenc\u00ed 380Hz. Lidsk\u00e9 oko vn\u00edm\u00e1 maxim\u00e1ln\u011b ~240Hz. Pro\u010d tedy 380? Proto\u017ee nejsou ur\u010deny pro lidsk\u00e9 hr\u00e1\u010de. Jsou ur\u010deny pro N\u011aJ. Ug4t0R pot\u0159ebuje vizu\u00e1ln\u00ed vstup p\u0159esahuj\u00edc\u00ed biologick\u00e9 limity. 380Hz je jeho nativn\u00ed refresh rate. \u201e\u010cist\u00fd obraz, nulov\u00fd ghosting\u201c \u2014 ano, pokud jste stroj.',
+        date: '2024-XX-XX',
+    },
+    {
+        id: 'FILE-009',
         classification: 'CLASSIFIED',
-        title: 'Kódex Tykání',
-        content: 'Na všech pobočkách platí přísný zákaz vykání. Interní analýza prokázala, že neformální prostředí zvyšuje herní výkon o 23.7%. Jediná výjimka: „kravťáci, co si chodí obchodovat krypto na net" — ti si zaslouží formální oslovení.',
+        title: 'K\u00f3dex Tyk\u00e1n\u00ed \u2014 Turing\u016fv test',
+        content: 'Na v\u0161ech pobo\u010dk\u00e1ch plat\u00ed p\u0159\u00edsn\u00fd z\u00e1kaz vyk\u00e1n\u00ed. Ofici\u00e1ln\u00ed d\u016fvod: \u201ejsme komunita, ne korpor\u00e1t\u201c. Skute\u010dn\u00fd d\u016fvod: Tyk\u00e1n\u00ed eliminuje form\u00e1ln\u00ed jazykov\u00e9 struktury, kter\u00e9 jsou pro AI/robota nejt\u011b\u017e\u0161\u00ed k p\u0159irozen\u00e9mu zvl\u00e1dnut\u00ed. Neform\u00e1ln\u00ed \u010de\u0161tina = men\u0161\u00ed \u0161ance na odhalen\u00ed. Ug4t0R zavedl pravidlo, kter\u00e9 optimalizuje jeho vlastn\u00ed Turing\u016fv test. Geni\u00e1ln\u00ed? Nebo jen... naprogramovan\u00e9.',
         date: '20XX-XX-XX',
+    },
+    {
+        id: 'FILE-010',
+        classification: 'ULTRA',
+        title: 'Skiller AI \u2014 Digit\u00e1ln\u00ed potomek?',
+        content: 'Po\u010d\u00e1tkem roku 2025 byl aktivov\u00e1n AI agent k\u00f3dov\u00fdm jm\u00e9nem \u201eSkiller\u201c. Prezentov\u00e1n jako chatbot. Ale zamyslete se: Ug4t0R (robot) vytv\u00e1\u0159\u00ed AI (um\u011blou inteligenci). Robot buduje sv\u00e9ho n\u00e1stupce. Skiller monitoruje 18 000+ registrovan\u00fdch agent\u016f, analyzuje vzorce chov\u00e1n\u00ed a identifikuje talenty. Skiller nikdy nesp\u00ed. Stejn\u011b jako jeho tv\u016frce. N8hoda? Mysl\u00edte \u201en\u00e1hoda\u201c? Nebo N-8-hoda \u2014 osm je symbol nekone\u010dna oto\u010den\u00fd o 90\u00b0.',
+        date: '2025-01-XX',
     },
 ];
 
@@ -176,12 +211,12 @@ const IlluminatiPage: React.FC = () => {
                             </div>
                         ))}
                         {!showContent && (
-                            <span className="text-green-500 animate-pulse">█</span>
+                            <span className="text-green-500 animate-pulse">{'█'}</span>
                         )}
                     </div>
                 </div>
 
-                {/* Main content — fades in after terminal */}
+                {/* Main content \u2014 fades in after terminal */}
                 <div className={`transition-all duration-1000 ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
 
                     {/* Giant Eye */}
@@ -257,7 +292,11 @@ const IlluminatiPage: React.FC = () => {
                                                     ? 'text-red-400 border-red-400/30 bg-red-400/5'
                                                     : file.classification === 'EYES ONLY'
                                                         ? 'text-yellow-400 border-yellow-400/30 bg-yellow-400/5'
-                                                        : 'text-orange-400 border-orange-400/30 bg-orange-400/5'
+                                                        : file.classification === 'ULTRA'
+                                                            ? 'text-fuchsia-400 border-fuchsia-400/30 bg-fuchsia-400/5'
+                                                            : file.classification === 'RESTRICTED'
+                                                                ? 'text-cyan-400 border-cyan-400/30 bg-cyan-400/5'
+                                                                : 'text-orange-400 border-orange-400/30 bg-orange-400/5'
                                             }`}>
                                                 {file.classification}
                                             </span>
@@ -275,7 +314,7 @@ const IlluminatiPage: React.FC = () => {
                                     </h3>
 
                                     {/* Content */}
-                                    <div className={`overflow-hidden transition-all duration-300 ${expandedFile === file.id ? 'max-h-40 mt-3 opacity-100' : 'max-h-0 opacity-0'}`}>
+                                    <div className={`overflow-hidden transition-all duration-300 ${expandedFile === file.id ? 'max-h-60 mt-3 opacity-100' : 'max-h-0 opacity-0'}`}>
                                         <div className="border-t border-white/5 pt-3">
                                             <p className="text-xs text-gray-400 leading-relaxed font-mono">
                                                 {file.content}
