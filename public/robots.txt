@@ -1,7 +1,38 @@
+# SkillZone Gaming Club — robots.txt
+# Generated automatically from route configuration.
+# Last generated: 2026-03-10T19:10:07.194Z
+#
+# https://skillzone.cz
+
 User-agent: *
 Allow: /
 
-Sitemap: https://skillzone.cz/sitemap.xml
+# Hidden & internal routes
+Disallow: /_
+Disallow: /admin
+Disallow: /all-seeing-eye
+Disallow: /api/
+Disallow: /arena
+Disallow: /cybersport
+Disallow: /debug
+Disallow: /gift
+Disallow: /hidden
+Disallow: /illuminati
+Disallow: /mvp
+Disallow: /oko
+Disallow: /poukaz
+Disallow: /poukaz-darky
+Disallow: /prisnetajne
+Disallow: /pronajem
+Disallow: /provozovny/bootcamp
+Disallow: /provozovny/haje
+Disallow: /provozovny/stodulky
+Disallow: /provozovny/zizkov
+Disallow: /redeem
+Disallow: /secret-pages
+Disallow: /test
+Disallow: /triangle
+Disallow: /voucher
 
-# SkillZone Gaming Club
-# https://skillzone.cz
+# Sitemap
+Sitemap: https://skillzone.cz/sitemap.xml
