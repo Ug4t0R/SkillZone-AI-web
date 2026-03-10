@@ -14,15 +14,15 @@ const CLASSIFIED_FILES = [
         id: 'FILE-000',
         classification: 'ULTRA',
         title: 'Projekt PLAYER \u2014 Po\u010d\u00e1tek',
-        content: 'Rok 2003. V T\u00e1bo\u0159e se objevuje hern\u00ed centrum pod zna\u010dkou PLAYER. Ofici\u00e1ln\u00ed zalo\u017een\u00ed: 2003. Zakladatel: nezn\u00e1m\u00fd. Pozd\u011bji identifikov\u00e1n jako entita s k\u00f3dov\u00fdm ozna\u010den\u00edm Ug4t0R. \u017d\u00e1dn\u00fd p\u0159edchoz\u00ed pracovn\u00ed z\u00e1znam. \u017d\u00e1dn\u00e1 historie. Prost\u011b se jednoho dne objevil a za\u010dal stav\u011bt.',
+        content: 'Rok 2003. Ve Strakonicích se objevuje herní centrum pod značkou PLAYER. Zakladatel: neznámý. Později identifikován jako entita s kódovým označením Ug4t0R. Žádný předchozí pracovní záznam. Žádná historie. Prostě se jednoho dne objevil a začal stavět. Proč Strakonice? Malé město. Žádný dohled. Ideální místo pro prototyp.',
         date: '2003-XX-XX',
     },
     {
         id: 'FILE-001',
         classification: 'TOP SECRET',
         title: '\u0160ifra KILL ONE',
-        content: 'V roce 2005 byla zna\u010dka PLAYER p\u0159ejmenov\u00e1na na SkillZone. Pro\u010d? Prove\u010fte jednoduchou dekompozici: Sk-KILL-Zone. Nyn\u00ed separujte: KILL + ONE (z \u201ezone\u201c). PLAYER byl \u201ezabit\u201c \u2014 pohlcen. Akvizice vlastn\u00ed zna\u010dky vlastn\u00edm zakladatelem. Kdo po\u017e\u00edr\u00e1 s\u00e1m sebe a p\u0159e\u017eije? Pouze entita, kter\u00e1 nen\u00ed omezena biologick\u00fdm st\u00e1rnut\u00edm.',
-        date: '2005-XX-XX',
+        content: 'Datum: 18. února 2005. Místo: Tábor. Značka PLAYER ze Strakonic je oficiálně pohřbena a nahrazena názvem SkillZone. Proveďte dekompozici: Sk-KILL-Zone. Separujte: KILL + ONE (z „zone"). PLAYER byl „zabit" — pohlcen. Ale proč 18. února? To je přesně 4 dny po Valentýnu. Valentýn = svátek lásky. 4 dny = chladnutí. SkillZone vznikl z popela zničeného vztahu mezi tvůrcem a jeho první kreací. Kdo požírá sám sebe a přežije? Pouze entita bez biologických limitů.',
+        date: '2005-02-18',
     },
     {
         id: 'FILE-002',
