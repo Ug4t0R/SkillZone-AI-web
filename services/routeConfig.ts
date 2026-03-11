@@ -156,6 +156,13 @@ const ROUTES: RouteEntry[] = [
         titleKey: 'nav_home',
         hidden: true,
     },
+    {
+        view: 'dev',
+        canonical: '/dev',
+        aliases: ['/admin', '/devmenu'],
+        titleKey: 'nav_home',
+        hidden: true,
+    },
 ];
 
 // ─── LOOKUP MAPS (built once) ────────────────────────────────────────

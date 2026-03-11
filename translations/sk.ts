@@ -145,7 +145,7 @@ export const sk = {
     coming_badge: '🚀 Niečo veľké sa blíži',
     coming_title1: 'LEVEL UP',
     coming_title2: 'LOADING...',
-    coming_desc: 'Už 21 rokov na scéne! Prežili sme Covid, otriasli sa, otvorili nové pobočky a teraz s pomocou moderných technológií posúvame celý projekt — a chce to zase nový web. Už historicky siedmy. A opäť bude iný, ako máme v DNA. Máš sa fakt na čo tešiť.',
+    coming_desc: 'Už 21 rokov na scéne! Prežili sme Covid, šetrili kde sa dalo, aby sme udržali nízke ceny — a celý rok umožnili hráčom ako poďakovanie hodinu za 20 Kč. Web neriešil nikto. Ale otriasli sme sa, otvorili nové pobočky a teraz s modernými technológiami posúvame celý projekt. Chce to nový web — už siedmy. A opäť bude iný, ako máme v DNA.',
     coming_progress: 'PROGRESS',
     coming_almost: 'ALMOST THERE',
     coming_location_title: '📍 Medzitým nás nájdeš tu',

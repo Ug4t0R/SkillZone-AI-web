@@ -4,7 +4,7 @@
  */
 import React, { useState, useCallback } from 'react';
 import { Phone, MessageCircle, MapPin, Clock, ExternalLink, ChevronDown, ChevronUp, Shield } from 'lucide-react';
-import { AppView } from '../types';
+import { AppView, LocationType } from '../types';
 import { LOCATIONS_CS } from '../data/locations';
 import { trackView } from '../services/analytics';
 
@@ -89,7 +89,7 @@ const WhatsAppButton: React.FC<{ phone: string; message?: string; label: string 
 const Contact: React.FC<ContactProps> = ({ onChangeView }) => {
     const [expandedLocation, setExpandedLocation] = useState<string | null>(null);
 
-    const publicLocations = LOCATIONS_CS.filter(l => l.type === 'PUBLIC' || l.type === 'public');
+    const publicLocations = LOCATIONS_CS.filter(l => l.type === LocationType.PUBLIC);
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-[#050505] via-[#0a0a0a] to-[#050505] text-white pt-24 pb-16">

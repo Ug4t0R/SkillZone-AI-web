@@ -103,15 +103,19 @@ const Gallery: React.FC = () => {
                     {filtered.map((item, index) => (
                         <div
                             key={item.id}
+                            role="button"
+                            tabIndex={0}
+                            aria-label={item.description || item.alt}
                             className={`break-inside-avoid group relative overflow-hidden rounded-sm border border-gray-200 dark:border-white/5 cursor-pointer transition-all duration-500 hover:border-sz-red/50 hover:shadow-[0_0_25px_rgba(227,30,36,0.15)] ${imgLoaded.has(item.id) ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
                                 }`}
                             onClick={() => openLightbox(item)}
+                            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openLightbox(item); } }}
                             style={{ transitionDelay: `${index * 50}ms` }}
                         >
                             <div className={`${getHeightClass(index)} w-full relative overflow-hidden bg-gray-100 dark:bg-zinc-900`}>
                                 <img
                                     src={item.src}
-                                    alt={item.alt}
+                                    alt={item.description || item.alt}
                                     loading="lazy"
                                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 filter group-hover:brightness-75"
                                     onLoad={() => setImgLoaded(prev => new Set(prev).add(item.id))}
@@ -136,7 +140,7 @@ const Gallery: React.FC = () => {
                                 </div>
 
                                 {/* Zoom Icon */}
-                                <div className="absolute top-3 right-3 bg-black/60 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-all transform group-hover:scale-100 scale-75">
+                                <div className="absolute top-3 right-3 bg-black/60 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-all transform group-hover:scale-100 scale-75" aria-hidden="true">
                                     <ZoomIn className="w-4 h-4" />
                                 </div>
 
@@ -159,12 +163,16 @@ const Gallery: React.FC = () => {
             {/* Lightbox */}
             {lightbox && (
                 <div
+                    role="dialog"
+                    aria-modal="true"
+                    aria-label={language === 'cs' ? 'Prohlížeč fotek' : 'Photo viewer'}
                     className="fixed inset-0 z-[9999] bg-black/95 backdrop-blur-xl flex items-center justify-center"
                     onClick={closeLightbox}
                 >
                     {/* Close */}
                     <button
                         onClick={closeLightbox}
+                        aria-label={language === 'cs' ? 'Zavřít' : 'Close'}
                         className="absolute top-4 right-4 text-white/60 hover:text-white p-2 transition-colors z-50"
                     >
                         <X className="w-8 h-8" />
@@ -173,12 +181,14 @@ const Gallery: React.FC = () => {
                     {/* Navigation Arrows */}
                     <button
                         onClick={(e) => { e.stopPropagation(); navigate(-1); }}
+                        aria-label={language === 'cs' ? 'Předchozí fotka' : 'Previous photo'}
                         className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white p-3 transition-colors z-50"
                     >
                         <ChevronLeft className="w-10 h-10" />
                     </button>
                     <button
                         onClick={(e) => { e.stopPropagation(); navigate(1); }}
+                        aria-label={language === 'cs' ? 'Další fotka' : 'Next photo'}
                         className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white p-3 transition-colors z-50"
                     >
                         <ChevronRight className="w-10 h-10" />
@@ -191,7 +201,7 @@ const Gallery: React.FC = () => {
                     >
                         <img
                             src={lightbox.item.src}
-                            alt={lightbox.item.alt}
+                            alt={lightbox.item.description || lightbox.item.alt}
                             className="max-w-full max-h-[80vh] object-contain rounded-sm shadow-2xl"
                         />
                         {/* Info Bar */}

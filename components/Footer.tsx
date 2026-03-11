@@ -109,13 +109,13 @@ const Footer: React.FC<FooterProps> = ({ sections, onNavigate }) => {
                     <div>
                         <h4 className="font-bold text-white mb-4 uppercase tracking-wider">Socials</h4>
                         <div className="flex gap-4">
-                            <a href="https://instagram.com/skillzone.cz" target="_blank" rel="noreferrer" className="w-11 h-11 rounded-sm border border-white/10 flex items-center justify-center hover:bg-sz-red hover:border-sz-red hover:text-white transition-all text-gray-400">
+                            <a href="https://instagram.com/skillzone.cz" target="_blank" rel="noreferrer" aria-label="Instagram" className="w-11 h-11 rounded-sm border border-white/10 flex items-center justify-center hover:bg-sz-red hover:border-sz-red hover:text-white transition-all text-gray-400">
                                 <Instagram className="w-5 h-5" />
                             </a>
-                            <a href="https://twitch.tv/skillzonetv" target="_blank" rel="noreferrer" className="w-11 h-11 rounded-sm border border-white/10 flex items-center justify-center hover:bg-[#9146FF] hover:border-[#9146FF] hover:text-white transition-all text-gray-400">
+                            <a href="https://twitch.tv/skillzonetv" target="_blank" rel="noreferrer" aria-label="Twitch" className="w-11 h-11 rounded-sm border border-white/10 flex items-center justify-center hover:bg-[#9146FF] hover:border-[#9146FF] hover:text-white transition-all text-gray-400">
                                 <Twitch className="w-5 h-5" />
                             </a>
-                            <a href="https://wa.me/420777766112" target="_blank" rel="noreferrer" className="w-11 h-11 rounded-sm border border-white/10 flex items-center justify-center hover:bg-[#25D366] hover:border-[#25D366] hover:text-white transition-all text-gray-400">
+                            <a href="https://wa.me/420777766112" target="_blank" rel="noreferrer" aria-label="WhatsApp" className="w-11 h-11 rounded-sm border border-white/10 flex items-center justify-center hover:bg-[#25D366] hover:border-[#25D366] hover:text-white transition-all text-gray-400">
                                 <MessageCircle className="w-5 h-5" />
                             </a>
                         </div>

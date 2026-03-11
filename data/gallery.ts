@@ -7,6 +7,8 @@ export interface GalleryItem {
     id: string;
     src: string;
     alt: string;
+    /** Longer descriptive text used for img alt attribute (WCAG). Falls back to `alt` if not set. */
+    description?: string;
     category: 'atmosphere' | 'events' | 'hardware' | 'community';
     location?: string;
     date?: string;
@@ -38,37 +40,37 @@ export const GALLERY_SECTIONS = [
 
 // Default gallery data (fallback when DB is empty)
 export const DEFAULT_GALLERY_CS: GalleryItem[] = [
-    { id: 'g1', src: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600', alt: 'Gaming setup s RGB osvětlením', category: 'atmosphere' },
-    { id: 'g2', src: 'https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=600', alt: 'Turnaj CS2 — live match', category: 'events', location: 'Žižkov' },
-    { id: 'g3', src: 'https://images.unsplash.com/photo-1593640408182-31c70c8268f5?w=600', alt: 'RTX 4070 Ti Super detail', category: 'hardware' },
-    { id: 'g4', src: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=600', alt: 'Hráči na LAN party', category: 'community', location: 'Háje' },
-    { id: 'g5', src: 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=600', alt: 'Noční atmosféra herny', category: 'atmosphere' },
-    { id: 'g6', src: 'https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=600', alt: 'Valorant turnaj — tým', category: 'events', location: 'Žižkov' },
-    { id: 'g7', src: 'https://images.unsplash.com/photo-1587202372634-32705e3bf49c?w=600', alt: '240Hz monitor close-up', category: 'hardware' },
-    { id: 'g8', src: 'https://images.unsplash.com/photo-1542751110-97427bbecf20?w=600', alt: 'Komunita hráčů', category: 'community' },
-    { id: 'g9', src: 'https://images.unsplash.com/photo-1625805866449-3589fe3f71a3?w=600', alt: 'Bunker entrance — neon', category: 'atmosphere', location: 'Žižkov' },
-    { id: 'g10', src: 'https://images.unsplash.com/photo-1552820728-8b83bb6b2b28?w=600', alt: 'Bootcamp private session', category: 'events', location: 'Háje' },
-    { id: 'g11', src: 'https://images.unsplash.com/photo-1591488320449-011701bb6704?w=600', alt: 'Herní klávesnice detail', category: 'hardware' },
-    { id: 'g12', src: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600', alt: 'Hráči slaví výhru', category: 'community', location: 'Žižkov' },
-    { id: 'g13', src: 'https://images.unsplash.com/photo-1586182987320-4f376d39d787?w=600', alt: 'Server room', category: 'hardware' },
-    { id: 'g14', src: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600', alt: 'RGB ambientní osvětlení', category: 'atmosphere' },
+    { id: 'g1', src: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600', alt: 'Gaming setup s RGB osvětlením', description: 'Herní stanice s vícebarevným RGB podsvícením klávesnice a monitoru v herním klubu SkillZone', category: 'atmosphere' },
+    { id: 'g2', src: 'https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=600', alt: 'Turnaj CS2 — live match', description: 'Živý záběr z turnaje Counter-Strike 2 v pobočce SkillZone Žižkov, hráči soustředění na monitory', category: 'events', location: 'Žižkov' },
+    { id: 'g3', src: 'https://images.unsplash.com/photo-1593640408182-31c70c8268f5?w=600', alt: 'RTX 4070 Ti Super detail', description: 'Detailní pohled na grafickou kartu NVIDIA RTX 4070 Ti Super nainstalovanou v herním PC', category: 'hardware' },
+    { id: 'g4', src: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=600', alt: 'Hráči na LAN party', description: 'Skupina hráčů na LAN party v pobočce SkillZone Háje, společné hraní a zábava', category: 'community', location: 'Háje' },
+    { id: 'g5', src: 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=600', alt: 'Noční atmosféra herny', description: 'Noční atmosféra herního klubu SkillZone s tlumeným neonovým osvětlením a svítícími monitory', category: 'atmosphere' },
+    { id: 'g6', src: 'https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=600', alt: 'Valorant turnaj — tým', description: 'Tým hráčů během turnaje ve Valorantu v SkillZone Žižkov, koordinovaná týmová hra', category: 'events', location: 'Žižkov' },
+    { id: 'g7', src: 'https://images.unsplash.com/photo-1587202372634-32705e3bf49c?w=600', alt: '240Hz monitor close-up', description: 'Detailní záběr na 240Hz herní monitor s vysokou obnovovací frekvencí pro plynulý obraz', category: 'hardware' },
+    { id: 'g8', src: 'https://images.unsplash.com/photo-1542751110-97427bbecf20?w=600', alt: 'Komunita hráčů', description: 'Komunita hráčů SkillZone — přátelská atmosféra a společný zájem o gaming', category: 'community' },
+    { id: 'g9', src: 'https://images.unsplash.com/photo-1625805866449-3589fe3f71a3?w=600', alt: 'Bunker entrance — neon', description: 'Neonově osvětlený vchod do herního bunkru SkillZone Žižkov s industriálním designem', category: 'atmosphere', location: 'Žižkov' },
+    { id: 'g10', src: 'https://images.unsplash.com/photo-1552820728-8b83bb6b2b28?w=600', alt: 'Bootcamp private session', description: 'Privátní bootcamp session v SkillZone Háje — individuální trénink a coaching pro hráče', category: 'events', location: 'Háje' },
+    { id: 'g11', src: 'https://images.unsplash.com/photo-1591488320449-011701bb6704?w=600', alt: 'Herní klávesnice detail', description: 'Detail mechanické herní klávesnice s RGB podsvícením jednotlivých kláves', category: 'hardware' },
+    { id: 'g12', src: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600', alt: 'Hráči slaví výhru', description: 'Nadšení hráči slaví společné vítězství v turnaji na pobočce SkillZone Žižkov', category: 'community', location: 'Žižkov' },
+    { id: 'g13', src: 'https://images.unsplash.com/photo-1586182987320-4f376d39d787?w=600', alt: 'Server room', description: 'Serverovna SkillZone s rackovými servery zajišťujícími nízký ping a stabilní připojení', category: 'hardware' },
+    { id: 'g14', src: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600', alt: 'RGB ambientní osvětlení', description: 'Ambientní RGB osvětlení herního prostoru vytvářející atmosféru pro imerzivní gaming zážitek', category: 'atmosphere' },
 ];
 
 export const DEFAULT_GALLERY_EN: GalleryItem[] = [
-    { id: 'g1', src: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600', alt: 'Gaming setup with RGB lighting', category: 'atmosphere' },
-    { id: 'g2', src: 'https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=600', alt: 'CS2 tournament — live match', category: 'events', location: 'Žižkov' },
-    { id: 'g3', src: 'https://images.unsplash.com/photo-1593640408182-31c70c8268f5?w=600', alt: 'RTX 4070 Ti Super closeup', category: 'hardware' },
-    { id: 'g4', src: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=600', alt: 'Players at LAN party', category: 'community', location: 'Háje' },
-    { id: 'g5', src: 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=600', alt: 'Night gaming atmosphere', category: 'atmosphere' },
-    { id: 'g6', src: 'https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=600', alt: 'Valorant tournament — team', category: 'events', location: 'Žižkov' },
-    { id: 'g7', src: 'https://images.unsplash.com/photo-1587202372634-32705e3bf49c?w=600', alt: '240Hz monitor close-up', category: 'hardware' },
-    { id: 'g8', src: 'https://images.unsplash.com/photo-1542751110-97427bbecf20?w=600', alt: 'Gaming community', category: 'community' },
-    { id: 'g9', src: 'https://images.unsplash.com/photo-1625805866449-3589fe3f71a3?w=600', alt: 'Bunker entrance — neon', category: 'atmosphere', location: 'Žižkov' },
-    { id: 'g10', src: 'https://images.unsplash.com/photo-1552820728-8b83bb6b2b28?w=600', alt: 'Bootcamp private session', category: 'events', location: 'Háje' },
-    { id: 'g11', src: 'https://images.unsplash.com/photo-1591488320449-011701bb6704?w=600', alt: 'Gaming keyboard detail', category: 'hardware' },
-    { id: 'g12', src: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600', alt: 'Players celebrating a win', category: 'community', location: 'Žižkov' },
-    { id: 'g13', src: 'https://images.unsplash.com/photo-1586182987320-4f376d39d787?w=600', alt: 'Server room', category: 'hardware' },
-    { id: 'g14', src: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600', alt: 'RGB ambient lighting', category: 'atmosphere' },
+    { id: 'g1', src: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600', alt: 'Gaming setup with RGB lighting', description: 'Gaming station with multicolor RGB backlighting on keyboard and monitor at SkillZone gaming club', category: 'atmosphere' },
+    { id: 'g2', src: 'https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=600', alt: 'CS2 tournament — live match', description: 'Live shot from a Counter-Strike 2 tournament at SkillZone Žižkov branch, players focused on monitors', category: 'events', location: 'Žižkov' },
+    { id: 'g3', src: 'https://images.unsplash.com/photo-1593640408182-31c70c8268f5?w=600', alt: 'RTX 4070 Ti Super closeup', description: 'Close-up view of an NVIDIA RTX 4070 Ti Super graphics card installed in a gaming PC', category: 'hardware' },
+    { id: 'g4', src: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=600', alt: 'Players at LAN party', description: 'Group of players at a LAN party at SkillZone Háje branch, cooperative gaming and fun', category: 'community', location: 'Háje' },
+    { id: 'g5', src: 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=600', alt: 'Night gaming atmosphere', description: 'Night atmosphere of SkillZone gaming club with dimmed neon lighting and glowing monitors', category: 'atmosphere' },
+    { id: 'g6', src: 'https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=600', alt: 'Valorant tournament — team', description: 'Team of players during a Valorant tournament at SkillZone Žižkov, coordinated team play', category: 'events', location: 'Žižkov' },
+    { id: 'g7', src: 'https://images.unsplash.com/photo-1587202372634-32705e3bf49c?w=600', alt: '240Hz monitor close-up', description: 'Close-up of a 240Hz gaming monitor with high refresh rate for smooth visuals', category: 'hardware' },
+    { id: 'g8', src: 'https://images.unsplash.com/photo-1542751110-97427bbecf20?w=600', alt: 'Gaming community', description: 'SkillZone gaming community — friendly atmosphere and shared passion for gaming', category: 'community' },
+    { id: 'g9', src: 'https://images.unsplash.com/photo-1625805866449-3589fe3f71a3?w=600', alt: 'Bunker entrance — neon', description: 'Neon-lit entrance to the SkillZone Žižkov gaming bunker with industrial design aesthetic', category: 'atmosphere', location: 'Žižkov' },
+    { id: 'g10', src: 'https://images.unsplash.com/photo-1552820728-8b83bb6b2b28?w=600', alt: 'Bootcamp private session', description: 'Private bootcamp session at SkillZone Háje — individual training and coaching for players', category: 'events', location: 'Háje' },
+    { id: 'g11', src: 'https://images.unsplash.com/photo-1591488320449-011701bb6704?w=600', alt: 'Gaming keyboard detail', description: 'Detail of a mechanical gaming keyboard with per-key RGB backlighting', category: 'hardware' },
+    { id: 'g12', src: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600', alt: 'Players celebrating a win', description: 'Excited players celebrating a tournament victory at SkillZone Žižkov branch', category: 'community', location: 'Žižkov' },
+    { id: 'g13', src: 'https://images.unsplash.com/photo-1586182987320-4f376d39d787?w=600', alt: 'Server room', description: 'SkillZone server room with rack-mounted servers ensuring low ping and stable connectivity', category: 'hardware' },
+    { id: 'g14', src: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600', alt: 'RGB ambient lighting', description: 'Ambient RGB lighting in the gaming space creating an atmosphere for an immersive gaming experience', category: 'atmosphere' },
 ];
 
 // ─── Supabase CRUD ───────────────────────────────────────────────────

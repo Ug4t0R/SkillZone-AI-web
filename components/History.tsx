@@ -193,7 +193,7 @@ const HistorySection: React.FC = () => {
                         {!logoError ? (
                             <img
                                 src="/SkillZone_logo_white.png"
-                                alt="SZ"
+                                alt="SkillZone logo"
                                 loading="lazy"
                                 className="h-8 w-auto"
                                 onError={() => setLogoError(true)}
@@ -201,7 +201,7 @@ const HistorySection: React.FC = () => {
                         ) : (
                             <img
                                 src="/SkillZone_logo_white.png"
-                                alt="SZ"
+                                alt="SkillZone logo"
                                 className="h-8 w-auto"
                             />
                         )}

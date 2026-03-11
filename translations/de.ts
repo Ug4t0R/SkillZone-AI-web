@@ -145,7 +145,7 @@ export const de = {
     coming_badge: '🚀 Etwas Großes kommt',
     coming_title1: 'LEVEL UP',
     coming_title2: 'LOADING...',
-    coming_desc: '21 Jahre auf der Szene! Wir haben Covid überlebt, uns erholt, neue Standorte eröffnet — und jetzt brauchen wir wieder eine neue Webseite. Schon die siebte. Und sie wird wieder anders, wie es in unserer DNA liegt. Es lohnt sich zu warten.',
+    coming_desc: '21 Jahre auf der Szene! Wir haben Covid überlebt, überall gespart, um die Preise niedrig zu halten — und ein ganzes Jahr lang Spielern als Dankeschön eine Stunde für 20 CZK ermöglicht. Die Website? Hat niemanden interessiert. Aber wir haben uns erholt, neue Standorte eröffnet und treiben jetzt mit moderner Technologie das ganze Projekt voran. Zeit für eine neue Website — die siebte. Und sie wird wieder anders, wie es in unserer DNA liegt.',
     coming_progress: 'FORTSCHRITT',
     coming_almost: 'FAST GESCHAFFT',
     coming_location_title: '📍 In der Zwischenzeit findest du uns hier',

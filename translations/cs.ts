@@ -147,7 +147,7 @@ export const cs = {
     coming_badge: '🚀 Něco velkého se blíží',
     coming_title1: 'LEVEL UP',
     coming_title2: 'LOADING...',
-    coming_desc: `Už ${y} let na scéně! Přežili jsme Covid, otřepali se, otevřeli nové pobočky a teď s pomocí moderních technologií posouváme celý projekt — a chce to zase nový web. Už historicky sedmý. A opět bude jinej, jak máme v DNA. Máš se fakt na co těšit.`,
+    coming_desc: `Už ${y} let na scéně! Přežili jsme Covid, šetřili kde se dalo, abychom udrželi nízké ceny — a celý rok umožnili hráčům jako poděkování hodinu za 20 Kč. Web neřešil nikdo. Ale otřepali jsme se, otevřeli nové pobočky a teď s moderními technologiemi posouváme celý projekt. Chce to nový web — už sedmý. A opět bude jinej, jak máme v DNA.`,
     coming_progress: 'PROGRESS',
     coming_almost: 'ALMOST THERE',
     coming_location_title: '📍 ZATÍM NÁS NAJDEŠ TADY',

@@ -126,7 +126,7 @@ export const vi = {
     coming_badge: '🚀 Một điều lớn lao sắp đến',
     coming_title1: 'LEVEL UP',
     coming_title2: 'LOADING...',
-    coming_desc: '21 năm trên sân khấu! Chúng tôi sống sót qua Covid, phục hồi, mở chi nhánh mới — và giờ là lúc làm trang web mới. Đã là trang thứ bảy. Và một lần nữa sẽ khác biệt, đó là DNA của chúng tôi. Hãy chờ đón.',
+    coming_desc: '21 năm trên sân khấu! Chúng tôi sống sót qua Covid, tiết kiệm mọi nơi để giữ giá thấp — và cả năm cho phép game thủ chơi 1 giờ chỉ 20 CZK như lời cảm ơn. Website? Không ai quan tâm. Nhưng chúng tôi đã phục hồi, mở chi nhánh mới và giờ với công nghệ hiện đại đang đẩy cả dự án tiến lên. Đã đến lúc làm web mới — lần thứ bảy. Và một lần nữa sẽ khác biệt, đó là DNA của chúng tôi.',
     coming_progress: 'TIẾN ĐỘ',
     coming_almost: 'SẮP HOÀN THÀNH',
     coming_location_title: '📍 Tạm thời có thể tìm chúng tôi ở đây',

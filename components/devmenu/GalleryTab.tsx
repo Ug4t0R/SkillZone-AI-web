@@ -437,6 +437,15 @@ const GalleryTab: React.FC<GalleryTabProps> = ({ addLog }) => {
                                             className={inputCls}
                                         />
                                     </div>
+                                    <div className="col-span-2">
+                                        <label className="text-[10px] text-gray-500 font-mono uppercase">Description <span className="text-gray-600">(WCAG alt text)</span></label>
+                                        <input
+                                            value={item.description || ''}
+                                            onChange={e => updateItem({ ...item, description: e.target.value || undefined })}
+                                            placeholder="Detailed image description for accessibility"
+                                            className={inputCls}
+                                        />
+                                    </div>
                                     <div>
                                         <label className="text-[10px] text-gray-500 font-mono uppercase">Category</label>
                                         <select

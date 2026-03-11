@@ -642,7 +642,7 @@ const ComingSoon: React.FC<ComingSoonProps> = ({ targetDate, onUnlock, onPlayAim
                                 value={vipCode}
                                 onChange={(e) => setVipCode(e.target.value)}
                                 placeholder={t('coming_vip_placeholder' as any)}
-                                className={`bg-transparent outline-none border-none text-white font-mono w-24 text-center placeholder-gray-600 text-sm
+                                className={`bg-transparent outline-none border-none text-white font-mono w-24 text-center placeholder-gray-600 text-[16px]
                                     ${vipError ? 'text-red-500 animate-shake' : ''}`}
                                 maxLength={10}
                             />

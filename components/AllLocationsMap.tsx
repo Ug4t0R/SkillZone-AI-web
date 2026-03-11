@@ -36,8 +36,8 @@ const AllLocationsMap: React.FC = () => {
         {
             id: 'zizkov',
             label: language === 'cs' ? 'Žižkov (Nonstop)' : 'Žižkov (Nonstop)',
-            top: '28%',
-            left: '58%',
+            top: '32%',
+            left: '46%',
             type: 'public',
             specs: '240Hz, 10Gbps',
             status: 'NONSTOP 24/7',
@@ -46,8 +46,8 @@ const AllLocationsMap: React.FC = () => {
         {
             id: 'haje',
             label: language === 'cs' ? 'Háje / Bootcamp' : 'Háje / Bootcamp',
-            top: '78%',
-            left: '72%',
+            top: '76%',
+            left: '64%',
             type: 'hybrid',
             specs: '240Hz & 380Hz',
             status: '12:00 – 03:00+',
@@ -57,11 +57,11 @@ const AllLocationsMap: React.FC = () => {
             id: 'stodulky',
             label: language === 'cs' ? 'Stodůlky (NOVÉ)' : 'Stodůlky (NEW)',
             top: '72%',
-            left: '28%',
+            left: '21%',
             type: 'new',
             specs: 'RTX 40 Series',
             status: '13:00 – 23:00',
-            pcs: 'Next-Gen'
+            pcs: '24 PC'
         }
     ];
 
@@ -85,30 +85,80 @@ const AllLocationsMap: React.FC = () => {
                         backgroundSize: '40px 40px'
                     }}></div>
 
-                    {/* Vltava River SVG */}
+                    {/* Vltava River SVG — traced from user's hand-drawn reference */}
                     <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 1000 500" preserveAspectRatio="none">
-                        <path d="M450,500 C450,400 480,350 500,300 C520,250 500,200 480,150 C460,100 480,50 500,0" fill="none" stroke="#1a1a1a" strokeWidth="80" className="blur-xl" />
-                        <path d="M450,500 C450,400 480,350 500,300 C520,250 500,200 480,150 C460,100 480,50 500,0" fill="none" stroke="#3a5a80" strokeWidth="20" opacity="0.5" />
+                        <defs>
+                            <linearGradient id="riverGrad" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stopColor="#2a4a6a" stopOpacity="0.6" />
+                                <stop offset="50%" stopColor="#3a6a90" stopOpacity="0.5" />
+                                <stop offset="100%" stopColor="#2a4a6a" stopOpacity="0.6" />
+                            </linearGradient>
+                            <filter id="riverGlow">
+                                <feGaussianBlur stdDeviation="5" result="blur" />
+                                <feMerge>
+                                    <feMergeNode in="blur" />
+                                    <feMergeNode in="SourceGraphic" />
+                                </feMerge>
+                            </filter>
+                            <filter id="riverShadow">
+                                <feGaussianBlur stdDeviation="12" />
+                            </filter>
+                        </defs>
+                        {/* 
+                            Pin positions for reference:
+                            Žižkov:    x=580 y=140
+                            Stodůlky:  x=280 y=360
+                            Háje:      x=720 y=390
+                            River always LEFT of Žižkov, between Stodůlky and center
+                        */}
+                        {/* Shadow layer */}
+                        <path
+                            d="M350,0 C350,50 500,40 500,90 C500,140 380,120 380,180 C380,240 410,250 380,320 C350,390 340,430 340,500"
+                            fill="none" stroke="#0a0a0a" strokeWidth="55" filter="url(#riverShadow)" opacity="0.8"
+                        />
+                        {/* Main river body */}
+                        <path
+                            d="M350,0 C350,50 500,40 500,90 C500,140 380,120 380,180 C380,240 410,250 380,320 C350,390 340,430 340,500"
+                            fill="none" stroke="url(#riverGrad)" strokeWidth="16" strokeLinecap="round" filter="url(#riverGlow)"
+                        />
+                        {/* Thin highlight center line */}
+                        <path
+                            d="M350,0 C350,50 500,40 500,90 C500,140 380,120 380,180 C380,240 410,250 380,320 C350,390 340,430 340,500"
+                            fill="none" stroke="#5a8ab5" strokeWidth="2" opacity="0.25" strokeLinecap="round"
+                        />
+                        {/* Animated flow particles */}
+                        <circle r="2" fill="#6a9ac0" opacity="0.6">
+                            <animateMotion dur="9s" repeatCount="indefinite"
+                                path="M350,0 C350,50 500,40 500,90 C500,140 380,120 380,180 C380,240 410,250 380,320 C350,390 340,430 340,500" />
+                        </circle>
+                        <circle r="1.5" fill="#6a9ac0" opacity="0.4">
+                            <animateMotion dur="9s" repeatCount="indefinite" begin="3s"
+                                path="M350,0 C350,50 500,40 500,90 C500,140 380,120 380,180 C380,240 410,250 380,320 C350,390 340,430 340,500" />
+                        </circle>
+                        <circle r="1.5" fill="#6a9ac0" opacity="0.5">
+                            <animateMotion dur="9s" repeatCount="indefinite" begin="6s"
+                                path="M350,0 C350,50 500,40 500,90 C500,140 380,120 380,180 C380,240 410,250 380,320 C350,390 340,430 340,500" />
+                        </circle>
                     </svg>
                 </div>
 
                 {/* Connection Lines between locations */}
                 <svg className="absolute inset-0 w-full h-full pointer-events-none z-[1]" preserveAspectRatio="none">
-                    <line x1="58%" y1="28%" x2="72%" y2="78%" stroke="#E31E24" strokeWidth="1" opacity="0.15" strokeDasharray="6 4">
-                        <animate attributeName="stroke-dashoffset" values="0;-20" dur="2s" repeatCount="indefinite" />
-                    </line>
-                    <line x1="58%" y1="28%" x2="28%" y2="72%" stroke="#E31E24" strokeWidth="1" opacity="0.15" strokeDasharray="6 4">
+                    <line x1="46%" y1="32%" x2="21%" y2="72%" stroke="#E31E24" strokeWidth="1" opacity="0.15" strokeDasharray="6 4">
                         <animate attributeName="stroke-dashoffset" values="0;-20" dur="2.5s" repeatCount="indefinite" />
                     </line>
-                    <line x1="28%" y1="72%" x2="72%" y2="78%" stroke="#E31E24" strokeWidth="1" opacity="0.1" strokeDasharray="6 4">
+                    <line x1="21%" y1="72%" x2="64%" y2="76%" stroke="#E31E24" strokeWidth="1" opacity="0.1" strokeDasharray="6 4">
                         <animate attributeName="stroke-dashoffset" values="0;-20" dur="3s" repeatCount="indefinite" />
+                    </line>
+                    <line x1="46%" y1="32%" x2="64%" y2="76%" stroke="#E31E24" strokeWidth="1" opacity="0.15" strokeDasharray="6 4">
+                        <animate attributeName="stroke-dashoffset" values="0;-20" dur="2s" repeatCount="indefinite" />
                     </line>
                 </svg>
 
                 {/* 🔺 Illuminati Easter Egg — Hidden clickable triangle center */}
                 <div
                     className="absolute z-[2] cursor-pointer transition-all duration-500"
-                    style={{ top: '59.3%', left: '52.7%', transform: 'translate(-50%, -50%)' }}
+                    style={{ top: '60%', left: '43.6%', transform: 'translate(-50%, -50%)' }}
                     onClick={handleTriangleClick}
                     onMouseEnter={() => setTriangleHovered(true)}
                     onMouseLeave={() => setTriangleHovered(false)}
@@ -142,7 +192,7 @@ const AllLocationsMap: React.FC = () => {
                 {mapPoints.map((point) => (
                     <div
                         key={point.id}
-                        className="absolute flex flex-col items-center group/pin cursor-pointer z-10"
+                        className="absolute flex flex-col items-center group/pin cursor-pointer z-10 -translate-x-1/2 -translate-y-1/2"
                         style={{ top: point.top, left: point.left }}
                         onClick={() => scrollToLocation(point.id)}
                         onMouseEnter={() => setHoveredPin(point.id)}

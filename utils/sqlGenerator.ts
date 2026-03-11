@@ -161,7 +161,7 @@ ALTER TABLE web_analytics ENABLE ROW LEVEL SECURITY;
 ALTER TABLE web_visitors ENABLE ROW LEVEL SECURITY;
 
 -- 4. CREATE SECURITY POLICIES
--- Define Master Admin Email: tomas@skillzone.cz
+-- Define Admin Emails: tomas@skillzone.cz, petr@skillzone.cz
 
 -- policy: Everyone can SELECT (Read Only)
 CREATE POLICY "Public Read Access" ON locations FOR SELECT USING (true);
@@ -172,39 +172,39 @@ CREATE POLICY "Public Read Access" ON ai_settings FOR SELECT USING (true);
 CREATE POLICY "Public Read Access" ON feed_messages FOR SELECT USING (true);
 CREATE POLICY "Public Read Access" ON owner_profile FOR SELECT USING (true);
 
--- policy: Only tomas@skillzone.cz can do EVERYTHING (Write/Update/Delete)
+-- policy: Only admin emails can do EVERYTHING (Write/Update/Delete)
 CREATE POLICY "Master Admin Full Access" ON locations 
-    FOR ALL USING (auth.jwt() ->> 'email' = 'tomas@skillzone.cz');
+    FOR ALL USING (auth.jwt() ->> 'email' IN ('tomas@skillzone.cz', 'petr@skillzone.cz'));
 
 CREATE POLICY "Master Admin Full Access" ON history_milestones 
-    FOR ALL USING (auth.jwt() ->> 'email' = 'tomas@skillzone.cz');
+    FOR ALL USING (auth.jwt() ->> 'email' IN ('tomas@skillzone.cz', 'petr@skillzone.cz'));
 
 CREATE POLICY "Master Admin Full Access" ON protocol_rules 
-    FOR ALL USING (auth.jwt() ->> 'email' = 'tomas@skillzone.cz');
+    FOR ALL USING (auth.jwt() ->> 'email' IN ('tomas@skillzone.cz', 'petr@skillzone.cz'));
 
 CREATE POLICY "Master Admin Full Access" ON calendar_events 
-    FOR ALL USING (auth.jwt() ->> 'email' = 'tomas@skillzone.cz');
+    FOR ALL USING (auth.jwt() ->> 'email' IN ('tomas@skillzone.cz', 'petr@skillzone.cz'));
 
 CREATE POLICY "Master Admin Full Access" ON ai_settings 
-    FOR ALL USING (auth.jwt() ->> 'email' = 'tomas@skillzone.cz');
+    FOR ALL USING (auth.jwt() ->> 'email' IN ('tomas@skillzone.cz', 'petr@skillzone.cz'));
 
 CREATE POLICY "Master Admin Full Access" ON feed_messages 
-    FOR ALL USING (auth.jwt() ->> 'email' = 'tomas@skillzone.cz');
+    FOR ALL USING (auth.jwt() ->> 'email' IN ('tomas@skillzone.cz', 'petr@skillzone.cz'));
 
 CREATE POLICY "Master Admin Full Access" ON owner_profile 
-    FOR ALL USING (auth.jwt() ->> 'email' = 'tomas@skillzone.cz');
+    FOR ALL USING (auth.jwt() ->> 'email' IN ('tomas@skillzone.cz', 'petr@skillzone.cz'));
 
 CREATE POLICY "Master Admin Full Access" ON chat_sessions 
-    FOR ALL USING (auth.jwt() ->> 'email' = 'tomas@skillzone.cz');
+    FOR ALL USING (auth.jwt() ->> 'email' IN ('tomas@skillzone.cz', 'petr@skillzone.cz'));
 
 CREATE POLICY "Public Read Access" ON web_press FOR SELECT USING (true);
 CREATE POLICY "Master Admin Full Access" ON web_press 
-    FOR ALL USING (auth.jwt() ->> 'email' = 'tomas@skillzone.cz');
+    FOR ALL USING (auth.jwt() ->> 'email' IN ('tomas@skillzone.cz', 'petr@skillzone.cz'));
 
 -- Analytics: everyone can INSERT (write their own events), admin reads all
 CREATE POLICY "Public Insert Analytics" ON web_analytics FOR INSERT WITH CHECK (true);
 CREATE POLICY "Master Admin Read Analytics" ON web_analytics 
-    FOR SELECT USING (auth.jwt() ->> 'email' = 'tomas@skillzone.cz');
+    FOR SELECT USING (auth.jwt() ->> 'email' IN ('tomas@skillzone.cz', 'petr@skillzone.cz'));
 
 CREATE POLICY "Public Upsert Visitors" ON web_visitors FOR ALL USING (true);
 

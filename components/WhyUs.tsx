@@ -75,7 +75,7 @@ const WhyUs: React.FC = () => {
                             {!logoError ? (
                                 <img
                                     src={logoSrc}
-                                    alt="SZ"
+                                    alt="SkillZone logo"
                                     loading="lazy"
                                     className="h-8 w-auto"
                                     onError={() => setLogoError(true)}
@@ -83,7 +83,7 @@ const WhyUs: React.FC = () => {
                             ) : (
                                 <img
                                     src="/SkillZone_logo_white.png"
-                                    alt="SZ"
+                                    alt="SkillZone logo"
                                     loading="lazy"
                                     className="h-8 w-auto"
                                 />

@@ -30,7 +30,7 @@ const AimArena: React.FC<AimArenaProps> = ({
         <div
             ref={arenaRef}
             onClick={onMisclick}
-            className="relative border-2 border-blue-500/30 rounded-lg overflow-hidden cursor-crosshair select-none"
+            className="aim-arena-bg relative border-2 border-blue-500/30 rounded-lg overflow-hidden cursor-crosshair select-none"
             style={{
                 width: ARENA_W,
                 height: ARENA_H,
@@ -68,7 +68,7 @@ const AimArena: React.FC<AimArenaProps> = ({
                 return (
                     <div
                         onClick={onHit}
-                        className="absolute rounded-full cursor-crosshair"
+                        className="aim-target-btn absolute rounded-full cursor-crosshair"
                         style={{
                             left: target.x,
                             top: target.y,

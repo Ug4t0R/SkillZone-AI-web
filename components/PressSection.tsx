@@ -162,7 +162,7 @@ const PressCard: React.FC<PressCardProps> = ({ item, index, language }) => {
                         {item.logo ? (
                             <img
                                 src={item.logo}
-                                alt=""
+                                alt={item.source}
                                 loading="lazy"
                                 className="w-5 h-5 rounded-sm object-contain"
                                 onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; (e.target as HTMLImageElement).parentElement!.textContent = cat.emoji; }}

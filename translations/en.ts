@@ -147,7 +147,7 @@ export const en = {
     coming_badge: '🚀 Something big is coming',
     coming_title1: 'LEVEL UP',
     coming_title2: 'LOADING...',
-    coming_desc: '21 years on the scene! We survived Covid, recovered, opened new branches, and now with modern tech we\'re pushing the whole project forward — time for a new website. Our 7th one. And once again, it\'ll be different. It\'s in our DNA. Stay tuned.',
+    coming_desc: '21 years on the scene! We survived Covid, cut costs everywhere to keep prices low — and for a whole year let players play for just 20 CZK/hour as a thank-you. The website? Nobody cared. But we bounced back, opened new branches and now with modern tech we\'re pushing the whole project forward. Time for a new website — our 7th. And once again, it\'ll be different. It\'s in our DNA.',
     coming_progress: 'PROGRESS',
     coming_almost: 'ALMOST THERE',
     coming_location_title: '📍 You can find us here meanwhile',

@@ -57,6 +57,7 @@ const Hero: React.FC = () => {
             <img
               src={src}
               alt=""
+              role="presentation"
               className="w-full h-full object-cover scale-[1.02]"
               loading="eager"
             />

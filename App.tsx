@@ -89,7 +89,7 @@ const SecretPages = React.lazy(() => import('./components/SecretPages'));
 const IlluminatiPage = React.lazy(() => import('./components/IlluminatiPage'));
 const Contact = React.lazy(() => import('./components/Contact'));
 
-import { AUTHORIZED_ADMIN_EMAIL as AUTHORIZED_EMAIL } from './utils/auth';
+import { isAuthorizedAdmin } from './utils/auth';
 
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<AppView>('home');
@@ -238,7 +238,7 @@ const App: React.FC = () => {
     // Real-time auth listener for immediate session killing of unauthorized users
     const { data: { subscription } } = getSupabase().auth.onAuthStateChange(async (event, session) => {
       if (session?.user) {
-        if (session.user.email === AUTHORIZED_EMAIL) {
+        if (isAuthorizedAdmin(session.user.email)) {
           setIsAdminLoggedIn(true);
           localStorage.setItem('skillzone_admin', 'true');
         } else {
@@ -264,7 +264,7 @@ const App: React.FC = () => {
 
   const checkAdminStatus = async () => {
     const user = await getCurrentUser();
-    if (user && user.email === AUTHORIZED_EMAIL) {
+    if (user && isAuthorizedAdmin(user.email)) {
       setIsAdminLoggedIn(true);
       localStorage.setItem('skillzone_admin', 'true');
     } else {
@@ -277,12 +277,21 @@ const App: React.FC = () => {
 
   const handleDevTrigger = async () => {
     const user = await getCurrentUser();
-    if (user && user.email === AUTHORIZED_EMAIL) {
+    if (user && isAuthorizedAdmin(user.email)) {
       setIsDevMenuOpen(true);
     } else {
       setIsLoginOpen(true);
     }
   };
+
+  // Auto-open DevMenu when navigating to /dev
+  useEffect(() => {
+    if (currentView === 'dev') {
+      handleDevTrigger();
+      // Reset view to home so /dev doesn't stay in renderView
+      setCurrentView('home');
+    }
+  }, [currentView]);
 
   const renderView = () => {
     switch (currentView) {
@@ -473,13 +482,7 @@ const App: React.FC = () => {
     return (
       <>
         <MaintenanceMode />
-        {/* Hidden admin access — triple-click bottom-right corner */}
-        <button
-          onClick={handleDevTrigger}
-          className="fixed bottom-2 right-2 w-16 h-16 opacity-0 hover:opacity-5 z-50 cursor-default"
-          title=""
-          aria-label="Admin"
-        />
+
         {isLoginOpen && (
           <Suspense fallback={null}>
             <TerminalLogin
@@ -510,7 +513,10 @@ const App: React.FC = () => {
       <>
         <ComingSoon
           targetDate={comingSoonDate}
-          onUnlock={() => setVipUnlocked(true)}
+          onUnlock={() => {
+            setVipUnlocked(true);
+            window.scrollTo(0, 0); // Spravna rotace a viewport po vstupu na domovskou stranku
+          }}
           onPlayAim={() => setIsAimOpen(true)}
           onPlayReaction={() => setIsReactionOpen(true)}
         />
@@ -531,13 +537,7 @@ const App: React.FC = () => {
             </Suspense>
           </GameErrorBoundary>
         )}
-        {/* Hidden admin access — click bottom-right corner */}
-        <button
-          onClick={handleDevTrigger}
-          className="fixed bottom-2 right-2 w-16 h-16 opacity-0 hover:opacity-5 z-50 cursor-default"
-          title=""
-          aria-label="Admin"
-        />
+
         {isLoginOpen && (
           <Suspense fallback={null}>
             <TerminalLogin
@@ -563,8 +563,6 @@ const App: React.FC = () => {
         <Navbar
           currentView={currentView}
           onChangeView={navigateTo}
-          adminStatus={isAdminLoggedIn}
-          onAdminClick={handleDevTrigger}
           sections={sections}
         />
         <Suspense fallback={<SkeletonLoader />}>

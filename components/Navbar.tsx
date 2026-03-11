@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, X, Sun, Moon, ShieldCheck, Terminal } from 'lucide-react';
+import { Menu, X, Sun, Moon } from 'lucide-react';
 import { AppView } from '../types';
 import { useAppContext } from '../context/AppContext';
 import { Language } from '../context/AppContext';
@@ -15,12 +15,10 @@ const LANG_CODES: Record<Language, string> = {
 interface NavbarProps {
   currentView: AppView;
   onChangeView: (view: AppView) => void;
-  adminStatus?: boolean;
-  onAdminClick: () => void;
-  sections?: SectionConfig;
+  sections: any;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ currentView, onChangeView, adminStatus, onAdminClick, sections }) => {
+const Navbar: React.FC<NavbarProps> = ({ currentView, onChangeView, sections }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [langDropdownOpen, setLangDropdownOpen] = useState(false);
   const langRef = useRef<HTMLDivElement>(null);
@@ -88,13 +86,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, onChangeView, adminStatus,
               />
             )}
 
-            {/* Admin Status Indicator */}
-            {adminStatus && (
-              <div className="hidden lg:flex items-center gap-2 px-3 py-1 bg-green-500/10 border border-green-500/30 rounded-full ml-4 animate-pulse">
-                <ShieldCheck className="w-3 h-3 text-green-500" />
-                <span className="text-[9px] font-mono font-bold text-green-500 uppercase tracking-tighter">Secure_Tunnel: Active</span>
-              </div>
-            )}
+
           </div>
 
           <div className="hidden xl:flex items-center min-w-0">
@@ -111,21 +103,16 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, onChangeView, adminStatus,
               ))}
             </div>
 
-            {/* Toggles & Admin Trigger */}
+            {/* Toggles */}
             <div className="flex items-center gap-1.5 ml-3 pl-3 border-l border-gray-300 dark:border-white/10 flex-shrink-0">
-              <button
-                onClick={onAdminClick}
-                className={`p-2 rounded-full transition-all ${adminStatus ? 'text-green-500 bg-green-500/10 shadow-[0_0_10px_rgba(34,197,94,0.3)]' : 'text-gray-500 dark:text-gray-400 hover:text-sz-red'}`}
-                title="Root Access"
-              >
-                <Terminal className="w-4 h-4" />
-              </button>
 
               {/* Language Flag Dropdown */}
               <div className="relative" ref={langRef}>
                 <button
                   onClick={() => setLangDropdownOpen(!langDropdownOpen)}
                   className="flex items-center gap-1.5 text-sm font-bold font-mono text-gray-600 dark:text-gray-300 hover:text-sz-red transition-colors px-2 py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5"
+                  aria-label={language === 'cs' ? 'Změnit jazyk' : 'Change language'}
+                  aria-expanded={langDropdownOpen}
                 >
                   <img src={getFlagSvgUrl(language)} alt={language} className="w-5 h-4 rounded-sm object-cover" />
                   <span className="text-[10px] tracking-wider">{LANG_CODES[language]}</span>
@@ -157,41 +144,45 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, onChangeView, adminStatus,
                 onClick={toggleTheme}
                 className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-white/10 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors"
                 title={theme === 'dark' ? 'Světelný režim' : 'Tmavý režim'}
+                aria-label={theme === 'dark' ? 'Přepnout na světlý režim' : 'Přepnout na tmavý režim'}
               >
                 {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
               </button>
 
-              {/* 3-way Mode Toggle: Normal / Gen Z / Corporate */}
+              {/* 3-way Mode Toggle: Normal / Gen Z / Corporate (icon-only) */}
               <div className="flex items-center bg-gray-100 dark:bg-zinc-800 rounded-full p-0.5 border border-gray-200 dark:border-white/10">
                 <button
                   onClick={() => { setBrainrot(false); setCorporate(false); }}
-                  className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all ${!isBrainrot && !isCorporate
-                    ? 'bg-white dark:bg-zinc-700 text-gray-900 dark:text-white shadow-sm'
-                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                  className={`w-7 h-7 flex items-center justify-center rounded-full text-sm transition-all ${!isBrainrot && !isCorporate
+                    ? 'bg-white dark:bg-zinc-700 shadow-sm scale-110'
+                    : 'opacity-50 hover:opacity-80'
                   }`}
                   title="Normal mode"
+                  aria-label="Normální režim"
                 >
-                  Normal
+                  ⚡
                 </button>
                 <button
-                  onClick={() => setBrainrot(!isBrainrot)}
-                  className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all ${isBrainrot
-                    ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-sm shadow-purple-500/30'
-                    : 'text-gray-500 dark:text-gray-400 hover:text-yellow-400'
+                  onClick={() => { setBrainrot(!isBrainrot); setCorporate(false); }}
+                  className={`w-7 h-7 flex items-center justify-center rounded-full text-sm transition-all ${isBrainrot
+                    ? 'bg-gradient-to-r from-purple-500 to-pink-500 shadow-sm shadow-purple-500/30 scale-110'
+                    : 'opacity-50 hover:opacity-80'
                   }`}
                   title="Gen Z Brainrot Mode"
+                  aria-label="Gen Z režim"
                 >
-                  🧠 GenZ
+                  🧠
                 </button>
                 <button
-                  onClick={() => setCorporate(!isCorporate)}
-                  className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all ${isCorporate
-                    ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-sm shadow-blue-500/30'
-                    : 'text-gray-500 dark:text-gray-400 hover:text-blue-400'
+                  onClick={() => { setCorporate(!isCorporate); setBrainrot(false); }}
+                  className={`w-7 h-7 flex items-center justify-center rounded-full text-sm transition-all ${isCorporate
+                    ? 'bg-gradient-to-r from-blue-500 to-cyan-500 shadow-sm shadow-blue-500/30 scale-110'
+                    : 'opacity-50 hover:opacity-80'
                   }`}
                   title="Corporate Mode"
+                  aria-label="Korporátní režim"
                 >
-                  🏢 Corp
+                  🏢
                 </button>
               </div>
             </div>
@@ -211,18 +202,17 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, onChangeView, adminStatus,
             <button
               onClick={() => setLangDropdownOpen(!langDropdownOpen)}
               className="text-base p-2 min-w-[44px] min-h-[44px] flex items-center justify-center"
+              aria-label={language === 'cs' ? 'Změnit jazyk' : 'Change language'}
+              aria-expanded={langDropdownOpen}
             >
               <img src={getFlagSvgUrl(language)} alt={language} className="w-6 h-4 rounded-sm object-cover" />
             </button>
-            <button
-              onClick={onAdminClick}
-              className={`p-2 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full ${adminStatus ? 'text-green-500' : 'text-gray-500'}`}
-            >
-              <Terminal className="w-5 h-5" />
-            </button>
+
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="inline-flex items-center justify-center p-2 min-w-[44px] min-h-[44px] rounded-md text-gray-400 hover:text-black dark:hover:text-white hover:bg-gray-100 dark:hover:bg-zinc-800 focus:outline-none"
+              aria-label={isOpen ? 'Zavřít menu' : 'Otevřít menu'}
+              aria-expanded={isOpen}
             >
               {isOpen ? <X className="h-6 w-6 text-sz-red" /> : <Menu className="h-6 w-6 text-sz-red" />}
             </button>
@@ -274,34 +264,37 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, onChangeView, adminStatus,
                 {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
                 {theme === 'dark' ? 'Light' : 'Dark'}
               </button>
-              {/* 3-way Mobile Mode Toggle */}
+              {/* 3-way Mobile Mode Toggle (icon-only) */}
               <div className="flex items-center bg-gray-100 dark:bg-zinc-800 rounded-full p-0.5">
                 <button
                   onClick={() => { setBrainrot(false); setCorporate(false); setIsOpen(false); }}
-                  className={`px-2 py-1 rounded-full text-[10px] font-bold transition-all ${!isBrainrot && !isCorporate
-                    ? 'bg-white dark:bg-zinc-700 text-gray-900 dark:text-white shadow-sm'
-                    : 'text-gray-500 dark:text-gray-400'
+                  className={`w-8 h-8 flex items-center justify-center rounded-full text-base transition-all ${!isBrainrot && !isCorporate
+                    ? 'bg-white dark:bg-zinc-700 shadow-sm scale-110'
+                    : 'opacity-50'
                   }`}
+                  aria-label="Normální režim"
                 >
-                  Normal
+                  ⚡
                 </button>
                 <button
-                  onClick={() => { setBrainrot(!isBrainrot); setIsOpen(false); }}
-                  className={`px-2 py-1 rounded-full text-[10px] font-bold transition-all ${isBrainrot
-                    ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white'
-                    : 'text-gray-500 dark:text-gray-400'
+                  onClick={() => { setBrainrot(!isBrainrot); setCorporate(false); setIsOpen(false); }}
+                  className={`w-8 h-8 flex items-center justify-center rounded-full text-base transition-all ${isBrainrot
+                    ? 'bg-gradient-to-r from-purple-500 to-pink-500 shadow-sm scale-110'
+                    : 'opacity-50'
                   }`}
+                  aria-label="Gen Z režim"
                 >
-                  🧠 GenZ
+                  🧠
                 </button>
                 <button
-                  onClick={() => { setCorporate(!isCorporate); setIsOpen(false); }}
-                  className={`px-2 py-1 rounded-full text-[10px] font-bold transition-all ${isCorporate
-                    ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white'
-                    : 'text-gray-500 dark:text-gray-400'
+                  onClick={() => { setCorporate(!isCorporate); setBrainrot(false); setIsOpen(false); }}
+                  className={`w-8 h-8 flex items-center justify-center rounded-full text-base transition-all ${isCorporate
+                    ? 'bg-gradient-to-r from-blue-500 to-cyan-500 shadow-sm scale-110'
+                    : 'opacity-50'
                   }`}
+                  aria-label="Korporátní režim"
                 >
-                  🏢 Corp
+                  🏢
                 </button>
               </div>
             </div>
