@@ -70,16 +70,16 @@ const AllLocationsMap: React.FC = () => {
     };
 
     return (
-        <div className="w-full bg-zinc-900/50 border border-white/5 p-6 rounded-lg relative overflow-hidden">
+        <div className="w-full bg-zinc-900/50 border border-white/5 p-6 rounded-lg relative">
             <h3 className="text-2xl font-orbitron font-bold text-gray-900 dark:text-white mb-6 uppercase border-b border-sz-red/30 pb-4 inline-block">
                 {language === 'cs' ? 'Taktická Mapa' : 'Tactical Map'} <span className="text-sz-red">{language === 'cs' ? 'Prahy' : 'Prague'}</span>
             </h3>
 
             {/* Map Container */}
-            <div className="relative w-full aspect-[16/9] md:aspect-[21/9] bg-[#111] rounded-sm overflow-hidden border border-white/10 group">
+            <div className="relative w-full aspect-[16/9] md:aspect-[21/9] bg-[#111] rounded-sm border border-white/10 group">
 
                 {/* Grid Background */}
-                <div className="absolute inset-0 opacity-30">
+                <div className="absolute inset-0 opacity-30 overflow-hidden rounded-sm pointer-events-none">
                     <div className="w-full h-full" style={{
                         backgroundImage: 'linear-gradient(#333 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px)',
                         backgroundSize: '40px 40px'
@@ -234,9 +234,9 @@ const AllLocationsMap: React.FC = () => {
                         </div>
 
                         {/* Hover Tooltip */}
-                        <div className={`absolute top-full mt-10 left-1/2 -translate-x-1/2 bg-black/95 backdrop-blur-xl border border-sz-red/30 rounded-sm p-3 min-w-[180px] shadow-2xl transition-all duration-200 z-50 ${hoveredPin === point.id
-                            ? 'opacity-100 translate-y-0 pointer-events-auto'
-                            : 'opacity-0 -translate-y-2 pointer-events-none'
+                        <div className={`absolute top-full mt-10 left-1/2 -translate-x-1/2 bg-black/95 backdrop-blur-xl border border-sz-red/30 rounded-sm p-3 min-w-[180px] shadow-2xl transition-all duration-200 ${hoveredPin === point.id
+                            ? 'opacity-100 translate-y-0 pointer-events-auto z-[70]'
+                            : 'opacity-0 -translate-y-2 pointer-events-none z-0'
                             }`}>
                             {/* Invisible bridge to prevent hover loss when moving mouse down */}
                             <div className="absolute bottom-full left-0 right-0 h-10 bg-transparent cursor-default" />
