@@ -508,7 +508,7 @@ const Pricing: React.FC = () => {
                                         <div className="mt-2 bg-green-50 dark:bg-green-900/10 border border-green-100 dark:border-green-900/30 rounded-lg p-3 flex gap-2 items-start text-left">
                                             <Info className="w-4 h-4 text-green-500 shrink-0 mt-0.5" />
                                             <div className="text-xs text-green-800 dark:text-green-300">
-                                                {cs ? 'Standard PC: bez příplatku, 240Hz monitor' : 'Standard PC: no surcharge, 240Hz monitor'}
+                                                {cs ? 'Standard PC: Výchozí PC pro všechny hráče s FullHD monitorem' : 'Standard PC: Default PC for all players with FullHD monitor'}
                                             </div>
                                         </div>
                                     )}

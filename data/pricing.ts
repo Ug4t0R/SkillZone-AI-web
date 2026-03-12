@@ -80,6 +80,7 @@ export const TOP_UP_BONUSES: TopUpBonus[] = [
 export const EXTRA_FEES: ExtraFee[] = [
     { id: 'esport', nameCs: 'Esport PC', nameEn: 'Esport PC', descCs: 'Jednorázový příplatek, 380Hz Monitor', descEn: 'One-time fee, 380Hz Monitor', price: 90, altPrice: 60, altNote: 'Premium/ULTRAS' },
     { id: 'vip', nameCs: 'VIP PC', nameEn: 'VIP PC', descCs: 'Jednorázový příplatek (Háje), 27" 2.5K Monitor', descEn: 'One-time fee (Háje), 27" 2.5K Monitor', price: 30 },
+    { id: 'standard', nameCs: 'Standard PC', nameEn: 'Standard PC', descCs: 'Výchozí PC pro všechny hráče s FullHD monitorem', descEn: 'Default PC for all players with FullHD monitor', price: 0 },
     { id: 'night', nameCs: 'Noční příplatek', nameEn: 'Night surcharge', descCs: 'Po půlnoci (Premium/ULTRAS neplatí)', descEn: 'After midnight (Premium/ULTRAS exempt)', price: 50 },
     { id: 'saturday', nameCs: 'Sobota', nameEn: 'Saturday', descCs: 'Jednorázově při vyšší vytíženosti', descEn: 'One-time during higher occupancy', price: 30 },
     { id: 'controller', nameCs: 'Zapůjčení ovladače', nameEn: 'Controller rental', descCs: 'Dle pobočky', descEn: 'Per branch', price: 20 },
@@ -94,6 +95,6 @@ export const PACKAGES: Package[] = [
 
 export const LOCATIONS: Location[] = [
     { id: 'zizkov', nameCs: 'Žižkov', nameEn: 'Žižkov', label: 'Praha 3', hasVip: false, hasEsport: true, hasNightLAN: true, hasDayLAN: true, dayLANTime: '08:00–22:00', nightLANTime: '22:00–08:00', openFrom: 'NONSTOP', openTo: '24/7' },
-    { id: 'haje', nameCs: 'Háje', nameEn: 'Háje', label: 'Praha 4', hasVip: true, hasEsport: true, hasNightLAN: false, hasDayLAN: true, dayLANTime: '12:00–22:00', dayLANPromoPrice: 345, openFrom: '12:00', openTo: '00:00' },
+    { id: 'haje', nameCs: 'Háje', nameEn: 'Háje', label: 'Praha 4', hasVip: true, hasEsport: true, hasNightLAN: false, hasDayLAN: true, dayLANTime: '12:00–22:00', openFrom: '12:00', openTo: '00:00' },
     { id: 'stodulky', nameCs: 'Stodůlky', nameEn: 'Stodůlky', label: 'Praha 5', hasVip: false, hasEsport: true, hasNightLAN: false, hasDayLAN: true, dayLANTime: '13:00–21:00', dayLANPromoPrice: 345, openFrom: '13:00', openTo: '21:00' },
 ];
