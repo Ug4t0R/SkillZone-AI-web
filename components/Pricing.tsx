@@ -1,4 +1,4 @@
-﻿import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Crown, Star, Gem, Zap, Users, Clock, Monitor, Gamepad2, Moon, CalendarDays, Gift, Heart, UserPlus, Calculator, ChevronDown, ChevronUp, MapPin, Lightbulb, CheckCircle2, Info, AlertTriangle, Phone } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 import { getYearsOnMarket } from '../utils/founding';
@@ -22,7 +22,6 @@ const Pricing: React.FC = () => {
     const [calcSaturday, setCalcSaturday] = useState(false);
     const [calcDayLAN, setCalcDayLAN] = useState(false);
     const [calcNightLAN, setCalcNightLAN] = useState(false);
-    const [calcFlatDay, setCalcFlatDay] = useState(false);
 
     // UX state
     const [showFullCalc, setShowFullCalc] = useState(false);
@@ -61,11 +60,10 @@ const Pricing: React.FC = () => {
         // Reset package options when switching locations
         if (!currentLoc.hasDayLAN) setCalcDayLAN(false);
         if (!currentLoc.hasNightLAN) setCalcNightLAN(false);
-        if (!currentLoc.flatDayPrice) setCalcFlatDay(false);
     }, [calcLocation]);
 
     // Is any package active?
-    const isPackageActive = calcDayLAN || calcNightLAN || calcFlatDay;
+    const isPackageActive = calcDayLAN || calcNightLAN;
 
     // Price calculator
     const calcResult = useMemo(() => {
@@ -90,12 +88,14 @@ const Pricing: React.FC = () => {
             const hourly = tier.price;
             let total: number;
 
-            if (calcFlatDay && currentLoc.flatDayPrice) {
-                // Háje / Stodůlky flat day price
-                total = currentLoc.flatDayPrice;
-            } else if (calcDayLAN || calcNightLAN) {
-                // Žižkov DayLAN / NightLAN
-                total = (tier.id === 'premium' || tier.id === 'ultras') ? 495 : 595;
+            if (calcDayLAN || calcNightLAN) {
+                // DayLAN / NightLAN balíček
+                if (currentLoc.dayLANPromoPrice && calcDayLAN) {
+                    // Háje / Stodůlky akční DayLAN cena
+                    total = currentLoc.dayLANPromoPrice;
+                } else {
+                    total = (tier.id === 'premium' || tier.id === 'ultras') ? 495 : 595;
+                }
             } else {
                 total = hourly * calcHours;
             }
@@ -115,10 +115,12 @@ const Pricing: React.FC = () => {
         const guestBase = 120 + Math.max(0, calcHours - 1) * 60;
         let guestTotal: number;
 
-        if (calcFlatDay && currentLoc.flatDayPrice) {
-            guestTotal = currentLoc.flatDayPrice;
-        } else if (calcDayLAN || calcNightLAN) {
-            guestTotal = 595;
+        if (calcDayLAN || calcNightLAN) {
+            if (currentLoc.dayLANPromoPrice && calcDayLAN) {
+                guestTotal = currentLoc.dayLANPromoPrice;
+            } else {
+                guestTotal = 595;
+            }
         } else {
             guestTotal = guestBase;
         }
@@ -131,7 +133,7 @@ const Pricing: React.FC = () => {
         results['guest'] = { hourly: 120, total: guestTotal, totalSat: guestTotalSat };
 
         return results;
-    }, [calcLocation, calcHours, calcSeat, calcNight, calcSaturday, calcDayLAN, calcNightLAN, calcFlatDay, currentLoc]);
+    }, [calcLocation, calcHours, calcSeat, calcNight, calcSaturday, calcDayLAN, calcNightLAN, currentLoc]);
 
     // Bonus effective pricing
     const bonusInfo = useMemo(() => {
@@ -414,7 +416,7 @@ const Pricing: React.FC = () => {
                                     </label>
                                     <div className="grid grid-cols-5 gap-1 mb-1">
                                         {[1, 2, 3, 4, 5].map(h => (
-                                            <button key={h} onClick={() => { setCalcHours(h); setCalcDayLAN(false); setCalcNightLAN(false); setCalcFlatDay(false); }}
+                                            <button key={h} onClick={() => { setCalcHours(h); setCalcDayLAN(false); setCalcNightLAN(false); }}
                                                 className={`py-2 rounded-lg text-sm font-mono font-bold transition-all
                                                         ${calcHours === h && !isPackageActive
                                                         ? 'bg-sz-red text-white' : 'bg-gray-100 dark:bg-zinc-800 text-gray-500 hover:bg-gray-200 dark:hover:bg-zinc-700'
@@ -425,7 +427,7 @@ const Pricing: React.FC = () => {
                                     </div>
                                     <div className="grid grid-cols-5 gap-1 mb-2">
                                         {[6, 7, 8, 9, 10].map(h => (
-                                            <button key={h} onClick={() => { setCalcHours(h); setCalcDayLAN(false); setCalcNightLAN(false); setCalcFlatDay(false); }}
+                                            <button key={h} onClick={() => { setCalcHours(h); setCalcDayLAN(false); setCalcNightLAN(false); }}
                                                 className={`py-2 rounded-lg text-sm font-mono font-bold transition-all
                                                         ${calcHours === h && !isPackageActive
                                                         ? 'bg-sz-red text-white' : 'bg-gray-100 dark:bg-zinc-800 text-gray-500 hover:bg-gray-200 dark:hover:bg-zinc-700'
@@ -438,30 +440,21 @@ const Pricing: React.FC = () => {
                                     {/* Package buttons — context-dependent on location */}
                                     <div className="space-y-1">
                                         {currentLoc.hasDayLAN && (
-                                            <button onClick={() => { setCalcDayLAN(!calcDayLAN); setCalcNightLAN(false); setCalcFlatDay(false); }}
+                                            <button onClick={() => { setCalcDayLAN(!calcDayLAN); setCalcNightLAN(false); }}
                                                 className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-mono font-bold transition-all border
                                                         ${calcDayLAN
                                                         ? 'bg-sz-red border-sz-red text-white' : 'border-gray-200 dark:border-zinc-700 text-gray-600 dark:text-gray-400 hover:border-gray-300'
                                                     }`}>
-                                                🌞 DayLAN ({cs ? 'příchod' : 'arrival'} 12:00–00:00)
+                                                ☀️ DayLAN ({currentLoc.dayLANTime}){currentLoc.dayLANPromoPrice ? ` — ${cs ? 'AKCE' : 'PROMO'} ${currentLoc.dayLANPromoPrice},- Kč` : ''}
                                             </button>
                                         )}
                                         {currentLoc.hasNightLAN && (
-                                            <button onClick={() => { setCalcNightLAN(!calcNightLAN); setCalcDayLAN(false); setCalcFlatDay(false); }}
+                                            <button onClick={() => { setCalcNightLAN(!calcNightLAN); setCalcDayLAN(false); }}
                                                 className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-mono font-bold transition-all border
                                                         ${calcNightLAN
                                                         ? 'bg-indigo-600 border-indigo-600 text-white' : 'border-gray-200 dark:border-zinc-700 text-gray-600 dark:text-gray-400 hover:border-gray-300'
                                                     }`}>
-                                                🌙 NightLAN ({cs ? 'příchod' : 'arrival'} 00:00–06:00)
-                                            </button>
-                                        )}
-                                        {currentLoc.flatDayPrice && (
-                                            <button onClick={() => { setCalcFlatDay(!calcFlatDay); setCalcDayLAN(false); setCalcNightLAN(false); }}
-                                                className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-mono font-bold transition-all border
-                                                        ${calcFlatDay
-                                                        ? 'bg-green-600 border-green-600 text-white' : 'border-gray-200 dark:border-zinc-700 text-gray-600 dark:text-gray-400 hover:border-gray-300'
-                                                    }`}>
-                                                🎮 {cs ? 'Celý den' : 'All Day'} ({currentLoc.openFrom}–{currentLoc.openTo}) — {currentLoc.flatDayPrice},- Kč
+                                                🌙 NightLAN ({currentLoc.nightLANTime})
                                             </button>
                                         )}
                                     </div>
@@ -563,7 +556,7 @@ const Pricing: React.FC = () => {
                                 {/* Guest prominently displayed */}
                                 <div className="bg-blue-500/10 border-2 border-blue-500/30 rounded-2xl p-6 text-center mb-6 relative hover:border-blue-500/60 transition-colors">
                                     <div className="text-sm font-mono font-bold text-blue-600 dark:text-blue-400 uppercase mb-2">
-                                        {isPackageActive ? (calcDayLAN ? 'DayLAN' : calcNightLAN ? 'NightLAN' : cs ? 'Celý den' : 'All Day') : `${calcHours}h`} • GUEST
+                                        {isPackageActive ? (calcDayLAN ? 'DayLAN' : 'NightLAN') : `${calcHours}h`} • GUEST
                                     </div>
                                     <div className="text-5xl font-black text-gray-900 dark:text-white flex items-center justify-center gap-2">
                                         {calcSaturday ? calcResult['guest'].totalSat : calcResult['guest'].total}
@@ -573,8 +566,8 @@ const Pricing: React.FC = () => {
                                     {/* Price breakdown */}
                                     <div className="mt-4 pt-3 border-t border-blue-500/20 space-y-1 text-left max-w-[240px] mx-auto">
                                         <div className="flex justify-between text-xs font-mono text-gray-600 dark:text-gray-400">
-                                            <span>{isPackageActive ? (calcDayLAN ? 'DayLAN' : calcNightLAN ? 'NightLAN' : (cs ? 'Celý den' : 'All Day')) : (cs ? `Hraní (${calcHours}h)` : `Play time (${calcHours}h)`)}</span>
-                                            <span>{calcFlatDay && currentLoc.flatDayPrice ? currentLoc.flatDayPrice : (calcDayLAN || calcNightLAN) ? '595' : (120 + Math.max(0, calcHours - 1) * 60)},- Kč</span>
+                                            <span>{isPackageActive ? (calcDayLAN ? 'DayLAN' : 'NightLAN') : (cs ? `Hraní (${calcHours}h)` : `Play time (${calcHours}h)`)}</span>
+                                            <span>{(calcDayLAN && currentLoc.dayLANPromoPrice) ? currentLoc.dayLANPromoPrice : (calcDayLAN || calcNightLAN) ? '595' : (120 + Math.max(0, calcHours - 1) * 60)},- Kč</span>
                                         </div>
                                         {calcSeat === 'vip' && currentLoc.hasVip && (
                                             <div className="flex justify-between text-xs font-mono text-yellow-600 dark:text-yellow-400">
