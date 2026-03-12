@@ -1,8 +1,9 @@
-import React from 'react';
-import { ArrowLeft, MapPin, Clock, CalendarHeart, MonitorSpeaker } from 'lucide-react';
+import React, { useState } from 'react';
+import { ArrowLeft, MapPin, Clock, CalendarHeart, MonitorSpeaker, Map, X as XIcon } from 'lucide-react';
 import { AppView } from '../../types';
 import CyberSeparator from '../CyberSeparator';
 import Gallery from '../Gallery';
+import { useGalleryImage } from '../../hooks/useGallery';
 
 export interface LocationDataParams {
     id: string;
@@ -24,8 +25,32 @@ interface LocationDetailProps {
 const LocationDetail: React.FC<LocationDetailProps> = ({ data, onChangeView }) => {
     if (!data) return null;
 
+    const floorPlanSrc = useGalleryImage(`fp_${data.id}`, '');
+    const [lightboxOpen, setLightboxOpen] = useState(false);
+
     return (
         <div className="pt-20 min-h-screen bg-light-bg dark:bg-dark-bg text-gray-900 dark:text-white transition-colors duration-300">
+            {/* Lightbox for floor plan */}
+            {lightboxOpen && floorPlanSrc && (
+                <div
+                    className="fixed inset-0 z-[60] bg-black/90 flex items-center justify-center p-4 animate-in fade-in duration-200"
+                    onClick={() => setLightboxOpen(false)}
+                >
+                    <button
+                        onClick={() => setLightboxOpen(false)}
+                        className="absolute top-6 right-6 text-white/70 hover:text-white transition-colors z-10"
+                    >
+                        <XIcon className="w-8 h-8" />
+                    </button>
+                    <img
+                        src={floorPlanSrc}
+                        alt={`Plánek SkillZone ${data.title}`}
+                        className="max-w-[90vw] max-h-[90vh] object-contain rounded-lg shadow-2xl"
+                        onClick={e => e.stopPropagation()}
+                    />
+                </div>
+            )}
+
             {/* Header / Hero */}
             <div className="relative h-[40vh] min-h-[400px] overflow-hidden">
                 <div className="absolute inset-0 bg-black/60 z-10" />
@@ -67,6 +92,29 @@ const LocationDetail: React.FC<LocationDetailProps> = ({ data, onChangeView }) =
                                 ))}
                             </div>
                         </div>
+
+                        {/* Floor Plan */}
+                        {floorPlanSrc && (
+                            <div>
+                                <h3 className="text-2xl font-orbitron font-bold text-gray-900 dark:text-white mb-6 uppercase flex items-center gap-3">
+                                    <Map className="text-sz-red" />
+                                    Mapa Prostor
+                                </h3>
+                                <div
+                                    className="bg-white dark:bg-zinc-900/50 border border-white/10 hover:border-sz-red/30 rounded-sm overflow-hidden cursor-pointer group transition-all shadow-lg"
+                                    onClick={() => setLightboxOpen(true)}
+                                >
+                                    <img
+                                        src={floorPlanSrc}
+                                        alt={`Plánek prostor SkillZone ${data.title}`}
+                                        className="w-full max-h-[500px] object-contain p-4 group-hover:scale-[1.02] transition-transform duration-500"
+                                    />
+                                    <div className="border-t border-white/5 px-4 py-2 flex items-center justify-center gap-2 text-xs text-gray-500 font-mono uppercase">
+                                        <Map className="w-3 h-3" /> Klikni pro zvětšení
+                                    </div>
+                                </div>
+                            </div>
+                        )}
 
                         {/* Specs */}
                         <div>
