@@ -689,7 +689,7 @@ const Pricing: React.FC = () => {
                             <h4 className="font-orbitron font-bold text-sm uppercase text-yellow-500 mb-1">VIP PC</h4>
                             <p className="text-xs text-gray-500 font-mono mb-3">27" 2.5K Monitor</p>
                             <div className="bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 text-sm font-bold rounded-lg px-3 py-1.5 inline-block">
-                                +30,- Kč <span className="font-normal text-xs opacity-70">({cs ? 'Háje' : 'Háje'})</span>
+                                +30,- Kč
                             </div>
                             <p className="text-xs text-gray-400 mt-3">
                                 {cs ? 'Výkonnější sestavy s většími monitory. Ideální pro pohodové hraní ve vyšším rozlišení.' : 'More powerful rigs with bigger monitors. Ideal for relaxed gaming at higher resolution.'}
