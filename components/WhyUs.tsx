@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Check, X, Skull } from 'lucide-react';
 import { WHY_US_DATA_CS, WHY_US_DATA_EN } from '../data/whyUs';
 import { useAppContext } from '../context/AppContext';
+import { useGalleryImage } from '../hooks/useGallery';
 
 const WhyUs: React.FC = () => {
     const [reveal, setReveal] = useState(false);
@@ -28,7 +29,9 @@ const WhyUs: React.FC = () => {
     }, []);
 
     const whyUsData = language === 'cs' ? WHY_US_DATA_CS : WHY_US_DATA_EN;
-    const logoSrc = theme === 'dark' ? '/SkillZone_logo_white.png' : '/SkillZone_logo_red.png';
+    const logoWhite = useGalleryImage('logo_white', '/SkillZone_logo_white.png');
+    const logoRed = useGalleryImage('logo_red', '/SkillZone_logo_red.png');
+    const logoSrc = theme === 'dark' ? logoWhite : logoRed;
 
     return (
         <section id="why-us" ref={sectionRef} className="py-24 bg-light-bg dark:bg-dark-bg relative overflow-hidden transition-colors duration-300">
@@ -82,7 +85,7 @@ const WhyUs: React.FC = () => {
                                 />
                             ) : (
                                 <img
-                                    src="/SkillZone_logo_white.png"
+                                    src={logoWhite}
                                     alt="SkillZone logo"
                                     loading="lazy"
                                     className="h-8 w-auto"

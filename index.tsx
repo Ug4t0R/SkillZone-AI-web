@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom/client';
 import './src/index.css';
 import App from './App';
 import { AppProvider } from './context/AppContext';
+import { GalleryProvider } from './hooks/useGallery';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
@@ -14,7 +15,9 @@ const root = ReactDOM.createRoot(rootElement);
 root.render(
   <React.StrictMode>
     <AppProvider>
-      <App />
+      <GalleryProvider>
+        <App />
+      </GalleryProvider>
     </AppProvider>
   </React.StrictMode>
 );

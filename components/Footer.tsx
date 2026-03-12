@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Instagram, Twitch, MessageCircle, User, Gamepad2 } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
+import { useGalleryImage } from '../hooks/useGallery';
 import { SectionConfig } from '../services/sectionConfig';
 import { AppView } from '../types';
 
@@ -12,6 +13,7 @@ interface FooterProps {
 
 const Footer: React.FC<FooterProps> = ({ sections, onNavigate }) => {
     const { t, setBrainrot } = useAppContext();
+    const logoWhite = useGalleryImage('logo_white', '/SkillZone_logo_white.png');
     const [logoError, setLogoError] = useState(false);
     const [versionClicks, setVersionClicks] = useState(0);
 
@@ -41,7 +43,7 @@ const Footer: React.FC<FooterProps> = ({ sections, onNavigate }) => {
                         <div className="mb-6">
                             {!logoError ? (
                                 <img
-                                    src="/SkillZone_logo_white.png"
+                                    src={logoWhite}
                                     alt="SkillZone"
                                     loading="lazy"
                                     className="h-12 w-auto object-contain"
@@ -50,7 +52,7 @@ const Footer: React.FC<FooterProps> = ({ sections, onNavigate }) => {
                                 />
                             ) : (
                                 <img
-                                    src="/SkillZone_logo_white.png"
+                                    src={logoWhite}
                                     alt="SkillZone"
                                     loading="lazy"
                                     className="h-12 w-auto object-contain"

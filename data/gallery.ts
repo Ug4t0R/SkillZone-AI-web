@@ -58,6 +58,13 @@ export const DEFAULT_GALLERY_CS: GalleryItem[] = [
     { id: 'fp_zizkov', src: '/floorplans/zizkov.png', alt: 'Plánek Žižkov', description: 'Půdorys pobočky SkillZone Žižkov — NONSTOP herna s hlavní halou, Esport zónou, batem a server roomem', category: 'atmosphere', location: 'Žižkov', sections: ['floorplans', 'locations'], tags: ['floorplan', 'layout', 'top-view', 'zizkov'] },
     { id: 'fp_haje', src: '/floorplans/haje.png', alt: 'Plánek Háje', description: 'Půdorys pobočky SkillZone Háje / Bootcamp — herní zóna, VIP sekce, privátní bootcamp místnost', category: 'atmosphere', location: 'Háje', sections: ['floorplans', 'locations'], tags: ['floorplan', 'layout', 'top-view', 'haje'] },
     { id: 'fp_stodulky', src: '/floorplans/stodulky.png', alt: 'Plánek Stodůlky', description: 'Půdorys nové pobočky SkillZone Stodůlky — kompaktní herní prostor s efektivním využitím prostoru', category: 'atmosphere', location: 'Stodůlky', sections: ['floorplans', 'locations'], tags: ['floorplan', 'layout', 'top-view', 'stodulky'] },
+    // ─── System images (logo, hero backgrounds) ──────────────────────
+    { id: 'logo_white', src: '/SkillZone_logo_white.png', alt: 'SkillZone logo (bílé)', category: 'atmosphere', visible: true, sections: ['hero'], tags: ['logo', 'system'] },
+    { id: 'logo_red', src: '/SkillZone_logo_red.png', alt: 'SkillZone logo (červené)', category: 'atmosphere', visible: true, sections: ['hero'], tags: ['logo', 'system'] },
+    { id: 'hero_bg_0', src: '/bg/P3.webp', alt: 'Hero pozadí — pobočka', category: 'atmosphere', visible: true, sections: ['hero'], tags: ['hero', 'background', 'system'], sort_order: 0 },
+    { id: 'hero_bg_1', src: '/bg/P4.webp', alt: 'Hero pozadí — gaming', category: 'atmosphere', visible: true, sections: ['hero'], tags: ['hero', 'background', 'system'], sort_order: 1 },
+    { id: 'hero_bg_2', src: '/bg/bootcamp.webp', alt: 'Hero pozadí — bootcamp', category: 'atmosphere', visible: true, sections: ['hero'], tags: ['hero', 'background', 'system'], sort_order: 2 },
+    { id: 'hero_bg_3', src: '/bg/P5.webp', alt: 'Hero pozadí — atmosféra', category: 'atmosphere', visible: true, sections: ['hero'], tags: ['hero', 'background', 'system'], sort_order: 3 },
 ];
 
 export const DEFAULT_GALLERY_EN: GalleryItem[] = [
@@ -78,6 +85,13 @@ export const DEFAULT_GALLERY_EN: GalleryItem[] = [
     { id: 'fp_zizkov', src: '/floorplans/zizkov.png', alt: 'Žižkov Floor Plan', description: 'Floor plan of SkillZone Žižkov NONSTOP branch — main hall, esport zone, bar and server room', category: 'atmosphere', location: 'Žižkov', sections: ['floorplans', 'locations'], tags: ['floorplan', 'layout', 'top-view', 'zizkov'] },
     { id: 'fp_haje', src: '/floorplans/haje.png', alt: 'Háje Floor Plan', description: 'Floor plan of SkillZone Háje / Bootcamp — gaming zone, VIP section, private bootcamp room', category: 'atmosphere', location: 'Háje', sections: ['floorplans', 'locations'], tags: ['floorplan', 'layout', 'top-view', 'haje'] },
     { id: 'fp_stodulky', src: '/floorplans/stodulky.png', alt: 'Stodůlky Floor Plan', description: 'Floor plan of new SkillZone Stodůlky branch — compact gaming space with efficient layout', category: 'atmosphere', location: 'Stodůlky', sections: ['floorplans', 'locations'], tags: ['floorplan', 'layout', 'top-view', 'stodulky'] },
+    // ─── System images (logo, hero backgrounds) ──────────────────────
+    { id: 'logo_white', src: '/SkillZone_logo_white.png', alt: 'SkillZone logo (white)', category: 'atmosphere', visible: true, sections: ['hero'], tags: ['logo', 'system'] },
+    { id: 'logo_red', src: '/SkillZone_logo_red.png', alt: 'SkillZone logo (red)', category: 'atmosphere', visible: true, sections: ['hero'], tags: ['logo', 'system'] },
+    { id: 'hero_bg_0', src: '/bg/P3.webp', alt: 'Hero background — branch', category: 'atmosphere', visible: true, sections: ['hero'], tags: ['hero', 'background', 'system'], sort_order: 0 },
+    { id: 'hero_bg_1', src: '/bg/P4.webp', alt: 'Hero background — gaming', category: 'atmosphere', visible: true, sections: ['hero'], tags: ['hero', 'background', 'system'], sort_order: 1 },
+    { id: 'hero_bg_2', src: '/bg/bootcamp.webp', alt: 'Hero background — bootcamp', category: 'atmosphere', visible: true, sections: ['hero'], tags: ['hero', 'background', 'system'], sort_order: 2 },
+    { id: 'hero_bg_3', src: '/bg/P5.webp', alt: 'Hero background — atmosphere', category: 'atmosphere', visible: true, sections: ['hero'], tags: ['hero', 'background', 'system'], sort_order: 3 },
 ];
 
 // ─── Supabase CRUD ───────────────────────────────────────────────────

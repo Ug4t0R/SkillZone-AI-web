@@ -7,6 +7,7 @@ import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react'
 import { Globe, Lock, Unlock, User, Smartphone, ArrowRight, ShieldAlert } from 'lucide-react';
 import { trackEvent } from '../services/ga4';
 import { getFlagSvgUrl } from '../utils/flags';
+import { useGalleryImage } from '../hooks/useGallery';
 import QRCode from 'react-qr-code';
 import { useAppContext } from '../context/AppContext';
 
@@ -194,6 +195,7 @@ interface ComingSoonProps {
 
 const ComingSoon: React.FC<ComingSoonProps> = ({ targetDate, onUnlock, onPlayAim, onPlayReaction }) => {
     const { t, language, setLanguage, allLanguages, isBrainrot } = useAppContext();
+    const logoRed = useGalleryImage('logo_red', '/SkillZone_logo_red.png');
     const timeLeft = useCountdown(targetDate);
     const hasCountdown = targetDate && timeLeft.total > 0;
     const [pulse, setPulse] = useState(false);
@@ -325,7 +327,7 @@ const ComingSoon: React.FC<ComingSoonProps> = ({ targetDate, onUnlock, onPlayAim
             {/* ─── Header ─── */}
             <header className="relative z-10 p-4 md:p-6 border-b border-white/5 flex items-center justify-between backdrop-blur-sm">
                 <div className="flex items-center gap-3">
-                    <img src="/SkillZone_logo_red.png" alt="SkillZone" className="h-7 md:h-9 w-auto" />
+                    <img src={logoRed} alt="SkillZone" className="h-7 md:h-9 w-auto" />
                 </div>
 
                 {/* Language Switcher */}

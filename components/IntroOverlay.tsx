@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Power } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
+import { useGalleryImage } from '../hooks/useGallery';
 
 interface IntroOverlayProps {
     onComplete: () => void;
@@ -11,6 +12,7 @@ const IntroOverlay: React.FC<IntroOverlayProps> = ({ onComplete }) => {
     const [step, setStep] = useState(0);
     const [fadeOut, setFadeOut] = useState(false);
     const { t } = useAppContext();
+    const logoWhite = useGalleryImage('logo_white', '/SkillZone_logo_white.png');
     const [logoError, setLogoError] = useState(false);
 
     useEffect(() => {
@@ -46,14 +48,14 @@ const IntroOverlay: React.FC<IntroOverlayProps> = ({ onComplete }) => {
                 <div className={`mb-12 transition-all duration-1000 transform ${step >= 1 ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
                      {!logoError ? (
                          <img 
-                            src="/SkillZone_logo_white.png" 
+                            src={logoWhite} 
                             alt="SkillZone" 
                             className="h-24 md:h-32 w-auto object-contain mx-auto animate-pulse"
                             onError={() => setLogoError(true)}
                          />
                      ) : (
                          <img 
-                            src="/SkillZone_logo_white.png" 
+                            src={logoWhite} 
                             alt="SkillZone" 
                             className="h-24 md:h-32 w-auto object-contain mx-auto animate-pulse"
                          />

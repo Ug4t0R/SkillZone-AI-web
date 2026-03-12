@@ -1,30 +1,39 @@
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { ChevronDown, ScanFace, ShieldCheck, Activity, Brain, X } from 'lucide-react';
 import HeroPresentation from './HeroPresentation';
 import { useAppContext } from '../context/AppContext';
 import { getUserProfile, saveUserProfile } from '../utils/devTools';
+import { useGallery } from '../hooks/useGallery';
 
-// Background photo mapping: slide index -> photo path
-const SLIDE_BACKGROUNDS: Record<number, string> = {
-    0: '/bg/P3.webp',
-    1: '/bg/P3.webp',
-    2: '/bg/P4.webp',
-    3: '/bg/P4.webp',
-    4: '/bg/bootcamp.webp',
-    5: '/bg/P5.webp',
-    6: '/bg/P5.webp',
-    7: '/bg/P3.webp',
-};
-const UNIQUE_PHOTOS = ['/bg/P3.webp', '/bg/P4.webp', '/bg/P5.webp', '/bg/bootcamp.webp'];
+// Fallback backgrounds (used when gallery is empty)
+const FALLBACK_PHOTOS = ['/bg/P3.webp', '/bg/P4.webp', '/bg/bootcamp.webp', '/bg/P5.webp'];
 
 const Hero: React.FC = () => {
   const { t } = useAppContext();
+  const { getImage } = useGallery();
   const [isScanning, setIsScanning] = useState(false);
   const [scanResult, setScanResult] = useState<string | null>(null);
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  const activePhoto = SLIDE_BACKGROUNDS[currentSlide] || UNIQUE_PHOTOS[0];
+  // Get hero background photos from gallery, with fallbacks
+  const heroPhotos = useMemo(() => [
+    getImage('hero_bg_0', FALLBACK_PHOTOS[0]),
+    getImage('hero_bg_1', FALLBACK_PHOTOS[1]),
+    getImage('hero_bg_2', FALLBACK_PHOTOS[2]),
+    getImage('hero_bg_3', FALLBACK_PHOTOS[3]),
+  ], [getImage]);
+
+  // Map slides to photos (some slides share the same photo)
+  const slideBackgrounds: Record<number, string> = {
+    0: heroPhotos[0], 1: heroPhotos[0],
+    2: heroPhotos[1], 3: heroPhotos[1],
+    4: heroPhotos[2],
+    5: heroPhotos[3], 6: heroPhotos[3],
+    7: heroPhotos[0],
+  };
+
+  const activePhoto = slideBackgrounds[currentSlide] || heroPhotos[0];
 
   const startScan = () => {
     setIsScanning(true);
@@ -49,7 +58,7 @@ const Hero: React.FC = () => {
 
       {/* Full-page crossfading gallery backgrounds */}
       <div className="absolute inset-0 z-0">
-        {UNIQUE_PHOTOS.map((src) => (
+        {heroPhotos.map((src) => (
           <div
             key={src}
             className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${activePhoto === src ? 'opacity-100' : 'opacity-0'}`}

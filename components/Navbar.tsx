@@ -6,6 +6,7 @@ import { useAppContext } from '../context/AppContext';
 import { Language } from '../context/AppContext';
 import { SectionConfig } from '../services/sectionConfig';
 import { getFlagSvgUrl, LANG_FLAG_CODES } from '../utils/flags';
+import { useGalleryImage } from '../hooks/useGallery';
 
 // Short code for each language
 const LANG_CODES: Record<Language, string> = {
@@ -62,7 +63,9 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, onChangeView, sections }) 
     setLangDropdownOpen(false);
   };
 
-  const logoSrc = theme === 'dark' ? '/SkillZone_logo_white.png' : '/SkillZone_logo_red.png';
+  const logoWhite = useGalleryImage('logo_white', '/SkillZone_logo_white.png');
+  const logoRed = useGalleryImage('logo_red', '/SkillZone_logo_red.png');
+  const logoSrc = theme === 'dark' ? logoWhite : logoRed;
 
   return (
     <nav className="fixed w-full z-50 glass-nav transition-colors duration-300">
@@ -80,7 +83,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, onChangeView, sections }) 
               />
             ) : (
               <img
-                src="/SkillZone_logo_white.png"
+                src={logoWhite}
                 alt="SkillZone"
                 className="h-8 md:h-12 w-auto object-contain transition-transform hover:scale-105"
               />

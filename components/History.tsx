@@ -5,12 +5,14 @@ import { History, Maximize2, Minimize2, Filter, Circle } from 'lucide-react';
 import { getMergedHistory } from '../utils/devTools';
 import { HistoryMilestone } from '../types';
 import { useAppContext } from '../context/AppContext';
+import { useGalleryImage } from '../hooks/useGallery';
 
 const HistorySection: React.FC = () => {
     const [viewMode, setViewMode] = useState<'short' | 'long'>('short');
     const [filter, setFilter] = useState<string>('all');
     const [combinedData, setCombinedData] = useState<HistoryMilestone[]>([]);
     const { language, t } = useAppContext();
+    const logoWhite = useGalleryImage('logo_white', '/SkillZone_logo_white.png');
     const [logoError, setLogoError] = useState(false);
 
     // Merge hardcoded history with custom/edited events
@@ -192,7 +194,7 @@ const HistorySection: React.FC = () => {
                     <div className="absolute bottom-[-40px] left-6 md:left-1/2 transform -translate-x-1/2 bg-black p-4 rounded-full border-4 border-sz-red z-20 shadow-[0_0_30px_rgba(227,30,36,0.8)]">
                         {!logoError ? (
                             <img
-                                src="/SkillZone_logo_white.png"
+                                src={logoWhite}
                                 alt="SkillZone logo"
                                 loading="lazy"
                                 className="h-8 w-auto"
@@ -200,7 +202,7 @@ const HistorySection: React.FC = () => {
                             />
                         ) : (
                             <img
-                                src="/SkillZone_logo_white.png"
+                                src={logoWhite}
                                 alt="SkillZone logo"
                                 className="h-8 w-auto"
                             />
