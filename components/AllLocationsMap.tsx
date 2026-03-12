@@ -192,7 +192,7 @@ const AllLocationsMap: React.FC = () => {
                 {mapPoints.map((point) => (
                     <div
                         key={point.id}
-                        className="absolute flex flex-col items-center group/pin cursor-pointer z-10 -translate-x-1/2 -translate-y-1/2"
+                        className={`absolute flex flex-col items-center group/pin cursor-pointer -translate-x-1/2 -translate-y-1/2 ${hoveredPin === point.id ? 'z-[60]' : 'z-10'}`}
                         style={{ top: point.top, left: point.left }}
                         onClick={() => scrollToLocation(point.id)}
                         onMouseEnter={() => setHoveredPin(point.id)}
@@ -238,6 +238,9 @@ const AllLocationsMap: React.FC = () => {
                             ? 'opacity-100 translate-y-0 pointer-events-auto'
                             : 'opacity-0 -translate-y-2 pointer-events-none'
                             }`}>
+                            {/* Invisible bridge to prevent hover loss when moving mouse down */}
+                            <div className="absolute bottom-full left-0 right-0 h-10 bg-transparent cursor-default" />
+
                             <div className="text-white font-bold text-xs mb-2 uppercase font-orbitron">{point.label}</div>
                             <div className="space-y-1.5">
                                 <div className="flex items-center gap-2 text-[10px] font-mono text-gray-300">
