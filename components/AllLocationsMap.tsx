@@ -66,7 +66,9 @@ const AllLocationsMap: React.FC = () => {
     ];
 
     const scrollToLocation = (id: string) => {
-        document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        pushRoute(`branch_${id}` as any);
+        window.dispatchEvent(new Event('popstate'));
+        window.scrollTo(0, 0);
     };
 
     return (

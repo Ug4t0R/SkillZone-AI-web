@@ -296,9 +296,9 @@ const App: React.FC = () => {
   const renderView = () => {
     switch (currentView) {
       case 'booking':
-        return <BookingSelection onChangeView={setCurrentView} />;
+        return <BookingSelection onChangeView={navigateTo} />;
       case 'locations':
-        return <Locations onChangeView={setCurrentView} />;
+        return <Locations onChangeView={navigateTo} />;
       case 'pricing':
         return <div className="pt-20"><Pricing /></div>;
       case 'history':
@@ -308,13 +308,13 @@ const App: React.FC = () => {
       case 'rentals':
         return (
           <Suspense fallback={<SkeletonLoader />}>
-            <RentalWizard onChangeView={setCurrentView} />
+            <RentalWizard onChangeView={navigateTo} />
           </Suspense>
         );
       case 'reservation-status':
         return (
           <Suspense fallback={<SkeletonLoader />}>
-            <ReservationStatus onChangeView={setCurrentView} />
+            <ReservationStatus onChangeView={navigateTo} />
           </Suspense>
         );
       case 'gallery':
@@ -327,7 +327,7 @@ const App: React.FC = () => {
         return (
           <Suspense fallback={<SkeletonLoader />}>
             <LocationDetail
-              onChangeView={setCurrentView}
+              onChangeView={navigateTo}
               data={{
                 id: 'zizkov',
                 title: 'Žižkov',
@@ -345,7 +345,7 @@ const App: React.FC = () => {
         return (
           <Suspense fallback={<SkeletonLoader />}>
             <LocationDetail
-              onChangeView={setCurrentView}
+              onChangeView={navigateTo}
               data={{
                 id: 'haje',
                 title: 'Háje',
@@ -363,7 +363,7 @@ const App: React.FC = () => {
         return (
           <Suspense fallback={<SkeletonLoader />}>
             <LocationDetail
-              onChangeView={setCurrentView}
+              onChangeView={navigateTo}
               data={{
                 id: 'stodulky',
                 title: 'Stodůlky',
@@ -381,7 +381,7 @@ const App: React.FC = () => {
         return (
           <Suspense fallback={<SkeletonLoader />}>
             <LocationDetail
-              onChangeView={setCurrentView}
+              onChangeView={navigateTo}
               data={{
                 id: 'bootcamp',
                 title: 'Bootcamp',
@@ -399,37 +399,37 @@ const App: React.FC = () => {
       case 'gift':
         return (
           <Suspense fallback={<SkeletonLoader />}>
-            <VoucherPage onChangeView={setCurrentView} />
+            <VoucherPage onChangeView={navigateTo} />
           </Suspense>
         );
       case 'poukaz':
         return (
           <Suspense fallback={<SkeletonLoader />}>
-            <VoucherRedeemPage onChangeView={setCurrentView} />
+            <VoucherRedeemPage onChangeView={navigateTo} />
           </Suspense>
         );
       case 'arena':
         return (
           <Suspense fallback={<SkeletonLoader />}>
-            <ArenaPromo onChangeView={setCurrentView} />
+            <ArenaPromo onChangeView={navigateTo} />
           </Suspense>
         );
       case 'mvp':
         return (
           <Suspense fallback={<SkeletonLoader />}>
-            <MvpPromo onChangeView={setCurrentView} />
+            <MvpPromo onChangeView={navigateTo} />
           </Suspense>
         );
       case 'cybersport':
         return (
           <Suspense fallback={<SkeletonLoader />}>
-            <CybersportPromo onChangeView={setCurrentView} />
+            <CybersportPromo onChangeView={navigateTo} />
           </Suspense>
         );
       case 'secretpages':
         return (
           <Suspense fallback={<SkeletonLoader />}>
-            <SecretPages onChangeView={setCurrentView} />
+            <SecretPages onChangeView={navigateTo} />
           </Suspense>
         );
       case 'illuminati':
@@ -441,7 +441,7 @@ const App: React.FC = () => {
       case 'contact':
         return (
           <Suspense fallback={<SkeletonLoader />}>
-            <Contact onChangeView={setCurrentView} />
+            <Contact onChangeView={navigateTo} />
           </Suspense>
         );
       case 'home':
