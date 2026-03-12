@@ -1,6 +1,6 @@
 // ─── Pricing Data ─────────────────────────────────────────────────────────────
 // Centralizovaná datová vrstva pro komponentu Pricing.
-// Ceny jsou aktualizovány k 28.7.2025.
+// Ceny jsou aktualizovány k 12.3.2026.
 
 export type SeatType = 'standard' | 'vip' | 'esport';
 
@@ -46,6 +46,14 @@ export interface Location {
     nameCs: string;
     nameEn: string;
     label: string;
+    hasVip: boolean;
+    hasEsport: boolean;
+    hasNightLAN: boolean;
+    hasDayLAN: boolean;
+    /** Flat all-day price (e.g. Háje/Stodůlky) — if set, replaces DayLAN pricing */
+    flatDayPrice?: number;
+    openFrom: string;
+    openTo: string;
 }
 
 export const MEMBER_TIERS: MemberTier[] = [
@@ -64,21 +72,22 @@ export const TOP_UP_BONUSES: TopUpBonus[] = [
 ];
 
 export const EXTRA_FEES: ExtraFee[] = [
-    { id: 'esport_haje', nameCs: 'VIP PC (Háje)', nameEn: 'VIP PC (Háje)', descCs: 'Jednorázový příplatek, 27" 240Hz 2.5K', descEn: 'One-time fee, 27" 240Hz 2.5K', price: 30 },
-    { id: 'esport_stodulky', nameCs: 'Esport PC (Stodůlky)', nameEn: 'Esport PC (Stodůlky)', descCs: 'Jednorázový příplatek, 380Hz Monitor', descEn: 'One-time fee, 380Hz Monitor', price: 90, altPrice: 60, altNote: 'Premium/ULTRAS' },
+    { id: 'esport', nameCs: 'Esport PC', nameEn: 'Esport PC', descCs: 'Jednorázový příplatek, 380Hz Monitor', descEn: 'One-time fee, 380Hz Monitor', price: 90, altPrice: 60, altNote: 'Premium/ULTRAS' },
+    { id: 'vip', nameCs: 'VIP PC', nameEn: 'VIP PC', descCs: 'Jednorázový příplatek, 27" 2.5K Monitor', descEn: 'One-time fee, 27" 2.5K Monitor', price: 30 },
     { id: 'night', nameCs: 'Noční návštěva', nameEn: 'Night visit', descCs: '00:00 – 06:00 (Premium/ULTRAS neplatí)', descEn: '00:00 – 06:00 (Premium/ULTRAS exempt)', price: 50 },
     { id: 'saturday', nameCs: 'Sobota', nameEn: 'Saturday', descCs: 'Jednorázově, 12:00 – 00:00 (před 12:00 neplatí!)', descEn: 'One-time, 12:00 – 00:00 (before 12:00 no surcharge!)', price: 30 },
     { id: 'controller', nameCs: 'Zapůjčení ovladače', nameEn: 'Controller rental', descCs: 'Dle pobočky', descEn: 'Per branch', price: 20 },
 ];
 
 export const PACKAGES: Package[] = [
-    { id: 'daylan_zizkov', nameCs: 'DayLAN Žižkov', nameEn: 'DayLAN Žižkov', time: '08:00 → 22:00', icon: '☀️' },
-    { id: 'nightlan_zizkov', nameCs: 'NightLAN Žižkov', nameEn: 'NightLAN Žižkov', time: '22:00 → 08:00', icon: '🌙' },
-    { id: 'daylan_haje', nameCs: 'DayLAN Háje', nameEn: 'DayLAN Háje', time: '12:00 → 00:00', icon: '🌇' },
+    { id: 'daylan_zizkov', nameCs: 'DayLAN Žižkov', nameEn: 'DayLAN Žižkov', time: '12:00 → 00:00', icon: '🌞' },
+    { id: 'nightlan_zizkov', nameCs: 'NightLAN Žižkov', nameEn: 'NightLAN Žižkov', time: '00:00 → 06:00', icon: '🌙' },
+    { id: 'allday_haje', nameCs: 'Celý den Háje', nameEn: 'All Day Háje', time: '12:00 → 00:00', icon: '🌇' },
+    { id: 'allday_stodulky', nameCs: 'Celý den Stodůlky', nameEn: 'All Day Stodůlky', time: '13:00 → 21:00', icon: '🏙️' },
 ];
 
 export const LOCATIONS: Location[] = [
-    { id: 'haje', nameCs: 'Háje', nameEn: 'Háje', label: 'Praha 4' },
-    { id: 'zizkov', nameCs: 'Žižkov', nameEn: 'Žižkov', label: 'Praha 3' },
-    { id: 'stodulky', nameCs: 'Stodůlky', nameEn: 'Stodůlky', label: 'Praha 5' },
+    { id: 'zizkov', nameCs: 'Žižkov', nameEn: 'Žižkov', label: 'Praha 3', hasVip: false, hasEsport: true, hasNightLAN: true, hasDayLAN: true, openFrom: 'NONSTOP', openTo: '24/7' },
+    { id: 'haje', nameCs: 'Háje', nameEn: 'Háje', label: 'Praha 4', hasVip: true, hasEsport: true, hasNightLAN: false, hasDayLAN: false, flatDayPrice: 345, openFrom: '12:00', openTo: '00:00' },
+    { id: 'stodulky', nameCs: 'Stodůlky', nameEn: 'Stodůlky', label: 'Praha 5', hasVip: false, hasEsport: true, hasNightLAN: false, hasDayLAN: false, flatDayPrice: 345, openFrom: '13:00', openTo: '21:00' },
 ];
