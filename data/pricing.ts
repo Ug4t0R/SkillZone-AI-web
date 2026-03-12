@@ -60,6 +60,8 @@ export interface Location {
     dayLANPromoPrice?: number;
     openFrom: string;
     openTo: string;
+    /** Otevírací doba o víkendu (pá-ne), pokud se liší */
+    openFromWeekend?: string;
 }
 
 export const MEMBER_TIERS: MemberTier[] = [
@@ -96,5 +98,5 @@ export const PACKAGES: Package[] = [
 export const LOCATIONS: Location[] = [
     { id: 'zizkov', nameCs: 'Žižkov', nameEn: 'Žižkov', label: 'Praha 3', hasVip: false, hasEsport: true, hasNightLAN: true, hasDayLAN: true, dayLANTime: '08:00–22:00', nightLANTime: '22:00–08:00', openFrom: 'NONSTOP', openTo: '24/7' },
     { id: 'haje', nameCs: 'Háje', nameEn: 'Háje', label: 'Praha 4', hasVip: true, hasEsport: true, hasNightLAN: false, hasDayLAN: true, dayLANTime: '12:00–22:00', openFrom: '12:00', openTo: '00:00' },
-    { id: 'stodulky', nameCs: 'Stodůlky', nameEn: 'Stodůlky', label: 'Praha 5', hasVip: false, hasEsport: true, hasNightLAN: false, hasDayLAN: true, dayLANTime: '13:00–21:00', dayLANPromoPrice: 345, openFrom: '13:00', openTo: '21:00' },
+    { id: 'stodulky', nameCs: 'Stodůlky', nameEn: 'Stodůlky', label: 'Praha 5', hasVip: false, hasEsport: true, hasNightLAN: false, hasDayLAN: true, dayLANTime: '13:00–21:00', dayLANPromoPrice: 345, openFrom: '13:00', openTo: '21:00', openFromWeekend: '12:00' },
 ];
