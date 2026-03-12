@@ -36,6 +36,7 @@ export const GALLERY_SECTIONS = [
     { id: 'locations', label: '📍 Locations' },
     { id: 'reviews', label: '⭐ Reviews' },
     { id: 'story', label: '📜 Story' },
+    { id: 'floorplans', label: '🗺️ Floor Plans' },
 ] as const;
 
 // Default gallery data (fallback when DB is empty)
@@ -54,6 +55,9 @@ export const DEFAULT_GALLERY_CS: GalleryItem[] = [
     { id: 'g12', src: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600', alt: 'Hráči slaví výhru', description: 'Nadšení hráči slaví společné vítězství v turnaji na pobočce SkillZone Žižkov', category: 'community', location: 'Žižkov' },
     { id: 'g13', src: 'https://images.unsplash.com/photo-1586182987320-4f376d39d787?w=600', alt: 'Server room', description: 'Serverovna SkillZone s rackovými servery zajišťujícími nízký ping a stabilní připojení', category: 'hardware' },
     { id: 'g14', src: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600', alt: 'RGB ambientní osvětlení', description: 'Ambientní RGB osvětlení herního prostoru vytvářející atmosféru pro imerzivní gaming zážitek', category: 'atmosphere' },
+    { id: 'fp_zizkov', src: '/floorplans/zizkov.png', alt: 'Plánek Žižkov', description: 'Půdorys pobočky SkillZone Žižkov — NONSTOP herna s hlavní halou, Esport zónou, batem a server roomem', category: 'atmosphere', location: 'Žižkov', sections: ['floorplans', 'locations'], tags: ['floorplan', 'layout', 'top-view', 'zizkov'] },
+    { id: 'fp_haje', src: '/floorplans/haje.png', alt: 'Plánek Háje', description: 'Půdorys pobočky SkillZone Háje / Bootcamp — herní zóna, VIP sekce, privátní bootcamp místnost', category: 'atmosphere', location: 'Háje', sections: ['floorplans', 'locations'], tags: ['floorplan', 'layout', 'top-view', 'haje'] },
+    { id: 'fp_stodulky', src: '/floorplans/stodulky.png', alt: 'Plánek Stodůlky', description: 'Půdorys nové pobočky SkillZone Stodůlky — kompaktní herní prostor s efektivním využitím prostoru', category: 'atmosphere', location: 'Stodůlky', sections: ['floorplans', 'locations'], tags: ['floorplan', 'layout', 'top-view', 'stodulky'] },
 ];
 
 export const DEFAULT_GALLERY_EN: GalleryItem[] = [
@@ -71,6 +75,9 @@ export const DEFAULT_GALLERY_EN: GalleryItem[] = [
     { id: 'g12', src: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600', alt: 'Players celebrating a win', description: 'Excited players celebrating a tournament victory at SkillZone Žižkov branch', category: 'community', location: 'Žižkov' },
     { id: 'g13', src: 'https://images.unsplash.com/photo-1586182987320-4f376d39d787?w=600', alt: 'Server room', description: 'SkillZone server room with rack-mounted servers ensuring low ping and stable connectivity', category: 'hardware' },
     { id: 'g14', src: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600', alt: 'RGB ambient lighting', description: 'Ambient RGB lighting in the gaming space creating an atmosphere for an immersive gaming experience', category: 'atmosphere' },
+    { id: 'fp_zizkov', src: '/floorplans/zizkov.png', alt: 'Žižkov Floor Plan', description: 'Floor plan of SkillZone Žižkov NONSTOP branch — main hall, esport zone, bar and server room', category: 'atmosphere', location: 'Žižkov', sections: ['floorplans', 'locations'], tags: ['floorplan', 'layout', 'top-view', 'zizkov'] },
+    { id: 'fp_haje', src: '/floorplans/haje.png', alt: 'Háje Floor Plan', description: 'Floor plan of SkillZone Háje / Bootcamp — gaming zone, VIP section, private bootcamp room', category: 'atmosphere', location: 'Háje', sections: ['floorplans', 'locations'], tags: ['floorplan', 'layout', 'top-view', 'haje'] },
+    { id: 'fp_stodulky', src: '/floorplans/stodulky.png', alt: 'Stodůlky Floor Plan', description: 'Floor plan of new SkillZone Stodůlky branch — compact gaming space with efficient layout', category: 'atmosphere', location: 'Stodůlky', sections: ['floorplans', 'locations'], tags: ['floorplan', 'layout', 'top-view', 'stodulky'] },
 ];
 
 // ─── Supabase CRUD ───────────────────────────────────────────────────
