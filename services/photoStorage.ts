@@ -57,9 +57,20 @@ export async function deletePhoto(storagePath: string): Promise<boolean> {
 
 // ─── Public URL ──────────────────────────────────────────────────────
 
-export function getPublicUrl(storagePath: string): string {
+export interface ImageTransformOptions {
+    width?: number;
+    height?: number;
+    quality?: number;
+    resize?: 'cover' | 'contain' | 'fill';
+}
+
+export function getPublicUrl(storagePath: string, transform?: ImageTransformOptions): string {
     const sb = getSupabase();
-    const { data } = sb.storage.from(BUCKET).getPublicUrl(storagePath);
+    const options: any = {};
+    if (transform) {
+        options.transform = { ...transform, format: 'webp' };
+    }
+    const { data } = sb.storage.from(BUCKET).getPublicUrl(storagePath, options);
     return data.publicUrl;
 }
 

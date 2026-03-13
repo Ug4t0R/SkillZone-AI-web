@@ -25,7 +25,7 @@ interface LocationDetailProps {
 const LocationDetail: React.FC<LocationDetailProps> = ({ data, onChangeView }) => {
     if (!data) return null;
 
-    const floorPlanSrc = useGalleryImage(`fp_${data.id}`, '');
+    const floorPlanSrc = useGalleryImage(`fp_${data.id}`, '', { width: 1200, quality: 85 });
     const [lightboxOpen, setLightboxOpen] = useState(false);
 
     return (

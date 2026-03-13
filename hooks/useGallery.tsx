@@ -5,11 +5,12 @@
  */
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { GalleryItem, getGalleryItems } from '../data/gallery';
+import { getPublicUrl, ImageTransformOptions } from '../services/photoStorage';
 
 interface GalleryContextValue {
     items: GalleryItem[];
-    /** Get a single image URL by gallery item ID. Returns fallback if not found. */
-    getImage: (id: string, fallback: string) => string;
+    /** Get a single image URL by gallery item ID. Returns fallback if not found. Supports dynamic Supabase image transforms if path exists. */
+    getImage: (id: string, fallback: string, transform?: ImageTransformOptions) => string;
     /** Get all visible image URLs for a given section. */
     getSection: (section: string) => GalleryItem[];
     /** Whether gallery data has loaded from Supabase */
@@ -18,7 +19,7 @@ interface GalleryContextValue {
 
 const GalleryContext = createContext<GalleryContextValue>({
     items: [],
-    getImage: (_id, fallback) => fallback,
+    getImage: (_id, fallback, _transform) => fallback,
     getSection: () => [],
     loaded: false,
 });
@@ -34,9 +35,17 @@ export const GalleryProvider: React.FC<{ children: React.ReactNode }> = ({ child
         }).catch(() => setLoaded(true));
     }, []);
 
-    const getImage = useCallback((id: string, fallback: string): string => {
+    const getImage = useCallback((id: string, fallback: string, transform?: ImageTransformOptions): string => {
         const item = items.find(i => i.id === id && i.visible !== false);
-        return item?.src || fallback;
+        if (!item) return fallback;
+
+        // If the item lives in Supabase Storage and we requested a transform, 
+        // dynamically generate the optimized URL.
+        if (item.storage_path && transform) {
+            return getPublicUrl(item.storage_path, transform);
+        }
+        
+        return item.src || fallback;
     }, [items]);
 
     const getSection = useCallback((section: string): GalleryItem[] => {
@@ -61,9 +70,9 @@ export const useGallery = () => useContext(GalleryContext);
 
 /**
  * Shortcut hook: returns a single image URL by gallery ID.
- * Usage: const logoSrc = useGalleryImage('logo_white', '/SkillZone_logo_white.png');
+ * Usage: const logoSrc = useGalleryImage('logo_white', '/SkillZone_logo_white.png', { width: 400 });
  */
-export const useGalleryImage = (id: string, fallback: string): string => {
+export const useGalleryImage = (id: string, fallback: string, transform?: ImageTransformOptions): string => {
     const { getImage } = useGallery();
-    return getImage(id, fallback);
+    return getImage(id, fallback, transform);
 };

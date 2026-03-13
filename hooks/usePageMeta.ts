@@ -8,6 +8,7 @@ const years = getYearsOnMarket();
 interface PageMeta {
     title: string;
     description: string;
+    image?: string;
 }
 
 type PageMetaMap = Partial<Record<AppView, PageMeta>>;
@@ -21,6 +22,26 @@ const PAGE_META: Partial<Record<Language, PageMetaMap>> = {
         locations: {
             title: 'Pobočky | SkillZone Gaming Club',
             description: 'Najdi nejbližší hernu SkillZone v Praze. Žižkov (nonstop 24/7), Háje (u metra), Stodůlky (nově otevřeno), Private Bootcamp.'
+        },
+        branch_zizkov: {
+            title: 'SkillZone Žižkov | NONSTOP Herní klub v Praze',
+            description: 'Největší herní klub v Praze otevřený 24/7. Špičkové počítače, Esport zóna a bar. Přijď si zahrát kdykoliv.',
+            image: 'https://skillzone.cz/floorplans/zizkov.png'
+        },
+        branch_haje: {
+            title: 'SkillZone Háje | VIP herní zóna Praha 4',
+            description: 'Atmosférická herna přímo u metra Háje. VIP PC s 27" 2.5K monitory a Bootcamp místnost pro nerušené hraní.',
+            image: 'https://skillzone.cz/floorplans/haje.png'
+        },
+        branch_stodulky: {
+            title: 'SkillZone Stodůlky | Moderní herna Praha 5',
+            description: 'Nově otevřená moderní herna v pražských Stodůlkách. Výkonná herní PC sestavy a skvělá komunita.',
+            image: 'https://skillzone.cz/floorplans/stodulky.png'
+        },
+        branch_bootcamp: {
+            title: 'Privátní Bootcamp | SkillZone Holešovice',
+            description: 'Samostatná privátní místnost pro esport týmy. 12 špičkových PC, soukromí a ideální prostředí pro nerušený trénink.',
+            image: 'https://skillzone.cz/floorplans/bootcamp.png'
         },
         pricing: {
             title: 'Ceník | SkillZone Gaming Club',
@@ -75,6 +96,26 @@ const PAGE_META: Partial<Record<Language, PageMetaMap>> = {
         locations: {
             title: 'Locations | SkillZone Gaming Club',
             description: 'Find your nearest SkillZone gaming club in Prague. Žižkov (24/7), Háje, Stodůlky, Private Bootcamp.'
+        },
+        branch_zizkov: {
+            title: 'SkillZone Žižkov | 24/7 NONSTOP Gaming Club',
+            description: 'The largest gaming club in Prague open 24/7. Top performance PCs, Esport zone and bar. Play anytime.',
+            image: 'https://skillzone.cz/floorplans/zizkov.png'
+        },
+        branch_haje: {
+            title: 'SkillZone Háje | VIP Gaming Zone Prague 4',
+            description: 'Atmospheric gaming club right next to Háje metro. VIP PCs with 27" 2.5K monitors and a private Bootcamp room.',
+            image: 'https://skillzone.cz/floorplans/haje.png'
+        },
+        branch_stodulky: {
+            title: 'SkillZone Stodůlky | Modern Gaming Club Prague 5',
+            description: 'Newly opened modern gaming club in Stodůlky. High-end PC rigs and a great community.',
+            image: 'https://skillzone.cz/floorplans/stodulky.png'
+        },
+        branch_bootcamp: {
+            title: 'Private Bootcamp | SkillZone Holešovice',
+            description: 'Private 12-PC room for esports teams. Total privacy and the perfect environment for uninterrupted training.',
+            image: 'https://skillzone.cz/floorplans/bootcamp.png'
         },
         pricing: {
             title: 'Pricing | SkillZone Gaming Club',
@@ -251,6 +292,20 @@ export function usePageMeta(view: AppView, language: string) {
 
         const ogDesc = document.querySelector('meta[property="og:description"]');
         if (ogDesc) ogDesc.setAttribute('content', meta.description);
+
+        // Dynamically add or update og:image
+        let ogImageTag = document.querySelector('meta[property="og:image"]');
+        if (meta.image) {
+            if (!ogImageTag) {
+                ogImageTag = document.createElement('meta');
+                ogImageTag.setAttribute('property', 'og:image');
+                document.head.appendChild(ogImageTag);
+            }
+            ogImageTag.setAttribute('content', meta.image);
+        } else if (ogImageTag) {
+            // Default fallback image if none provided for this view
+            ogImageTag.setAttribute('content', 'https://skillzone.cz/SkillZone_FB_Share.jpg');
+        }
 
         // Dynamically update Canonical URL for SEO (Critical for SPAs)
         const baseUrl = 'https://skillzone.cz';

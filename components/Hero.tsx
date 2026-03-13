@@ -18,10 +18,10 @@ const Hero: React.FC = () => {
 
   // Get hero background photos from gallery, with fallbacks
   const heroPhotos = useMemo(() => [
-    getImage('hero_bg_0', FALLBACK_PHOTOS[0]),
-    getImage('hero_bg_1', FALLBACK_PHOTOS[1]),
-    getImage('hero_bg_2', FALLBACK_PHOTOS[2]),
-    getImage('hero_bg_3', FALLBACK_PHOTOS[3]),
+    getImage('hero_bg_0', FALLBACK_PHOTOS[0], { width: 1920, quality: 80 }),
+    getImage('hero_bg_1', FALLBACK_PHOTOS[1], { width: 1920, quality: 80 }),
+    getImage('hero_bg_2', FALLBACK_PHOTOS[2], { width: 1920, quality: 80 }),
+    getImage('hero_bg_3', FALLBACK_PHOTOS[3], { width: 1920, quality: 80 }),
   ], [getImage]);
 
   // Map slides to photos (some slides share the same photo)
